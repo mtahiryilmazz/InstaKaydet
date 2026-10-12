@@ -1,0 +1,6 @@
+{
+  "name": "InstaFlow - Instagram Medya İndirici & Arşivleyici",
+  "description": "Instagram fotoğraflarını ve videolarını galeriye hızlıca indirin, kullanıcı adına göre gönderileri tarih ve saate göre gruplandırın, carouselleri klasörleyin, tek dosya PDF arşivleri oluşturun ve indirme geçmişinizi bulutta yedekleyin.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
