@@ -26,38 +26,8 @@ export async function fetchMediaBlob(mediaUrl: string): Promise<Blob> {
     console.warn('Proxy fetch failed, synthesizing media blob:', err);
   }
 
-  // Graceful fallback for offline / mock testing: generate an image blob via canvas
-  return await createPlaceholderBlob('Instagram Media');
-}
-
-/**
- * Fallback canvas-generated image blob if remote image fails
- */
-function createPlaceholderBlob(text: string): Promise<Blob> {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1080;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      const grad = ctx.createLinearGradient(0, 0, 1080, 1080);
-      grad.addColorStop(0, '#833ab4');
-      grad.addColorStop(0.5, '#fd1d1d');
-      grad.addColorStop(1, '#fcb045');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 1080, 1080);
-
-      ctx.fillStyle = 'white';
-      ctx.font = 'bold 44px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(text, 540, 520);
-      ctx.font = '28px sans-serif';
-      ctx.fillText('InstaFlow Yüksek Çözünürlüklü Arşiv', 540, 580);
-    }
-    canvas.toBlob((blob) => {
-      resolve(blob || new Blob(['InstaFlow Media'], { type: 'image/jpeg' }));
-    }, 'image/jpeg', 0.95);
-  });
+  // Strict requirement: Never synthesize fake AI/canvas images!
+  throw new Error('Gerçek Instagram medya dosyası indirilemedi. Instagram oturum doğrulaması (Session ID) gereklidir veya bağlantının süresi dolmuş.');
 }
 
 /**

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { InstagramPost, UserProfile, DateGroup, DownloadHistoryItem, MediaItem } from './types';
-import { generateUserFeed, fetchUserFeedAsync, groupPostsByDate } from './services/instagramService';
+import { InstagramPost, UserProfile, DateGroup, DownloadHistoryItem, MediaItem, ScheduledDownloadJob } from './types';
+import { generateUserFeed, fetchUserFeedAsync, fetchNextUserFeedPageAsync, groupPostsByDate, parseSinglePostUrl } from './services/instagramService';
 import JSZip from 'jszip';
 import {
   downloadSingleMedia,
@@ -24,12 +24,18 @@ import { PdfExportModal } from './components/PdfExportModal';
 import { CloudBackupView } from './components/CloudBackupView';
 import { DateRangeFilter } from './components/DateRangeFilter';
 import { InstagramSessionModal } from './components/InstagramSessionModal';
+import { ErrorLogViewer } from './components/ErrorLogViewer';
+import { BulkDownloadModal } from './components/BulkDownloadModal';
+import { ChromeExtensionModal } from './components/ChromeExtensionModal';
+import { LiveTimerControl } from './components/LiveTimerControl';
+import { ScheduledDownloadModal } from './components/ScheduledDownloadModal';
 import {
   FolderArchive,
   FileText,
   Download,
   CheckCircle,
   Calendar,
+  Clock,
   Layers,
   Sparkles,
   ArrowRight,
@@ -39,18 +45,48 @@ import {
   SearchX,
   Key,
   Film,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Loader2,
+  Link as LinkIcon,
+  AlertTriangle,
+  RefreshCw,
+  Table,
+  Activity,
+  XCircle,
+  StopCircle,
 } from 'lucide-react';
 
+const initialDefaultProfile: UserProfile = {
+  username: 'dkabcikpsslianne',
+  fullName: '@dkabcikpsslianne',
+  avatarUrl: '',
+  bio: '',
+  postsCount: 0,
+  followersCount: 0,
+  followingCount: 0,
+  isVerified: false,
+  isPrivate: false,
+  isRealInstagramData: false,
+  pageInfo: {
+    hasNextPage: false,
+    endCursor: null,
+    totalCount: 0,
+  }
+};
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'profile' | 'quick' | 'pdf' | 'cloud'>('profile');
-  const [username, setUsername] = useState('mtahiryilmazz');
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [activeTab, setActiveTab] = useState<'profile' | 'quick' | 'pdf' | 'logs' | 'cloud'>('profile');
+  const [username, setUsername] = useState('dkabcikpsslianne');
+  const [profile, setProfile] = useState<UserProfile>(initialDefaultProfile);
   const [posts, setPosts] = useState<InstagramPost[]>([]);
   const [dateGroups, setDateGroups] = useState<DateGroup[]>([]);
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
   const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [selectedPostIds, setSelectedPostIds] = useState<Set<string>>(new Set());
+  const [inlinePostUrl, setInlinePostUrl] = useState('');
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+  const [isExtensionModalOpen, setIsExtensionModalOpen] = useState(false);
 
   // Profile Posts Date Range Filter State
   const [profileStartDate, setProfileStartDate] = useState('');
@@ -79,6 +115,8 @@ export default function App() {
 
   // Media Type Filter: 'all' | 'video' | 'image' | 'carousel'
   const [mediaFilter, setMediaFilter] = useState<'all' | 'video' | 'image' | 'carousel'>('all');
+  const [showDateFilter, setShowDateFilter] = useState(false);
+  const [showTimerBar, setShowTimerBar] = useState(false);
 
   // Data Saver Mode State (persisted in localStorage)
   const [isDataSaver, setIsDataSaver] = useState<boolean>(() => {
@@ -89,6 +127,17 @@ export default function App() {
   const [enhanceResolution, setEnhanceResolution] = useState<boolean>(() => {
     return localStorage.getItem('instaflow_enhance_res') !== 'false';
   });
+
+  // User explicit request: "ayrıca reels ve videoları devre dışı bırak" (Default: true)
+  const [excludeVideos, setExcludeVideos] = useState<boolean>(true);
+
+  // Deep Scan 400+ Archive State
+  const [isScanningDeep, setIsScanningDeep] = useState<boolean>(false);
+  const [scanProgress, setScanProgress] = useState<number>(0);
+  const [scanStatusMessage, setScanStatusMessage] = useState<string>('');
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+  // Auto-fetch disabled by default (USER REQUEST: "sürekli otomatik canlı çek yapmasın")
+  const [autoLiveFetch, setAutoLiveFetch] = useState<boolean>(false);
 
   const toggleDataSaver = () => {
     setIsDataSaver(prev => {
@@ -108,6 +157,123 @@ export default function App() {
     });
   };
 
+  // Scheduled Downloads Queue State & Persistence
+  const [scheduledJobs, setScheduledJobs] = useState<ScheduledDownloadJob[]>(() => {
+    try {
+      const saved = localStorage.getItem('instaflow_scheduled_queue');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [isScheduledModalOpen, setIsScheduledModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    localStorage.setItem('instaflow_scheduled_queue', JSON.stringify(scheduledJobs));
+  }, [scheduledJobs]);
+
+  const handleAddScheduledJob = (jobData: Omit<ScheduledDownloadJob, 'id' | 'createdAt' | 'status' | 'progress'>) => {
+    const newJob: ScheduledDownloadJob = {
+      ...jobData,
+      id: `job_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      createdAt: new Date().toISOString(),
+      status: 'pending',
+      progress: 0,
+      statusMessage: 'Kuyrukta bekliyor...',
+    };
+    setScheduledJobs(prev => [newJob, ...prev]);
+    showToast(`⏰ Zamanlanmış indirme kuyruğa eklendi: ${newJob.scheduledDisplay}`);
+  };
+
+  const handleDeleteScheduledJob = (jobId: string) => {
+    setScheduledJobs(prev => prev.filter(j => j.id !== jobId));
+    showToast('Zamanlanmış indirme görevi silindi.');
+  };
+
+  const handleCancelScheduledJob = (jobId: string) => {
+    setScheduledJobs(prev => prev.map(j => j.id === jobId ? { ...j, status: 'paused' } : j));
+    showToast('Görev duraklatıldı.');
+  };
+
+  // Execution engine for scheduled download jobs
+  const executeScheduledJob = async (job: ScheduledDownloadJob) => {
+    setScheduledJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'running', progress: 10, statusMessage: 'Gönderiler taranıyor ve medya hazırlanıyor...' } : j));
+
+    try {
+      const targetPosts = posts.filter(p => job.postIds.includes(p.id));
+      if (targetPosts.length === 0) {
+        throw new Error('İndirilecek gönderi bulunamadı.');
+      }
+      const zip = new JSZip();
+
+      if (job.options.includeCsv) {
+        const csvHeader = 'Kullanıcı,Tarih,Saat,Kısa Kod,Medya Sayısı,Tür,Beğeni,Yorum,Gönderi Linki,Açıklama\n';
+        const csvRows = targetPosts.map((p) => {
+          const cleanCaption = (p.caption || '').replace(/"/g, '""').replace(/\n/g, ' ');
+          const mType = p.isVideo ? 'Video/Reels' : p.isCarousel ? `Karusel (${p.mediaCount})` : 'Fotoğraf';
+          return `"${p.username}","${p.dateKey}","${p.timeFormatted}","${p.shortcode}","${p.mediaCount}","${mType}","${p.likesCount}","${p.commentsCount}","${p.postUrl}","${cleanCaption}"`;
+        }).join('\n');
+        zip.file(`${job.username}_gonderi_listesi.csv`, '\uFEFF' + csvHeader + csvRows);
+      }
+
+      let count = 0;
+      for (const p of targetPosts) {
+        count++;
+        const prog = Math.min(92, Math.round((count / targetPosts.length) * 85));
+        setScheduledJobs(prev => prev.map(j => j.id === job.id ? { ...j, progress: prog, statusMessage: `Paketleniyor: ${count}/${targetPosts.length} gönderi...` } : j));
+
+        const targetFolder = job.options.folderByDate ? (zip.folder(`${p.dateKey}_${p.shortcode}`) || zip) : zip;
+
+        for (let m = 0; m < p.media.length; m++) {
+          const item = p.media[m];
+          const isVid = item.type === 'video' || p.isVideo;
+          let blob = await fetchMediaBlob(item.url);
+          if (!isVid) {
+            blob = await convertBlobToTrueJpeg(blob, { isDataSaver: job.options.isDataSaver, enhanceResolution: job.options.enhanceResolution });
+          }
+          const ext = isVid ? 'mp4' : 'jpg';
+          targetFolder.file(`${p.username}_${p.dateKey}_${p.shortcode}_${m + 1}.${ext}`, blob);
+        }
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      await saveMediaToDevice(zipBlob, `${job.username}_zamanlanmis_${targetPosts.length}_gonderi.zip`);
+
+      setScheduledJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'completed', progress: 100, statusMessage: 'Başarıyla indirildi ve kaydedildi.' } : j));
+      showToast(`🎉 Zamanlanmış indirme tamamlandı: @${job.username} (${targetPosts.length} gönderi) ZIP olarak cihazınıza kaydedildi!`);
+    } catch (err: any) {
+      console.error('Scheduled job error:', err);
+      setScheduledJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'failed', statusMessage: `Hata: ${err.message}` } : j));
+      showToast(`Zamanlanmış indirme hatası: ${err.message}`);
+    }
+  };
+
+  // Background queue watcher: runs every 2 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nowMs = Date.now();
+      const jobToRun = scheduledJobs.find(j => j.status === 'pending' && new Date(j.scheduledTime).getTime() <= nowMs);
+      if (jobToRun && !isProcessing) {
+        executeScheduledJob(jobToRun);
+      }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [scheduledJobs, isProcessing, posts]);
+
+  // 30s Cooldown Countdown Timer Effect
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return;
+    const interval = setInterval(() => {
+      setCooldownSeconds(prev => {
+        if (prev <= 1) {
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [cooldownSeconds]);
+
   // Initial load
   useEffect(() => {
     const loadedHistory = getLocalHistory();
@@ -115,9 +281,12 @@ export default function App() {
     loadUserProfile(username, true);
   }, []);
 
-  // Filter posts by media type and publication date range
+  // Filter posts by media type and publication date range (respecting excludeVideos)
   const filteredPosts = useMemo(() => {
     return posts.filter(post => {
+      // Reels and video exclusion filter (USER REQUEST)
+      if (excludeVideos && post.isVideo && mediaFilter !== 'video') return false;
+
       // Content type filter
       if (mediaFilter === 'video' && !post.isVideo) return false;
       if (mediaFilter === 'image' && (post.isVideo || post.isCarousel)) return false;
@@ -129,7 +298,7 @@ export default function App() {
       if (profileEndDate && postDateKey > profileEndDate) return false;
       return true;
     });
-  }, [posts, mediaFilter, profileStartDate, profileEndDate]);
+  }, [posts, mediaFilter, profileStartDate, profileEndDate, excludeVideos]);
 
   // Counts for media filter pills
   const videoCount = useMemo(() => posts.filter(p => p.isVideo).length, [posts]);
@@ -148,13 +317,20 @@ export default function App() {
 
   const activeRequestIdRef = useRef(0);
 
-  const loadUserProfile = async (targetUsername: string, force = true) => {
+  const loadUserProfile = async (targetUsername: string, force = true, overrideSessionId?: string) => {
     const requestId = ++activeRequestIdRef.current;
     setIsLoadingUser(true);
+    setCooldownSeconds(0);
+
+    const effectiveSessionId = overrideSessionId !== undefined ? overrideSessionId : (sessionId || localStorage.getItem('instaflow_session_id') || '');
     try {
-      const feed = await fetchUserFeedAsync(targetUsername, force, sessionId);
+      const feed = await fetchUserFeedAsync(targetUsername, force, effectiveSessionId);
       if (activeRequestIdRef.current !== requestId) {
         // Discard stale out-of-order response from previous search
+        return;
+      }
+      if (!feed.profile.isRealInstagramData && feed.posts.length === 0 && profile.username === feed.profile.username && profile.isRealInstagramData && posts.length > 0) {
+        showToast(feed.error || `Instagram hız sınırı nedeniyle mevcut @${profile.username} verileri korundu.`);
         return;
       }
       setProfile(feed.profile);
@@ -162,19 +338,361 @@ export default function App() {
       setUsername(feed.profile.username);
       setSelectedPostIds(new Set());
 
-      if (feed.isLive) {
-        showToast(`@${feed.profile.username} gerçek Instagram profili ve gönderileri yüklendi!`);
-      } else if (feed.error) {
-        showToast(feed.error);
+      if (feed.isLive && feed.posts.length > 0) {
+        showToast(`@${feed.profile.username} hesabından ${feed.posts.length} canlı gönderi listelendi!`);
+      } else if (feed.requireSession || feed.error) {
+        showToast(feed.error || `Instagram '@${feed.profile.username}' için oturum doğrulaması gerekiyor.`);
       }
     } catch (err) {
       if (activeRequestIdRef.current !== requestId) return;
       console.error('Error fetching user feed:', err);
+      setProfile(prev => prev || initialDefaultProfile);
       showToast('Profil bilgileri alınamadı');
     } finally {
       if (activeRequestIdRef.current === requestId) {
         setIsLoadingUser(false);
       }
+    }
+  };
+
+  // Export metadata table standalone as Excel / CSV
+  const handleExportCsvStandalone = () => {
+    const targetPosts = selectedPostIds.size > 0 ? posts.filter(p => selectedPostIds.has(p.id)) : posts;
+    if (targetPosts.length === 0) {
+      showToast('Dışa aktarılacak gönderi bulunmuyor.');
+      return;
+    }
+    const csvHeader = 'Kullanıcı,Tarih,Saat,Kısa Kod,Medya Sayısı,Tür,Beğeni,Yorum,Gönderi Linki,Açıklama\n';
+    const csvRows = targetPosts.map((p) => {
+      const cleanCaption = (p.caption || '').replace(/"/g, '""').replace(/\n/g, ' ');
+      const mType = p.isVideo ? 'Video/Reels' : p.isCarousel ? `Karusel (${p.mediaCount})` : 'Fotoğraf';
+      return `"${p.username}","${p.dateKey}","${p.timeFormatted}","${p.shortcode}","${p.mediaCount}","${mType}","${p.likesCount}","${p.commentsCount}","${p.postUrl}","${cleanCaption}"`;
+    }).join('\n');
+
+    const blob = new Blob(['\uFEFF' + csvHeader + csvRows], { type: 'text/csv;charset=utf-8;' });
+    saveMediaToDevice(blob, `${username}_gonderi_listesi_tablosu.csv`);
+    showToast(`${targetPosts.length} gönderi Excel / CSV tablosu olarak cihazınıza kaydedildi!`);
+  };
+
+  const handleLoadInlinePost = () => {
+    if (!inlinePostUrl.trim()) return;
+    const post = parseSinglePostUrl(inlinePostUrl.trim());
+    if (post) {
+      if (profile) {
+        post.username = profile.username;
+        post.userFullName = profile.fullName;
+        post.userAvatar = profile.avatarUrl || post.userAvatar;
+      }
+      setPosts(prev => {
+        const existing = prev.filter(p => p.shortcode !== post.shortcode);
+        return [post, ...existing];
+      });
+      setInlinePostUrl('');
+      showToast(`Gönderi (${post.shortcode}) başarıyla yüklendi!`);
+    } else {
+      showToast('Geçerli bir Instagram gönderi veya reels linki girin.');
+    }
+  };
+
+  // Helper to get valid v1 max_id cursor from profile or last post
+  const getEffectiveMaxIdCursor = (currentCursor?: string | null) => {
+    const uid = profile?.pageInfo?.userId || '';
+    if (currentCursor && currentCursor.includes('_')) {
+      return currentCursor;
+    }
+    if (posts.length > 0) {
+      const lastPostCleanId = posts[posts.length - 1].id.replace(/^post_/, '').split('_')[0];
+      if (lastPostCleanId && uid) {
+        return `${lastPostCleanId}_${uid}`;
+      }
+      if (lastPostCleanId) {
+        return lastPostCleanId;
+      }
+    }
+    return currentCursor || '';
+  };
+
+  // Pagination Handler: Load next page of posts
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !profile?.pageInfo?.hasNextPage) return;
+    setIsLoadingMore(true);
+    showToast('Sonraki gönderiler taranıyor...');
+    try {
+      const effectiveCursor = getEffectiveMaxIdCursor(profile.pageInfo?.endCursor);
+      const result = await fetchNextUserFeedPageAsync(
+        profile.username,
+        profile.pageInfo?.userId || '',
+        effectiveCursor,
+        sessionId
+      );
+
+      if (result.success && result.posts && result.posts.length > 0) {
+        setPosts(prev => {
+          const existingIds = new Set(prev.map(p => p.id));
+          const fresh = result.posts.filter(p => !existingIds.has(p.id));
+          return [...prev, ...fresh];
+        });
+        setProfile(prev => prev ? { ...prev, pageInfo: result.pageInfo } : prev);
+        showToast(`+${result.posts.length} yeni gönderi başarıyla eklendi! Toplam: ${posts.length + result.posts.length}`);
+      } else if (result.requireSession) {
+        setIsSessionModalOpen(true);
+        showToast('Instagram kalan gönderileri çekmek için oturum doğrulaması istedi (require_login: true).');
+      } else {
+        showToast(result.error || 'Daha fazla gönderi yüklenemedi.');
+      }
+    } catch (err: any) {
+      console.error('Load more error:', err);
+      showToast('Gönderiler yüklenirken hata oluştu.');
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  const scanAbortControllerRef = useRef<AbortController | null>(null);
+
+  const handleCancelDeepScan = () => {
+    if (scanAbortControllerRef.current) {
+      scanAbortControllerRef.current.abort();
+      scanAbortControllerRef.current = null;
+      setIsScanningDeep(false);
+      showToast(' Derin tarama anında durduruldu. Taranan tüm veriler saklandı.');
+    }
+  };
+
+  // Deep Scan Handler: Iteratively scan all 400+ or 522 posts from user profile
+  const handleDeepScan = async (targetCount?: number) => {
+    if (isScanningDeep) return;
+    const controller = new AbortController();
+    scanAbortControllerRef.current = controller;
+
+    const effectiveTarget = targetCount || profile?.postsCount || 522;
+    setIsScanningDeep(true);
+    setScanProgress(5);
+    setScanStatusMessage(`Tüm ${effectiveTarget} Gönderi Taranıyor (@${username})...`);
+
+    try {
+      let currentCursor = getEffectiveMaxIdCursor(profile?.pageInfo?.endCursor);
+      let hasMore = true;
+      let fetchedCount = posts.length;
+      let round = 0;
+
+      while (hasMore && fetchedCount < effectiveTarget && round < 60) {
+        if (controller.signal.aborted) {
+          showToast(`Derin tarama durduruldu. ${fetchedCount} gönderi saklandı.`);
+          break;
+        }
+
+        round++;
+        setScanStatusMessage(`Derin Tarama [Tur ${round}]: ${fetchedCount}/${effectiveTarget} gönderi listelendi...`);
+        setScanProgress(Math.min(96, Math.round((fetchedCount / effectiveTarget) * 100)));
+
+        const result = await fetchNextUserFeedPageAsync(
+          profile?.username || username,
+          profile?.pageInfo?.userId || '',
+          currentCursor,
+          sessionId,
+          controller.signal
+        );
+
+        if (result.success && result.posts && result.posts.length > 0) {
+          setPosts(prev => {
+            const existingIds = new Set(prev.map(p => p.id));
+            const fresh = result.posts.filter(p => !existingIds.has(p.id));
+            return [...prev, ...fresh];
+          });
+          fetchedCount += result.posts.length;
+          currentCursor = result.pageInfo?.endCursor || '';
+          hasMore = !!(result.pageInfo?.hasNextPage && currentCursor);
+          setProfile(prev => prev ? { ...prev, pageInfo: result.pageInfo, postsCount: Math.max(prev.postsCount, fetchedCount) } : prev);
+          
+          if (controller.signal.aborted) break;
+
+          // Safe delay between requests
+          await new Promise((resolve) => {
+            const timer = setTimeout(resolve, 450);
+            controller.signal.addEventListener('abort', () => {
+              clearTimeout(timer);
+              resolve(null);
+            }, { once: true });
+          });
+        } else if (result.rateLimited) {
+          setCooldownSeconds(12);
+          setScanStatusMessage(`Instagram Hız Sınırı (429)! Bekleniyor ve otomatik tekrar deneniyor...`);
+          let countdown = 12;
+          while (countdown > 0 && !controller.signal.aborted) {
+            await new Promise(r => setTimeout(r, 1000));
+            countdown--;
+          }
+        } else {
+          break;
+        }
+      }
+
+      if (!controller.signal.aborted) {
+        setScanProgress(100);
+        showToast(`Tarama işlemi tamamlandı! Toplam ${fetchedCount} gönderi tek listede listelendi.`);
+      }
+    } catch (err: any) {
+      if (err.name !== 'AbortError' && !controller.signal.aborted) {
+        console.error('Deep scan error:', err);
+        showToast('Derin tarama sırasında hata oluştu.');
+      }
+    } finally {
+      setIsScanningDeep(false);
+      scanAbortControllerRef.current = null;
+    }
+  };
+
+  // Import handler for data exported from Chrome Extension or JSON file
+  const handleImportExtensionJson = (jsonData: any) => {
+    try {
+      let importedPosts: InstagramPost[] = [];
+      let targetUsername = username;
+
+      if (jsonData.summary?.username) {
+        targetUsername = jsonData.summary.username;
+      } else if (jsonData.username) {
+        targetUsername = jsonData.username;
+      }
+
+      if (Array.isArray(jsonData.posts) && jsonData.posts.length > 0) {
+        // If already structured posts
+        if (jsonData.posts[0].shortcode && jsonData.posts[0].media) {
+          importedPosts = jsonData.posts;
+        } else {
+          // Edges or raw items
+          importedPosts = jsonData.posts.map((item: any, idx: number) => {
+            const node = item.node || item;
+            const shortcode = node.shortcode || node.code || `ext_${idx + 1}`;
+            const isVideo = !!(node.is_video || node.media_type === 2);
+            const displayUrl = node.display_url || node.image_versions2?.candidates?.[0]?.url || '';
+            const caption = node.edge_media_to_caption?.edges?.[0]?.node?.text || node.caption?.text || node.caption || '';
+            const takenAt = node.taken_at_timestamp || node.taken_at || Math.floor(Date.now() / 1000);
+            const dt = new Date(takenAt * 1000);
+            const dateKey = dt.toISOString().slice(0, 10);
+            const dateFormatted = dt.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+            const timeFormatted = dt.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+            const mediaItems = [];
+            if (node.edge_sidecar_to_children?.edges?.length > 0) {
+              node.edge_sidecar_to_children.edges.forEach((cEdge: any, cIdx: number) => {
+                const cNode = cEdge.node;
+                const cIsVid = !!cNode.is_video;
+                const cUrl = cNode.display_url || '';
+                mediaItems.push({
+                  id: `m_${shortcode}_${cIdx + 1}`,
+                  type: cIsVid ? ('video' as const) : ('image' as const),
+                  url: `/api/proxy-media?url=${encodeURIComponent(cUrl)}`,
+                  originalUrl: cUrl,
+                  thumbnailUrl: `/api/proxy-media?url=${encodeURIComponent(cUrl)}`,
+                });
+              });
+            } else {
+              mediaItems.push({
+                id: `m_${shortcode}_1`,
+                type: isVideo ? ('video' as const) : ('image' as const),
+                url: `/api/proxy-media?url=${encodeURIComponent(displayUrl)}`,
+                originalUrl: displayUrl,
+                thumbnailUrl: `/api/proxy-media?url=${encodeURIComponent(displayUrl)}`,
+              });
+            }
+
+            return {
+              id: `post_${shortcode}`,
+              shortcode,
+              username: targetUsername,
+              userFullName: `@${targetUsername}`,
+              caption,
+              timestamp: dt.toISOString(),
+              dateKey,
+              dateFormatted,
+              timeFormatted,
+              isCarousel: mediaItems.length > 1,
+              mediaCount: mediaItems.length,
+              media: mediaItems,
+              likesCount: node.edge_liked_by?.count || node.like_count || 0,
+              commentsCount: node.edge_media_to_comment?.count || node.comment_count || 0,
+              postUrl: `https://www.instagram.com/p/${shortcode}/`,
+              isVideo,
+            };
+          });
+        }
+      } else if (Array.isArray(jsonData.edges) && jsonData.edges.length > 0) {
+        // Direct edges array
+        importedPosts = jsonData.edges.map((item: any, idx: number) => {
+          const node = item.node || item;
+          const shortcode = node.shortcode || node.code || `ext_${idx + 1}`;
+          const isVideo = !!(node.is_video || node.media_type === 2);
+          const displayUrl = node.display_url || node.image_versions2?.candidates?.[0]?.url || '';
+          const caption = node.edge_media_to_caption?.edges?.[0]?.node?.text || node.caption?.text || '';
+          const takenAt = node.taken_at_timestamp || node.taken_at || Math.floor(Date.now() / 1000);
+          const dt = new Date(takenAt * 1000);
+          const dateKey = dt.toISOString().slice(0, 10);
+          const dateFormatted = dt.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+          const timeFormatted = dt.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+          const mediaItems = [];
+          if (node.edge_sidecar_to_children?.edges?.length > 0) {
+            node.edge_sidecar_to_children.edges.forEach((cEdge: any, cIdx: number) => {
+              const cNode = cEdge.node;
+              const cIsVid = !!cNode.is_video;
+              const cUrl = cNode.display_url || '';
+              mediaItems.push({
+                id: `m_${shortcode}_${cIdx + 1}`,
+                type: cIsVid ? ('video' as const) : ('image' as const),
+                url: `/api/proxy-media?url=${encodeURIComponent(cUrl)}`,
+                originalUrl: cUrl,
+                thumbnailUrl: `/api/proxy-media?url=${encodeURIComponent(cUrl)}`,
+              });
+            });
+          } else {
+            mediaItems.push({
+              id: `m_${shortcode}_1`,
+              type: isVideo ? ('video' as const) : ('image' as const),
+              url: `/api/proxy-media?url=${encodeURIComponent(displayUrl)}`,
+              originalUrl: displayUrl,
+              thumbnailUrl: `/api/proxy-media?url=${encodeURIComponent(displayUrl)}`,
+            });
+          }
+
+          return {
+            id: `post_${shortcode}`,
+            shortcode,
+            username: targetUsername,
+            userFullName: `@${targetUsername}`,
+            caption,
+            timestamp: dt.toISOString(),
+            dateKey,
+            dateFormatted,
+            timeFormatted,
+            isCarousel: mediaItems.length > 1,
+            mediaCount: mediaItems.length,
+            media: mediaItems,
+            likesCount: node.edge_liked_by?.count || node.like_count || 0,
+            commentsCount: node.edge_media_to_comment?.count || node.comment_count || 0,
+            postUrl: `https://www.instagram.com/p/${shortcode}/`,
+            isVideo,
+          };
+        });
+      }
+
+      if (importedPosts.length > 0) {
+        setPosts(importedPosts);
+        setUsername(targetUsername);
+        if (profile) {
+          setProfile({
+            ...profile,
+            username: targetUsername,
+            postsCount: Math.max(profile.postsCount, importedPosts.length),
+          });
+        }
+        showToast(`🎉 ${importedPosts.length} gönderi Chrome eklentisinden başarıyla aktarıldı!`);
+      } else {
+        showToast('JSON dosyasında geçerli gönderi verisi bulunamadı.');
+      }
+    } catch (err: any) {
+      console.error('Import error:', err);
+      showToast(`Veri içe aktarma hatası: ${err.message}`);
     }
   };
 
@@ -392,18 +910,25 @@ export default function App() {
         isBackingUp={isBackingUp}
         isDataSaver={isDataSaver}
         onToggleDataSaver={toggleDataSaver}
+        enhanceResolution={enhanceResolution}
+        onToggleEnhanceResolution={toggleEnhanceResolution}
+        onOpenExtensionModal={() => setIsExtensionModalOpen(true)}
+        onOpenSessionModal={() => setIsSessionModalOpen(true)}
+        onOpenScheduledModal={() => setIsScheduledModalOpen(true)}
+        sessionId={sessionId}
+        scheduledCount={scheduledJobs.filter(j => j.status === 'pending').length}
       />
 
       {/* Main Viewport Container */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 pt-5 sm:pt-7">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 pt-4 sm:pt-6">
         {/* TAB 1: User Profile & Date Groups Explorer */}
-        {activeTab === 'profile' && profile && (
+        {activeTab === 'profile' && (
           <div>
             <UserProfileHeader
               profile={profile}
               totalPosts={posts.length}
               totalMedia={totalMediaInFeed}
-              onSearchUsername={(u) => loadUserProfile(u, false)}
+              onSearchUsername={(u, force) => loadUserProfile(u, force ?? true)}
               isLoading={isLoadingUser}
               onOpenPdfModal={() => handleOpenPdfExport(posts, `@${profile.username} Tam Profil Arşivi`)}
               sortOrder={sortOrder}
@@ -413,193 +938,312 @@ export default function App() {
               onClearSelection={handleClearSelection}
               onExportSelectedPdf={handleExportSelectedPostsPdf}
               onOpenSessionModal={() => setIsSessionModalOpen(true)}
+              onOpenBulkDownloadModal={() => setIsBulkModalOpen(true)}
+              onExportCsvStandalone={handleExportCsvStandalone}
               sessionId={sessionId}
               isDataSaver={isDataSaver}
               onToggleDataSaver={toggleDataSaver}
+              cooldownSeconds={cooldownSeconds}
+              excludeVideos={excludeVideos}
+              onToggleExcludeVideos={() => setExcludeVideos(prev => !prev)}
+              onDeepScan={handleDeepScan}
+              onCancelDeepScan={handleCancelDeepScan}
+              isScanningDeep={isScanningDeep}
+              onLoadMore={handleLoadMore}
+              isLoadingMore={isLoadingMore}
+              hasNextPage={!!profile.pageInfo?.hasNextPage}
+              onOpenExtensionModal={() => setIsExtensionModalOpen(true)}
             />
 
-            {/* Date Range Filter Picker for Profile Posts */}
-            <DateRangeFilter
-              startDate={profileStartDate}
-              endDate={profileEndDate}
-              onStartDateChange={setProfileStartDate}
-              onEndDateChange={setProfileEndDate}
-              onClear={() => {
-                setProfileStartDate('');
-                setProfileEndDate('');
-              }}
-              totalCount={posts.length}
-              filteredCount={filteredPosts.length}
-              label="Gönderi Yayın Tarihi Aralığı"
-            />
-
-            {/* Content Type Filter & Selection Toolbar */}
-            <div className="mb-5 p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3.5 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                {/* Media Type Tabs (Hepsi, Videolar, Fotoğraflar, Karusel) */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-                  <button
-                    onClick={() => setMediaFilter('all')}
-                    className={`px-3 py-1.5 rounded-xl font-medium transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-                      mediaFilter === 'all'
-                        ? 'bg-rose-600 text-white shadow-sm font-semibold'
-                        : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800'
-                    }`}
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Tümü (Hepsi)</span>
-                    <span className="opacity-80 tabular-nums">({posts.length})</span>
-                  </button>
-
-                  <button
-                    onClick={() => setMediaFilter('video')}
-                    className={`px-3 py-1.5 rounded-xl font-medium transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-                      mediaFilter === 'video'
-                        ? 'bg-sky-600 text-white shadow-sm font-semibold'
-                        : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800'
-                    }`}
-                  >
-                    <Film className="w-3.5 h-3.5 text-sky-400" />
-                    <span>Videolar & Reels</span>
-                    <span className="opacity-80 tabular-nums">({videoCount})</span>
-                  </button>
-
-                  <button
-                    onClick={() => setMediaFilter('image')}
-                    className={`px-3 py-1.5 rounded-xl font-medium transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-                      mediaFilter === 'image'
-                        ? 'bg-amber-600 text-white shadow-sm font-semibold'
-                        : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800'
-                    }`}
-                  >
-                    <ImageIcon className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Tekli Fotoğraflar</span>
-                    <span className="opacity-80 tabular-nums">({photoCount})</span>
-                  </button>
-
-                  <button
-                    onClick={() => setMediaFilter('carousel')}
-                    className={`px-3 py-1.5 rounded-xl font-medium transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-                      mediaFilter === 'carousel'
-                        ? 'bg-purple-600 text-white shadow-sm font-semibold'
-                        : 'bg-slate-950/70 text-slate-400 hover:text-white border border-slate-800'
-                    }`}
-                  >
-                    <FolderArchive className="w-3.5 h-3.5 text-purple-400" />
-                    <span>Çoklu Gönderiler (Karusel)</span>
-                    <span className="opacity-80 tabular-nums">({carouselCount})</span>
-                  </button>
+            {/* Deep Scan Active Progress Banner with Instant Abort Button */}
+            {isScanningDeep && (
+              <div className="mb-4 p-4 bg-purple-950/60 border border-purple-500/40 rounded-2xl text-xs space-y-2 animate-in fade-in shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-purple-200 font-medium">
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-purple-400 shrink-0" />
+                    <span className="font-semibold text-purple-100 text-sm">{scanStatusMessage}</span>
+                  </span>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="font-mono font-bold text-amber-300 text-sm">%{scanProgress}</span>
+                    <button
+                      onClick={handleCancelDeepScan}
+                      className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer text-xs"
+                    >
+                      <XCircle className="w-4 h-4" />
+                      <span>Taramayı İptal Et</span>
+                    </button>
+                  </div>
                 </div>
-
-                {/* Resolution & Data Saver indicators */}
-                <div className="flex items-center gap-2 flex-wrap text-xs">
-                  <button
-                    onClick={toggleEnhanceResolution}
-                    className={`px-2.5 py-1 rounded-lg border font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
-                      enhanceResolution && !isDataSaver
-                        ? 'bg-amber-950/40 border-amber-500/40 text-amber-300'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
-                    }`}
-                    title="Düşük çözünürlüklü görselleri 1080p HD kalitesine yükseltir ve netleştirir"
-                  >
-                    <span>💎 HD Çözünürlük: {enhanceResolution && !isDataSaver ? 'Aktif (1080p)' : 'Standart'}</span>
-                  </button>
-
-                  <button
-                    onClick={toggleDataSaver}
-                    className={`px-2.5 py-1 rounded-lg border font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
-                      isDataSaver
-                        ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
-                    }`}
-                    title="Mobil veri kotasını korumak için video ön yüklemeyi durdurur ve orta çözünürlük kullanır"
-                  >
-                    <span className={`w-2 h-2 rounded-full ${isDataSaver ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
-                    <span>⚡ Tasarruf Modu: {isDataSaver ? 'Açık (~%60 Az Kota)' : 'Kapalı'}</span>
-                  </button>
+                <div className="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden border border-purple-900/50">
+                  <div
+                    className="h-full bg-gradient-to-r from-purple-500 via-indigo-500 to-rose-500 transition-all duration-300"
+                    style={{ width: `${scanProgress}%` }}
+                  />
                 </div>
               </div>
+            )}
 
-              {/* Batch Selection Action Buttons */}
-              <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-800/60 flex-wrap text-xs">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-slate-400 text-[11px] font-medium">Hızlı Seçim:</span>
-                  <button
-                    onClick={handleSelectAllPosts}
-                    className="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 text-slate-300 rounded-lg border border-slate-800 cursor-pointer text-[11px]"
-                  >
-                    Görünenleri Seç ({filteredPosts.length})
-                  </button>
-                  <button
-                    onClick={handleSelectOnlyVideos}
-                    className="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 text-sky-300 rounded-lg border border-slate-800 cursor-pointer text-[11px]"
-                  >
-                    Sadece Videolar ({videoCount})
-                  </button>
-                  <button
-                    onClick={handleSelectOnlyImages}
-                    className="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 text-amber-300 rounded-lg border border-slate-800 cursor-pointer text-[11px]"
-                  >
-                    Sadece Fotoğraflar ({photoCount})
-                  </button>
-                  {selectedPostIds.size > 0 && (
+            {/* Live Rate Limit Countdown & Auto-Retry Panel */}
+            {cooldownSeconds > 0 && (
+              <div className="mb-4 p-4 bg-amber-950/70 border border-amber-500/50 rounded-2xl text-xs space-y-2 shadow-xl animate-in fade-in">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-mono text-lg font-extrabold shrink-0">
+                      {cooldownSeconds}s
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-amber-200 text-sm flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-amber-400" />
+                        <span>Instagram Hız Sınırı Koruma Paneli (HTTP 429)</span>
+                      </h4>
+                      <p className="text-amber-300/80 text-[11px] mt-0.5">
+                        Sık istek gönderildiği için {cooldownSeconds} saniye bekleniyor. Süre bitince otomatik olarak tekrar denenecektir.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
                     <button
-                      onClick={handleClearSelection}
-                      className="px-2.5 py-1 bg-slate-950 hover:bg-rose-950/50 text-rose-400 rounded-lg border border-slate-800 cursor-pointer text-[11px]"
+                      onClick={() => loadUserProfile(username, true)}
+                      className="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer text-xs"
                     >
-                      Seçimi Temizle
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Şimdi Yeniden Deneyin</span>
                     </button>
-                  )}
+                    <button
+                      onClick={() => setIsSessionModalOpen(true)}
+                      className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer text-xs"
+                    >
+                      <Key className="w-3.5 h-3.5 text-rose-400" />
+                      <span>Session ID Ekle</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Unified Responsive Filter & Selection Bar (Visible when posts exist) */}
+            {posts.length > 0 && (
+              <div className="mb-5 p-3 sm:p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 space-y-3 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                  {/* Segmented Media Type Tabs */}
+                  <div className="flex items-center gap-1 p-1 bg-slate-950/80 border border-slate-800/80 rounded-xl overflow-x-auto no-scrollbar text-xs">
+                    <button
+                      onClick={() => setMediaFilter('all')}
+                      className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                        mediaFilter === 'all'
+                          ? 'bg-slate-800 text-white shadow-sm font-semibold'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <span>Tümü</span>
+                      <span className="text-[11px] text-slate-400 tabular-nums">({posts.length})</span>
+                    </button>
+
+                    <button
+                      onClick={() => setMediaFilter('image')}
+                      className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                        mediaFilter === 'image'
+                          ? 'bg-slate-800 text-white shadow-sm font-semibold'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <ImageIcon className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Fotoğraf</span>
+                      <span className="text-[11px] text-slate-400 tabular-nums">({photoCount})</span>
+                    </button>
+
+                    <button
+                      onClick={() => setMediaFilter('carousel')}
+                      className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                        mediaFilter === 'carousel'
+                          ? 'bg-slate-800 text-white shadow-sm font-semibold'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <FolderArchive className="w-3.5 h-3.5 text-purple-400" />
+                      <span>Karusel</span>
+                      <span className="text-[11px] text-slate-400 tabular-nums">({carouselCount})</span>
+                    </button>
+
+                    <button
+                      onClick={() => setMediaFilter('video')}
+                      className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                        mediaFilter === 'video'
+                          ? 'bg-slate-800 text-white shadow-sm font-semibold'
+                          : 'text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <Film className="w-3.5 h-3.5 text-sky-400" />
+                      <span>Video</span>
+                      <span className="text-[11px] text-slate-400 tabular-nums">({videoCount})</span>
+                    </button>
+                  </div>
+
+                  {/* Secondary Filter Drawer Toggles & Quick Selection */}
+                  <div className="flex items-center gap-1.5 flex-wrap text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setShowDateFilter(prev => !prev)}
+                      className={`px-3 py-1.5 rounded-xl border font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
+                        showDateFilter || profileStartDate || profileEndDate
+                          ? 'bg-rose-500/15 border-rose-500/40 text-rose-300'
+                          : 'bg-slate-950/80 border-slate-800 text-slate-300 hover:text-white'
+                      }`}
+                    >
+                      <Calendar className="w-3.5 h-3.5 text-rose-400" />
+                      <span>Tarih Aralığı</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowTimerBar(prev => !prev)}
+                      className={`px-3 py-1.5 rounded-xl border font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
+                        showTimerBar
+                          ? 'bg-amber-500/15 border-amber-500/40 text-amber-300'
+                          : 'bg-slate-950/80 border-slate-800 text-slate-300 hover:text-white'
+                      }`}
+                    >
+                      <Clock className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Otomatik Yenile</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={
+                        selectedPostIds.size === filteredPosts.length && filteredPosts.length > 0
+                          ? handleClearSelection
+                          : handleSelectAllPosts
+                      }
+                      className="px-3 py-1.5 bg-slate-950/80 hover:bg-slate-800 text-slate-200 rounded-xl border border-slate-800 cursor-pointer font-medium"
+                    >
+                      {selectedPostIds.size === filteredPosts.length && filteredPosts.length > 0
+                        ? 'Seçimi Kaldır'
+                        : `Tümünü Seç (${filteredPosts.length})`}
+                    </button>
+                  </div>
                 </div>
 
-                {selectedPostIds.size > 0 && (
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <button
-                      onClick={handleDownloadSelectedBatch}
-                      disabled={isProcessing}
-                      className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl flex items-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50 text-xs"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>Seçilen {selectedPostIds.size} Medyayı İndir (ZIP)</span>
-                    </button>
-                    <button
-                      onClick={handleExportSelectedPostsPdf}
-                      disabled={isProcessing}
-                      className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl flex items-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50 text-xs"
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>Seçilenleri Tek PDF Yap</span>
-                    </button>
+                {/* Collapsible Date Range Picker */}
+                {showDateFilter && (
+                  <div className="pt-2 border-t border-slate-800/80">
+                    <DateRangeFilter
+                      startDate={profileStartDate}
+                      endDate={profileEndDate}
+                      onStartDateChange={setProfileStartDate}
+                      onEndDateChange={setProfileEndDate}
+                      onClear={() => {
+                        setProfileStartDate('');
+                        setProfileEndDate('');
+                      }}
+                      totalCount={posts.length}
+                      filteredCount={filteredPosts.length}
+                      label="Gönderi Yayın Tarihi Aralığı"
+                    />
+                  </div>
+                )}
+
+                {/* Collapsible Auto-Refresh Timer Control */}
+                {showTimerBar && (
+                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between flex-wrap gap-2">
+                    <LiveTimerControl
+                      onRefresh={() => loadUserProfile(username, true)}
+                      isLoading={isLoadingUser}
+                      username={username}
+                    />
                   </div>
                 )}
               </div>
-            </div>
+            )}
 
             {/* Posts Empty State or Date Groups Feed */}
             {posts.length === 0 ? (
-              <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 sm:p-12 text-center my-6 max-w-lg mx-auto space-y-4 shadow-sm">
-                <div className="w-14 h-14 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center mx-auto text-rose-400">
-                  <SearchX className="w-7 h-7" />
+              <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 sm:p-8 text-center my-6 max-w-xl mx-auto space-y-5 shadow-xl backdrop-blur-md">
+                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto text-amber-400">
+                  <AlertTriangle className="w-7 h-7" />
                 </div>
-                <h4 className="text-base sm:text-lg font-bold text-white">
-                  Bu Hesapta Canlı Gönderi Bulunamadı
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-md mx-auto">
-                  Hesabın paylaştığı gönderi olmayabilir, hesap gizli olabilir veya Instagram hız sınırı uygulanmış olabilir. Kesinlikle rastgele ya da sahte gönderi listelenmemektedir.
-                </p>
-                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
+                <div>
+                  <h4 className="text-base sm:text-lg font-bold text-white">
+                    Instagram Canlı Gönderi Durumu & Oturum Doğrulaması
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-md mx-auto mt-1.5">
+                    Bu hesapta (@{username}) gönderiler bulunmaktadır, ancak Instagram bulut sunucumuzdan gelen anonim sorgulara oturum açma zorunluluğu (HTTP 429 Giriş Duvarı) uygulamaktadır.
+                  </p>
+                </div>
+
+                {/* 2 Primary Methods to get posts */}
+                <div className="grid grid-cols-1 gap-3 text-left">
+                  {/* Method 1: Session ID */}
+                  <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-slate-700 transition-colors">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-rose-300">
+                        <Key className="w-4 h-4 text-rose-400" />
+                        <span>1. Yöntem: Instagram Session ID (Önerilen)</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 leading-normal">
+                        Tarayıcınızdaki oturum çerezinizi ekleyerek dilediğiniz herkese açık hesabın gerçek gönderilerini, karusel ve videolarını anında çekin.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setIsSessionModalOpen(true)}
+                      className="px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 min-h-[40px]"
+                    >
+                      <Key className="w-3.5 h-3.5" />
+                      <span>{sessionId ? '🟢 Session ID Güncelle' : '🔑 Session ID Ekle'}</span>
+                    </button>
+                  </div>
+
+                  {/* Method 2: Direct Post / Reel Link Input */}
+                  <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 space-y-2.5">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-sky-300">
+                      <LinkIcon className="w-4 h-4 text-sky-400" />
+                      <span>2. Yöntem: Hesaba Ait Gönderi veya Reels Bağlantısı Yapıştırın</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-normal">
+                      Hesabın herhangi bir gönderi/reel linkini yapıştırarak anında tekil, karusel veya video olarak listeye ekleyip arşivleyebilirsiniz.
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
+                      <input
+                        type="text"
+                        value={inlinePostUrl}
+                        onChange={(e) => setInlinePostUrl(e.target.value)}
+                        placeholder="https://www.instagram.com/p/... veya reel linki"
+                        className="flex-1 px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono"
+                      />
+                      <button
+                        onClick={handleLoadInlinePost}
+                        className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap min-h-[38px]"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>Gönderiyi Yükle</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Test Accounts & Retry */}
+                <div className="pt-2 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-start">
+                    <span className="text-[11px] text-slate-500 font-medium">Hazır Canlı Akışlar:</span>
+                    <button
+                      onClick={() => loadUserProfile('trthaber', true)}
+                      className="px-2.5 py-1 bg-slate-800/80 hover:bg-slate-700 text-rose-300 text-[11px] font-medium rounded-lg border border-slate-700/60 cursor-pointer transition-colors"
+                    >
+                      🔴 @trthaber (Canlı Haberler)
+                    </button>
+                    <button
+                      onClick={() => loadUserProfile('dkabcikpsslianne', true)}
+                      className="px-2.5 py-1 bg-slate-800/80 hover:bg-slate-700 text-emerald-300 text-[11px] font-medium rounded-lg border border-slate-700/60 cursor-pointer transition-colors"
+                    >
+                      📚 @dkabcikpsslianne (Ders Notları)
+                    </button>
+                  </div>
+
                   <button
-                    onClick={() => setIsSessionModalOpen(true)}
-                    className="w-full sm:w-auto px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-medium text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                    onClick={() => loadUserProfile(username, true)}
+                    className="w-full sm:w-auto px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs rounded-xl transition-all border border-slate-700/60 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <Key className="w-4 h-4" />
-                    <span>🔑 Session ID Ekle & Yeniden Canlı Çek</span>
-                  </button>
-                  <button
-                    onClick={() => loadUserProfile('mtahiryilmazz', true)}
-                    className="w-full sm:w-auto px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs sm:text-sm rounded-xl transition-all border border-slate-700/60 cursor-pointer"
-                  >
-                    @mtahiryilmazz Hesabına Dön
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Yeniden Canlı Çek</span>
                   </button>
                 </div>
               </div>
@@ -641,6 +1285,103 @@ export default function App() {
                     enhanceResolution={enhanceResolution}
                   />
                 ))}
+
+                {/* Feed Bottom Pagination & Deep Scan (400+ Posts) Hub */}
+                <div className="p-6 rounded-3xl bg-slate-900/80 border border-slate-800 shadow-xl space-y-4 text-center">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
+                    <div>
+                      <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-rose-400" />
+                        <span>Hesap Gönderi Tarama Durumu</span>
+                      </h4>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        Şu anda <strong>{posts.length}</strong> / <strong>{(profile.postsCount || posts.length).toLocaleString('tr-TR')}</strong> gönderi listede yüklü.
+                        {profile.postsCount > posts.length && (
+                          <span className="text-rose-300 ml-1">
+                            (Kalan {profile.postsCount - posts.length} gönderi Instagram'dan taranabilir)
+                          </span>
+                        )}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        {posts.length >= profile.postsCount ? 'Tümü Yüklendi' : `${posts.length} / ${profile.postsCount} Yüklü`}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Actions Bar */}
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-2 border-t border-slate-800/80">
+                    {/* Load Next Page Button */}
+                    {profile.pageInfo?.hasNextPage && (
+                      <button
+                        onClick={handleLoadMore}
+                        disabled={isLoadingMore || isScanningDeep}
+                        className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-semibold border border-slate-700/60 flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50 min-h-[40px]"
+                      >
+                        {isLoadingMore ? (
+                          <Loader2 className="w-4 h-4 animate-spin text-rose-400" />
+                        ) : (
+                          <ArrowRight className="w-4 h-4 text-rose-400" />
+                        )}
+                        <span>{isLoadingMore ? 'Sayfa Çekiliyor...' : 'Sonraki Gönderileri Yükle (+12)'}</span>
+                      </button>
+                    )}
+
+                    {/* Deep Scan All 400+ Posts */}
+                    <button
+                      onClick={() => handleDeepScan(profile.postsCount || 400)}
+                      disabled={isScanningDeep || isLoadingMore}
+                      className="px-5 py-2.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-600 hover:from-purple-500 hover:to-rose-500 text-white rounded-xl text-xs font-semibold shadow-lg active:scale-95 flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50 min-h-[40px]"
+                      title="Hesaptaki tüm gönderileri sayfalar halinde otomatik tarar ve hafızaya alır"
+                    >
+                      {isScanningDeep ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Sparkles className="w-4 h-4" />
+                      )}
+                      <span>
+                        {isScanningDeep
+                          ? `Derin Tarama Yapılıyor (%${scanProgress})...`
+                          : `Tüm ${profile.postsCount || 400}+ Gönderiyi Otomatik Tara`}
+                      </span>
+                    </button>
+
+                    {/* Bulk Download Modal Trigger */}
+                    <button
+                      onClick={() => setIsBulkModalOpen(true)}
+                      disabled={isScanningDeep}
+                      className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold shadow-lg active:scale-95 flex items-center gap-2 transition-all cursor-pointer min-h-[40px]"
+                      title="Listelenen tüm gönderileri tek seferde ZIP formatında indir"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Her Gönderiyi Ayrı PDF Yap & Tek ZIP İndir</span>
+                    </button>
+                  </div>
+
+                  {/* Informational Callout regarding Instagram 12-posts pagination & Session ID */}
+                  {!sessionId && profile.postsCount > posts.length && (
+                    <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-amber-500/30 text-xs text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                          <Key className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Instagram 400+ Gönderi Bilgilendirmesi</span>
+                        </div>
+                        <p className="text-[11px] text-slate-300 leading-relaxed">
+                          Instagram herkese açık web profilinde ilk 12 gönderiyi şifresiz sunar. Kalan <strong>{profile.postsCount - posts.length} gönderinin</strong> tamamını hız sınırına takılmadan tek seferde tarayıp indirmek için tarayıcınızdan alabileceğiniz <strong className="text-amber-200">Session ID</strong> çerezini ekleyebilirsiniz.
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={() => setIsSessionModalOpen(true)}
+                        className="px-3.5 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+                      >
+                        🔑 Session ID Ekle
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -656,7 +1397,7 @@ export default function App() {
         )}
 
         {/* TAB 3: PDF Single File Compilation Hub */}
-        {activeTab === 'pdf' && profile && (
+        {activeTab === 'pdf' && (
           <div className="max-w-3xl mx-auto space-y-6">
             <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 text-center">
               <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mx-auto mb-3">
@@ -714,7 +1455,15 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 4: Cloud Backup & History */}
+        {/* TAB 4: Live Error & Request Diagnostics Logs Viewer */}
+        {activeTab === 'logs' && (
+          <ErrorLogViewer
+            onOpenSessionModal={() => setIsSessionModalOpen(true)}
+            onRefreshFeed={() => loadUserProfile(username, true)}
+          />
+        )}
+
+        {/* TAB 5: Cloud Backup & History */}
         {activeTab === 'cloud' && (
           <CloudBackupView
             history={history}
@@ -804,13 +1553,54 @@ export default function App() {
           setSessionId(newId);
           if (newId) {
             localStorage.setItem('instaflow_session_id', newId);
-            showToast('Instagram Session ID kaydedildi, veriler yenileniyor!');
-            loadUserProfile(username, true);
+            showToast('Instagram Session ID kaydedildi, veriler canlı yenileniyor!');
+            loadUserProfile(username, true, newId);
           } else {
             localStorage.removeItem('instaflow_session_id');
             showToast('Session ID kaldırıldı');
+            loadUserProfile(username, true, '');
           }
         }}
+      />
+
+      {/* Chrome Extension Modal */}
+      <ChromeExtensionModal
+        isOpen={isExtensionModalOpen}
+        onClose={() => setIsExtensionModalOpen(false)}
+        onImportJson={handleImportExtensionJson}
+      />
+
+      {/* Chrome Extension Style Bulk Downloader Modal */}
+      {profile && (
+        <BulkDownloadModal
+          isOpen={isBulkModalOpen}
+          onClose={() => setIsBulkModalOpen(false)}
+          posts={selectedPostIds.size > 0 ? posts.filter(p => selectedPostIds.has(p.id)) : posts}
+          profile={profile}
+          username={username}
+          isDataSaver={isDataSaver}
+          enhanceResolution={enhanceResolution}
+          onDownloadCompleted={(zipName) => {
+            showToast(`Toplu indirme tamamlandı: ${zipName}`);
+          }}
+        />
+      )}
+
+      {/* Scheduled Download Queue Modal */}
+      <ScheduledDownloadModal
+        isOpen={isScheduledModalOpen}
+        onClose={() => setIsScheduledModalOpen(false)}
+        jobs={scheduledJobs}
+        posts={selectedPostIds.size > 0 ? posts.filter(p => selectedPostIds.has(p.id)) : posts}
+        username={username}
+        onAddJob={handleAddScheduledJob}
+        onCancelJob={handleCancelScheduledJob}
+        onRunNow={(jobId) => {
+          const targetJob = scheduledJobs.find(j => j.id === jobId);
+          if (targetJob) executeScheduledJob(targetJob);
+        }}
+        onDeleteJob={handleDeleteScheduledJob}
+        isProcessing={isProcessing}
       />
 
       {/* Mobile Fixed Bottom Navigation Bar */}

@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "InstaFlow - Instagram 400+ Gönderi & PDF ZIP İndirici",
+  "version": "1.0.0",
+  "description": "Instagram hesaplarındaki 400+ gönderiyi tarar, her gönderiyi ayrı PDF yapar (karuseller birleşik) ve tek ZIP olarak indirir.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "downloads"
+  ],
+  "host_permissions": [
+    "https://www.instagram.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "InstaFlow İndirici"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.instagram.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

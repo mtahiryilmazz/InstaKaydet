@@ -14,15 +14,27 @@ import {
   Check,
   Heart,
   MessageCircle,
-  ExternalLink
+  ExternalLink,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface DateGroupCardProps {
   group: DateGroup;
   username: string;
-  onDownloadCarouselFolder: (post: InstagramPost, options?: { embedCaption?: boolean; isDataSaver?: boolean; enhanceResolution?: boolean }) => void;
-  onDownloadSingleMedia: (post: InstagramPost, mediaItem: MediaItem, index: number, options?: { embedCaption?: boolean; isDataSaver?: boolean; enhanceResolution?: boolean }) => void;
-  onDownloadDayArchive: (group: DateGroup, options?: { embedCaption?: boolean; isDataSaver?: boolean; enhanceResolution?: boolean }) => void;
+  onDownloadCarouselFolder: (
+    post: InstagramPost,
+    options?: { embedCaption?: boolean; isDataSaver?: boolean; enhanceResolution?: boolean }
+  ) => void;
+  onDownloadSingleMedia: (
+    post: InstagramPost,
+    mediaItem: MediaItem,
+    index: number,
+    options?: { embedCaption?: boolean; isDataSaver?: boolean; enhanceResolution?: boolean }
+  ) => void;
+  onDownloadDayArchive: (
+    group: DateGroup,
+    options?: { embedCaption?: boolean; isDataSaver?: boolean; enhanceResolution?: boolean }
+  ) => void;
   onExportDayPdf: (posts: InstagramPost[], title: string) => void;
   isProcessing: boolean;
   selectedPostIds?: Set<string>;
@@ -34,7 +46,6 @@ interface DateGroupCardProps {
 
 export const DateGroupCard: React.FC<DateGroupCardProps> = ({
   group,
-  username,
   onDownloadCarouselFolder,
   onDownloadSingleMedia,
   onDownloadDayArchive,
@@ -50,7 +61,7 @@ export const DateGroupCard: React.FC<DateGroupCardProps> = ({
   const [activeMediaIndices, setActiveMediaIndices] = useState<{ [postId: string]: number }>({});
   const [copiedPostId, setCopiedPostId] = useState<string | null>(null);
   const [postEmbedCaptions, setPostEmbedCaptions] = useState<{ [postId: string]: boolean }>({});
-  const [dayEmbedCaption, setDayEmbedCaption] = useState(false);
+  const [failedMediaIds, setFailedMediaIds] = useState<Record<string, boolean>>({});
 
   const isPostEmbedCaption = (postId: string) => {
     if (postEmbedCaptions[postId] !== undefined) return postEmbedCaptions[postId];
@@ -58,7 +69,7 @@ export const DateGroupCard: React.FC<DateGroupCardProps> = ({
   };
 
   const togglePostEmbedCaption = (postId: string) => {
-    setPostEmbedCaptions(prev => ({
+    setPostEmbedCaptions((prev) => ({
       ...prev,
       [postId]: !isPostEmbedCaption(postId),
     }));
@@ -66,7 +77,7 @@ export const DateGroupCard: React.FC<DateGroupCardProps> = ({
 
   const getActiveIndex = (postId: string) => activeMediaIndices[postId] || 0;
   const setActiveIndex = (postId: string, index: number) => {
-    setActiveMediaIndices(prev => ({ ...prev, [postId]: index }));
+    setActiveMediaIndices((prev) => ({ ...prev, [postId]: index }));
   };
 
   const handleCopyCaption = (postId: string, caption: string) => {
@@ -76,52 +87,53 @@ export const DateGroupCard: React.FC<DateGroupCardProps> = ({
   };
 
   return (
-    <div className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden mb-6 shadow-sm transition-all">
-      {/* Date Header Strip */}
-      <div className="bg-slate-950/70 p-4 border-b border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
-            <Calendar className="w-5 h-5 text-rose-400" />
+    <div className="bg-slate-900/70 border border-slate-800/90 rounded-2xl overflow-hidden mb-5 shadow-sm transition-all">
+      {/* Date Group Header */}
+      <div className="bg-slate-950/60 px-4 py-3.5 border-b border-slate-800/80 flex items-center justify-between gap-3 flex-wrap">
+        <div
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex items-center gap-3 cursor-pointer select-none min-w-0 flex-1"
+        >
+          <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
+            <Calendar className="w-4 h-4 text-rose-400" />
           </div>
-          <div>
-            <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
+          <div className="min-w-0">
+            <h3 className="text-sm sm:text-base font-bold text-white tracking-tight truncate">
               {group.displayDate}
             </h3>
             <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
-              <span>{group.posts.length} Gönderi</span>
+              <span>{group.posts.length} gönderi</span>
               <span aria-hidden="true">·</span>
-              <span>{group.totalMediaCount} Medya Öğesi</span>
-              <span aria-hidden="true">·</span>
-              <span className="text-rose-400 font-medium">Saat Sıralı</span>
+              <span>{group.totalMediaCount} medya</span>
             </div>
           </div>
         </div>
 
-        {/* Date Group Quick Actions */}
-        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
+        {/* Compact Date Actions */}
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => onDownloadDayArchive(group)}
             disabled={isProcessing}
-            className="px-3 py-2 sm:py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700/60 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 min-h-[40px]"
-            title="Bu tarihteki tüm gönderileri saat klasörleriyle ZIP olarak indir"
+            className="px-3 py-2 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700/60 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 min-h-[38px]"
+            title="Bu tarihteki tüm gönderileri ZIP olarak indir"
           >
             <FolderArchive className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span className="truncate">Günü İndir (ZIP)</span>
+            <span>Günü ZIP İndir</span>
           </button>
 
           <button
             onClick={() => onExportDayPdf(group.posts, `${group.displayDate} Gönderileri`)}
             disabled={isProcessing}
-            className="px-3 py-2 sm:py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700/60 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 min-h-[40px]"
-            title="Sadece bu günün gönderilerini tek PDF dosyası yap"
+            className="px-3 py-2 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700/60 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 min-h-[38px]"
+            title="Bu günün gönderilerini tek PDF dosyası yap"
           >
             <FileText className="w-3.5 h-3.5 text-rose-400 shrink-0" />
-            <span className="truncate">Günü PDF Yap</span>
+            <span className="hidden sm:inline">PDF Yap</span>
           </button>
 
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="hidden sm:flex p-2 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors cursor-pointer min-h-[40px] min-w-[40px] items-center justify-center shrink-0"
+            className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors cursor-pointer min-h-[38px] min-w-[38px] flex items-center justify-center"
             aria-label={isExpanded ? 'Gizle' : 'Genişlet'}
           >
             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -129,274 +141,262 @@ export const DateGroupCard: React.FC<DateGroupCardProps> = ({
         </div>
       </div>
 
-      {/* Posts on this Date (Sorted by Post Time) */}
+      {/* Posts List */}
       {isExpanded && (
-        <div className="p-4 sm:p-6 space-y-6">
-          {group.posts.map((post, postIdx) => {
+        <div className="p-3 sm:p-5 space-y-4">
+          {group.posts.map((post) => {
             const activeIndex = getActiveIndex(post.id);
             const currentMedia = post.media[activeIndex] || post.media[0];
+            const isSelected = selectedPostIds?.has(post.id) || false;
 
             return (
               <div
                 key={post.id}
-                className="bg-slate-950/80 border border-slate-800/90 rounded-2xl p-4 sm:p-5 transition-all hover:border-slate-700"
+                className={`bg-slate-950/70 border rounded-2xl p-3.5 sm:p-5 transition-all ${
+                  isSelected
+                    ? 'border-rose-500/60 ring-1 ring-rose-500/20'
+                    : 'border-slate-800/90 hover:border-slate-700'
+                }`}
               >
-                {/* Post Time & Category Indicator */}
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800/70">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 px-2.5 py-1 rounded-lg border border-rose-500/20">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>Saat {post.timeFormatted}</span>
-                    </div>
-
-                    <span className="text-xs text-slate-400 hidden sm:inline">
+                {/* Top Meta Row */}
+                <div className="flex items-center justify-between pb-3 mb-3.5 border-b border-slate-800/70 gap-2">
+                  <div className="flex items-center gap-2 text-xs text-slate-400">
+                    <Clock className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                    <span className="text-slate-200 font-semibold">{post.timeFormatted}</span>
+                    <span aria-hidden="true">·</span>
+                    <span>
                       {post.isCarousel
-                        ? `Çoklu Gönderi (${post.mediaCount} Fotoğraf)`
+                        ? `${post.mediaCount} Fotoğraf`
                         : post.isVideo
-                        ? 'Video / Reels'
-                        : 'Tekli Fotoğraf'}
+                        ? 'Video'
+                        : 'Fotoğraf'}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-300 hover:text-white select-none bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800">
+                  <div className="flex items-center gap-2.5">
+                    <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-300 hover:text-white select-none px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800">
                       <input
                         type="checkbox"
-                        checked={selectedPostIds?.has(post.id) || false}
+                        checked={isSelected}
                         onChange={() => onToggleSelectPost?.(post.id)}
                         className="accent-rose-500 w-3.5 h-3.5 cursor-pointer rounded"
                       />
-                      <span className="text-[11px] font-medium">PDF için Seç</span>
+                      <span className="text-[11px] font-medium">Seç</span>
                     </label>
 
                     <a
                       href={post.postUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs text-slate-400 hover:text-rose-400 flex items-center gap-1 transition-colors"
+                      className="text-xs text-slate-400 hover:text-rose-400 flex items-center gap-1 transition-colors p-1"
+                      title="Instagram'da Aç"
                     >
-                      <span className="hidden sm:inline">Instagram</span>
-                      <ExternalLink className="w-3 h-3" />
+                      <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   </div>
                 </div>
 
-                {/* Media Presentation Grid / Split */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
-                  {/* Left Column: Visual Media Box */}
-                  <div className="md:col-span-5 relative group">
-                    <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-slate-900 border border-slate-800">
-                      {currentMedia.type === 'video' || post.isVideo ? (
-                        <div className="relative w-full h-full bg-slate-950 flex items-center justify-center">
-                          <video
-                            src={currentMedia.url || undefined}
-                            poster={(currentMedia.thumbnailUrl || post.userAvatar) || undefined}
-                            controls
-                            preload={isDataSaver ? "none" : "metadata"}
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute top-2 left-2 bg-slate-950/80 backdrop-blur-sm text-slate-200 text-[11px] px-2 py-0.5 rounded-md flex items-center gap-1 border border-slate-700/50">
-                            <Film className="w-3 h-3 text-rose-400" />
-                            <span>Reels Video (MP4)</span>
-                          </div>
-                        </div>
-                      ) : currentMedia.url ? (
-                        <div className="relative w-full h-full">
-                          <img
-                            src={currentMedia.url}
-                            alt={`Post ${post.shortcode}`}
-                            referrerPolicy="no-referrer"
-                            loading="lazy"
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          />
-                          {post.isCarousel && (
-                            <div className="absolute top-2 left-2 bg-slate-950/80 backdrop-blur-sm text-slate-200 text-[11px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1 border border-slate-700/50">
-                              <FolderArchive className="w-3 h-3 text-amber-400" />
-                              <span>{activeIndex + 1} / {post.mediaCount} Fotoğraf</span>
-                            </div>
-                          )}
-                        </div>
+                {/* Responsive Two-Column Post Content */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-5 items-start">
+                  {/* Left: Media Preview & Carousel Thumbnails */}
+                  <div className="md:col-span-5">
+                    <div className="relative aspect-square rounded-xl overflow-hidden bg-slate-900 border border-slate-800">
+                      {currentMedia?.type === 'video' || post.isVideo ? (
+                        <video
+                          key={currentMedia?.url}
+                          src={currentMedia?.url}
+                          poster={currentMedia?.thumbnailUrl}
+                          controls
+                          playsInline
+                          preload={isDataSaver ? 'none' : 'metadata'}
+                          className="w-full h-full object-contain bg-black"
+                        />
+                      ) : currentMedia?.url && !failedMediaIds[currentMedia.id] ? (
+                        <img
+                          src={currentMedia.url}
+                          alt={post.caption?.slice(0, 60) || 'Instagram Gönderisi'}
+                          referrerPolicy="no-referrer"
+                          onError={() => {
+                            setFailedMediaIds((prev) => ({ ...prev, [currentMedia.id]: true }));
+                          }}
+                          className="w-full h-full object-cover transition-transform duration-300"
+                        />
                       ) : (
-                        <div className="w-full h-full bg-slate-900 flex items-center justify-center text-slate-500 text-xs">
-                          Görsel
+                        <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center bg-slate-950">
+                          <AlertTriangle className="w-7 h-7 text-amber-400 mb-2" />
+                          <p className="text-xs font-semibold text-slate-200">
+                            Orijinal Medya Oturum Doğrulaması İstiyor
+                          </p>
+                          <p className="text-[11px] text-slate-400 mt-1">
+                            Gerçek görseli görüntülemek için üst menüden Session ID ekleyin.
+                          </p>
                         </div>
                       )}
 
-                      {/* Quality & Resolution indicator */}
-                      <div className="absolute bottom-2 right-2 bg-slate-950/85 backdrop-blur-sm text-[10px] px-2 py-0.5 rounded-md text-slate-300 border border-slate-700/50">
-                        {isDataSaver ? (
-                          <span className="text-emerald-400 font-medium">⚡ Orta Kalite (Düşük Kota)</span>
-                        ) : (
-                          <span className="text-amber-300 font-medium">💎 1080p HD (Çözünürlük Yüksek)</span>
-                        )}
-                      </div>
+                      {/* Subtle Slide Counter */}
+                      {post.isCarousel && (
+                        <div className="absolute top-2.5 right-2.5 bg-slate-950/85 backdrop-blur-md text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-700/60 tabular-nums">
+                          {activeIndex + 1} / {post.mediaCount}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Carousel Thumbnail Strip (If post has multiple photos) */}
+                    {/* Carousel Strip */}
                     {post.isCarousel && post.media.length > 1 && (
-                      <div className="mt-2.5">
-                        <div className="text-[11px] text-slate-400 mb-1.5 flex items-center justify-between">
-                          <span>Klasördeki Fotoğraflar:</span>
-                          <span className="text-amber-400 font-medium">Tek klasörde toplanacak</span>
-                        </div>
-                        <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                          {post.media.map((item, idx) => (
-                            <button
-                              key={item.id}
-                              onClick={() => setActiveIndex(post.id, idx)}
-                              className={`relative w-12 h-12 rounded-lg overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
-                                activeIndex === idx
-                                  ? 'border-rose-500 scale-105 shadow-md shadow-rose-950'
-                                  : 'border-slate-800 opacity-60 hover:opacity-100'
-                              }`}
-                            >
-                              {(item.thumbnailUrl || item.url) ? (
-                                <img
-                                  src={item.thumbnailUrl || item.url}
-                                  alt={`Thumb ${idx + 1}`}
-                                  referrerPolicy="no-referrer"
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full bg-slate-900 flex items-center justify-center text-[10px] text-slate-500">
-                                  {idx + 1}
-                                </div>
-                              )}
-                              <span className="absolute bottom-0 right-0 bg-slate-950/80 text-[9px] text-white px-1 font-bold">
+                      <div className="flex items-center gap-2 overflow-x-auto pt-2.5 pb-1">
+                        {post.media.map((item, idx) => (
+                          <button
+                            key={item.id}
+                            onClick={() => setActiveIndex(post.id, idx)}
+                            className={`relative w-12 h-12 rounded-lg overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                              activeIndex === idx
+                                ? 'border-rose-500 scale-105'
+                                : 'border-slate-800 opacity-60 hover:opacity-100'
+                            }`}
+                          >
+                            {(item.thumbnailUrl || item.url) && !failedMediaIds[item.id] ? (
+                              <img
+                                src={item.thumbnailUrl || item.url}
+                                alt={`Kare ${idx + 1}`}
+                                referrerPolicy="no-referrer"
+                                onError={() => {
+                                  setFailedMediaIds((prev) => ({ ...prev, [item.id]: true }));
+                                }}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-slate-900 flex items-center justify-center text-[10px] text-slate-400">
                                 {idx + 1}
-                              </span>
-                            </button>
-                          ))}
-                        </div>
+                              </div>
+                            )}
+                          </button>
+                        ))}
                       </div>
                     )}
                   </div>
 
-                  {/* Right Column: Download Actions & Metadata */}
+                  {/* Right: Caption, Metrics & Clean Download Actions */}
                   <div className="md:col-span-7 flex flex-col justify-between h-full space-y-4">
-                    {/* Caption & Location */}
                     <div>
-                      {post.location && (
-                        <div className="text-xs text-rose-400/90 font-medium mb-1">
-                          📍 {post.location}
-                        </div>
-                      )}
-                      <p className="text-sm text-slate-300 leading-relaxed line-clamp-3">
-                        {post.caption}
+                      <p className="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line line-clamp-4">
+                        {post.caption || 'Açıklama metni bulunmuyor.'}
                       </p>
 
-                      <div className="flex items-center gap-4 mt-3 text-xs text-slate-400 font-medium">
-                        <span className="flex items-center gap-1.5 text-slate-300">
-                          <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500/20" />
-                          <span className="tabular-nums font-semibold">
+                      {/* Clean Unboxed Metrics & Copy Action */}
+                      <div className="flex items-center gap-4 mt-3 text-xs text-slate-400">
+                        <span className="flex items-center gap-1.5">
+                          <Heart className="w-3.5 h-3.5 text-rose-500" />
+                          <span className="tabular-nums font-medium text-slate-300">
                             {post.likesCount.toLocaleString('tr-TR')}
                           </span>
                         </span>
-                        <span className="flex items-center gap-1.5 text-slate-300">
+                        <span className="flex items-center gap-1.5">
                           <MessageCircle className="w-3.5 h-3.5 text-sky-400" />
-                          <span className="tabular-nums font-semibold">
+                          <span className="tabular-nums font-medium text-slate-300">
                             {post.commentsCount.toLocaleString('tr-TR')}
                           </span>
                         </span>
-                        <button
-                          onClick={() => handleCopyCaption(post.id, post.caption)}
-                          className="flex items-center gap-1 text-slate-400 hover:text-slate-200 transition-colors ml-auto cursor-pointer"
-                          title="Açıklamayı kopyala"
-                        >
-                          {copiedPostId === post.id ? (
-                            <>
-                              <Check className="w-3.5 h-3.5 text-emerald-400" />
-                              <span className="text-emerald-400">Kopyalandı</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3.5 h-3.5" />
-                              <span>Metni Kopyala</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Download Controls & Caption Embedding Toggle */}
-                    <div className="pt-3 border-t border-slate-800/80 space-y-2.5">
-                      {/* Caption Embedding Selection Option */}
-                      {!post.isVideo && (
-                        <label className="flex items-center justify-between p-2.5 bg-slate-900/90 hover:bg-slate-900 border border-slate-800 rounded-xl cursor-pointer text-xs select-none transition-colors">
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              checked={isPostEmbedCaption(post.id)}
-                              onChange={() => togglePostEmbedCaption(post.id)}
-                              className="accent-rose-500 w-4 h-4 rounded cursor-pointer"
-                            />
-                            <span className="text-slate-200 font-medium text-[11px] sm:text-xs">
-                              Görsel altına açıklama metnini beyaz barla göm
-                            </span>
-                          </div>
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${isPostEmbedCaption(post.id) ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'text-slate-500'}`}>
-                            {isPostEmbedCaption(post.id) ? 'Metin Gömülecek' : 'Sade Görsel'}
-                          </span>
-                        </label>
-                      )}
-
-                      {/* If Carousel: Highlight Single Folder Download requirement */}
-                      {post.isCarousel ? (
-                        <div className="space-y-2">
+                        {post.caption && (
                           <button
-                            onClick={() => onDownloadCarouselFolder(post, { embedCaption: isPostEmbedCaption(post.id), isDataSaver, enhanceResolution })}
-                            disabled={isProcessing}
-                            className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white font-semibold text-xs sm:text-sm rounded-xl transition-all shadow-md active:scale-98 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 min-h-[44px]"
+                            onClick={() => handleCopyCaption(post.id, post.caption)}
+                            className="flex items-center gap-1 text-slate-400 hover:text-white transition-colors ml-auto cursor-pointer"
                           >
-                            <FolderArchive className="w-4 h-4" />
-                            <span>
-                              Klasör Olarak İndir (Tek Klasörde {post.mediaCount} Foto {isPostEmbedCaption(post.id) ? '· Metinli' : '· Sade'})
-                            </span>
-                          </button>
-
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => onDownloadSingleMedia(post, currentMedia, activeIndex, { embedCaption: isPostEmbedCaption(post.id), isDataSaver, enhanceResolution })}
-                              disabled={isProcessing}
-                              className="flex-1 py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-slate-700/60 min-h-[40px]"
-                            >
-                              <Download className="w-3.5 h-3.5 text-rose-400" />
-                              <span>
-                                {isPostEmbedCaption(post.id)
-                                  ? `Foto ${activeIndex + 1}'i Beyaz Barlı İndir`
-                                  : `Foto ${activeIndex + 1}'i HD İndir`}
-                              </span>
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => onDownloadSingleMedia(post, currentMedia, 0, { embedCaption: isPostEmbedCaption(post.id), isDataSaver, enhanceResolution })}
-                            disabled={isProcessing}
-                            className={`w-full py-2.5 px-4 font-semibold text-xs sm:text-sm rounded-xl transition-all shadow-md active:scale-98 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 min-h-[44px] ${
-                              post.isVideo || currentMedia.type === 'video'
-                                ? 'bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white shadow-sky-950/40'
-                                : 'bg-rose-600 hover:bg-rose-500 text-white'
-                            }`}
-                          >
-                            {post.isVideo || currentMedia.type === 'video' ? (
+                            {copiedPostId === post.id ? (
                               <>
-                                <Film className="w-4 h-4" />
-                                <span>🎬 Videoyu Galeriye / Cihaza İndir (MP4)</span>
+                                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                <span className="text-emerald-400">Kopyalandı</span>
                               </>
                             ) : (
                               <>
-                                <Download className="w-4 h-4" />
-                                <span>
-                                  {isPostEmbedCaption(post.id)
-                                    ? 'Fotoğrafı Açıklamalı İndir (Beyaz Bar İçinde)'
-                                    : 'Fotoğrafı Galeriye İndir (1080p HD JPEG)'}
-                                </span>
+                                <Copy className="w-3.5 h-3.5" />
+                                <span>Metni Kopyala</span>
                               </>
                             )}
                           </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Streamlined Download Footer */}
+                    <div className="pt-3 border-t border-slate-800/80 space-y-2.5">
+                      {!post.isVideo && (
+                        <label className="flex items-center justify-between px-3 py-2 bg-slate-900/70 hover:bg-slate-900 border border-slate-800/80 rounded-xl cursor-pointer text-xs select-none transition-colors">
+                          <span className="text-slate-300 font-medium text-[11px] sm:text-xs">
+                            Açıklama metnini görsel altına ekle
+                          </span>
+                          <input
+                            type="checkbox"
+                            checked={isPostEmbedCaption(post.id)}
+                            onChange={() => togglePostEmbedCaption(post.id)}
+                            className="accent-rose-500 w-4 h-4 rounded cursor-pointer"
+                          />
+                        </label>
+                      )}
+
+                      {post.isCarousel ? (
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                          <button
+                            onClick={() =>
+                              onDownloadCarouselFolder(post, {
+                                embedCaption: isPostEmbedCaption(post.id),
+                                isDataSaver,
+                                enhanceResolution,
+                              })
+                            }
+                            disabled={isProcessing}
+                            className="flex-1 py-2.5 px-4 bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs rounded-xl transition-all shadow-sm active:scale-98 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 min-h-[42px]"
+                          >
+                            <FolderArchive className="w-4 h-4 shrink-0" />
+                            <span>Tüm Albümü İndir ({post.mediaCount} Fotoğraf)</span>
+                          </button>
+
+                          <button
+                            onClick={() =>
+                              onDownloadSingleMedia(post, currentMedia, activeIndex, {
+                                embedCaption: isPostEmbedCaption(post.id),
+                                isDataSaver,
+                                enhanceResolution,
+                              })
+                            }
+                            disabled={isProcessing}
+                            className="py-2.5 px-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-slate-700/60 min-h-[42px]"
+                          >
+                            <Download className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                            <span>Kare {activeIndex + 1}'i İndir</span>
+                          </button>
                         </div>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            onDownloadSingleMedia(post, currentMedia, 0, {
+                              embedCaption: isPostEmbedCaption(post.id),
+                              isDataSaver,
+                              enhanceResolution,
+                            })
+                          }
+                          disabled={isProcessing}
+                          className={`w-full py-2.5 px-4 font-semibold text-xs rounded-xl transition-all shadow-sm active:scale-98 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 min-h-[42px] ${
+                            post.isVideo || currentMedia?.type === 'video'
+                              ? 'bg-sky-600 hover:bg-sky-500 text-white'
+                              : 'bg-rose-600 hover:bg-rose-500 text-white'
+                          }`}
+                        >
+                          {post.isVideo || currentMedia?.type === 'video' ? (
+                            <>
+                              <Film className="w-4 h-4 shrink-0" />
+                              <span>Videoyu İndir (MP4)</span>
+                            </>
+                          ) : (
+                            <>
+                              <Download className="w-4 h-4 shrink-0" />
+                              <span>
+                                {isPostEmbedCaption(post.id)
+                                  ? 'Açıklamalı Fotoğraf İndir (HD JPEG)'
+                                  : 'Fotoğrafı İndir (HD JPEG)'}
+                              </span>
+                            </>
+                          )}
+                        </button>
                       )}
                     </div>
                   </div>

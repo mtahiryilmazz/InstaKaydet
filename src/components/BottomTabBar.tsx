@@ -1,9 +1,9 @@
 import React from 'react';
-import { UserCheck, Download, FileText, Cloud } from 'lucide-react';
+import { UserCheck, Download, FileText, Cloud, Activity } from 'lucide-react';
 
 interface BottomTabBarProps {
-  activeTab: 'profile' | 'quick' | 'pdf' | 'cloud';
-  setActiveTab: (tab: 'profile' | 'quick' | 'pdf' | 'cloud') => void;
+  activeTab: 'profile' | 'quick' | 'pdf' | 'logs' | 'cloud';
+  setActiveTab: (tab: 'profile' | 'quick' | 'pdf' | 'logs' | 'cloud') => void;
   historyCount: number;
 }
 
@@ -12,59 +12,51 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
   setActiveTab,
   historyCount,
 }) => {
+  const tabs: Array<{
+    id: 'profile' | 'quick' | 'pdf' | 'cloud' | 'logs';
+    label: string;
+    icon: React.FC<{ className?: string }>;
+    badge?: number;
+  }> = [
+    { id: 'profile', label: 'Arşiv', icon: UserCheck },
+    { id: 'quick', label: 'Hızlı İndir', icon: Download },
+    { id: 'pdf', label: 'PDF Yap', icon: FileText },
+    { id: 'cloud', label: 'Yedekler', icon: Cloud, badge: historyCount },
+    { id: 'logs', label: 'Loglar', icon: Activity },
+  ];
+
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-md border-t border-slate-800/80 pb-[env(safe-area-inset-bottom,0px)]">
-      <div className="grid grid-cols-4 items-center h-16 max-w-md mx-auto">
-        {/* Tab 1: Profile & Dates */}
-        <button
-          onClick={() => setActiveTab('profile')}
-          className={`min-h-[44px] flex flex-col items-center justify-center transition-colors cursor-pointer ${
-            activeTab === 'profile' ? 'text-rose-400' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <UserCheck className="w-5 h-5" />
-          <span className="text-[11px] font-medium tracking-tight mt-1">Kullanıcı</span>
-        </button>
-
-        {/* Tab 2: Quick Download */}
-        <button
-          onClick={() => setActiveTab('quick')}
-          className={`min-h-[44px] flex flex-col items-center justify-center transition-colors cursor-pointer ${
-            activeTab === 'quick' ? 'text-rose-400' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Download className="w-5 h-5" />
-          <span className="text-[11px] font-medium tracking-tight mt-1">Hızlı İndir</span>
-        </button>
-
-        {/* Tab 3: PDF Compilation */}
-        <button
-          onClick={() => setActiveTab('pdf')}
-          className={`min-h-[44px] flex flex-col items-center justify-center transition-colors cursor-pointer ${
-            activeTab === 'pdf' ? 'text-rose-400' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <FileText className="w-5 h-5" />
-          <span className="text-[11px] font-medium tracking-tight mt-1">Tek PDF</span>
-        </button>
-
-        {/* Tab 4: Cloud & History */}
-        <button
-          onClick={() => setActiveTab('cloud')}
-          className={`min-h-[44px] flex flex-col items-center justify-center relative transition-colors cursor-pointer ${
-            activeTab === 'cloud' ? 'text-rose-400' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <div className="relative">
-            <Cloud className="w-5 h-5" />
-            {historyCount > 0 && (
-              <span className="absolute -top-1 -right-2 bg-rose-600 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                {historyCount > 9 ? '9+' : historyCount}
-              </span>
-            )}
-          </div>
-          <span className="text-[11px] font-medium tracking-tight mt-1">Bulut</span>
-        </button>
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/90 pb-[env(safe-area-inset-bottom,0px)]">
+      <div className="grid grid-cols-5 items-center h-16 max-w-lg mx-auto px-1.5">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`min-h-[48px] flex flex-col items-center justify-center rounded-xl transition-all cursor-pointer relative ${
+                isActive
+                  ? 'text-rose-400 font-semibold'
+                  : 'text-slate-400 hover:text-slate-200 font-medium'
+              }`}
+            >
+              <div
+                className={`px-3 py-1 rounded-full transition-colors relative ${
+                  isActive ? 'bg-rose-500/15' : ''
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {typeof tab.badge === 'number' && tab.badge > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center">
+                    {tab.badge > 9 ? '9+' : tab.badge}
+                  </span>
+                )}
+              </div>
+              <span className="text-[10px] tracking-tight mt-0.5">{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
     </nav>
   );

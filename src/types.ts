@@ -3,6 +3,7 @@ export interface MediaItem {
   type: 'image' | 'video';
   url: string;
   thumbnailUrl: string;
+  originalUrl?: string;
   aspectRatio?: '1:1' | '4:5' | '16:9';
   width?: number;
   height?: number;
@@ -29,6 +30,13 @@ export interface InstagramPost {
   location?: string;
 }
 
+export interface PageInfo {
+  hasNextPage: boolean;
+  endCursor?: string | null;
+  totalCount?: number;
+  userId?: string | null;
+}
+
 export interface UserProfile {
   username: string;
   fullName: string;
@@ -40,6 +48,7 @@ export interface UserProfile {
   isVerified: boolean;
   isPrivate: boolean;
   isRealInstagramData?: boolean;
+  pageInfo?: PageInfo;
 }
 
 export interface DateGroup {
@@ -81,4 +90,55 @@ export interface PdfExportOptions {
   includeUserHeader: boolean;
   theme: 'clean' | 'dark';
   pageSize: 'a4';
+  excludeVideos?: boolean;
+  pdfMode?: 'per_post' | 'single_master';
 }
+
+export interface InstagramLogEntry {
+  id: string;
+  timestamp: string;
+  timeFormatted: string;
+  username: string;
+  status: number | string;
+  success: boolean;
+  strategyUsed: string;
+  hasSessionId: boolean;
+  error?: string;
+  diagnosis: string;
+  suggestedAction: string;
+  latencyMs?: number;
+}
+
+export interface DiagnosticsData {
+  logs: InstagramLogEntry[];
+  stats: {
+    totalRequests: number;
+    successCount: number;
+    rateLimitedCount: number;
+    notFoundCount: number;
+    activeSessionIdPresent: boolean;
+    serverRegion: string;
+    gatewayStatus: string;
+  };
+}
+
+export interface ScheduledDownloadJob {
+  id: string;
+  createdAt: string;
+  scheduledTime: string; // ISO string
+  scheduledDisplay: string;
+  username: string;
+  totalPosts: number;
+  postIds: string[];
+  status: 'pending' | 'running' | 'completed' | 'paused' | 'failed';
+  progress: number; // 0 - 100
+  statusMessage?: string;
+  downloadUrl?: string;
+  options: {
+    includeCsv: boolean;
+    folderByDate: boolean;
+    isDataSaver: boolean;
+    enhanceResolution: boolean;
+  };
+}
+
