@@ -51,6 +51,8 @@ interface UserProfileHeaderProps {
   onLoadMore?: () => void;
   isLoadingMore?: boolean;
   hasNextPage?: boolean;
+  isFromLocalCache?: boolean;
+  cachedAt?: string | null;
 }
 
 export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
@@ -72,6 +74,8 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
   isScanningDeep = false,
   excludeVideos = true,
   onToggleExcludeVideos,
+  isFromLocalCache = false,
+  cachedAt = null,
 }) => {
   const [searchInput, setSearchInput] = useState(profile.username || '');
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
@@ -143,7 +147,8 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
     e.preventDefault();
     const cleaned = cleanInput(searchInput);
     if (cleaned && !isLoading) {
-      onSearchUsername(cleaned, true);
+      // Load from local cache first if available; user can click Canlı Yenile for live fetch
+      onSearchUsername(cleaned, false);
     }
   };
 
@@ -161,7 +166,7 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
       if (cleaned) {
         setSearchInput(cleaned);
         setTimeout(() => {
-          onSearchUsername(cleaned, true);
+          onSearchUsername(cleaned, false);
         }, 60);
       }
     }
@@ -207,10 +212,11 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
               type="button"
               onClick={handleForceRefresh}
               disabled={isLoading}
-              className="p-2.5 bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 rounded-xl transition-all cursor-pointer min-h-[42px] min-w-[42px] flex items-center justify-center shrink-0 disabled:opacity-40"
-              title="Canlı Veriyi Yenile"
+              className="px-3 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700/70 rounded-xl transition-all cursor-pointer min-h-[42px] flex items-center justify-center gap-1.5 shrink-0 disabled:opacity-40 text-xs font-semibold"
+              title="Önbelleği Atla ve Instagram'dan Canlı Yenile"
             >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-rose-400' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-rose-400' : 'text-emerald-400'}`} />
+              <span className="hidden sm:inline">Canlı Yenile</span>
             </button>
           )}
         </form>
@@ -232,7 +238,7 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
                   type="button"
                   onClick={() => {
                     setSearchInput(acc);
-                    onSearchUsername(acc, true);
+                    onSearchUsername(acc, false);
                   }}
                   className="cursor-pointer"
                 >
@@ -386,6 +392,19 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
                 <span className="text-emerald-400 font-medium tabular-nums">
                   {totalPosts} yüklü
                 </span>
+                <span aria-hidden="true">·</span>
+                {isFromLocalCache ? (
+                  <span
+                    className="text-sky-400 font-medium"
+                    title={cachedAt ? `Önbellek zamanı: ${new Date(cachedAt).toLocaleTimeString('tr-TR')}` : 'Yerel önbellekten yüklendi'}
+                  >
+                    ⚡ Önbellekten Anında Yüklendi
+                  </span>
+                ) : (
+                  <span className="text-emerald-300 font-medium">
+                    {sessionId ? '🔑 Çerezli Canlı Mod' : '📱 Çerezsiz Mobil/APK Modu'}
+                  </span>
+                )}
               </div>
             </div>
           </div>

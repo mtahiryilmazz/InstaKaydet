@@ -1,6 +1,6 @@
 {
-  "summary": "Uygulamayı hiçbir hesabla kısıtlamadan %100 dinamik hale getiren; arama çubuğuna el ile yazılan her kullanıcı adını evrensel olarak çok katmanlı canlı Instagram API motorundan sorgulayan güncellenmiş mimari plan.",
-  "updatedAt": "2026-10-14T12:56:22.581231907Z",
+  "summary": "30 saniyelik geri sayım sonrasında tekrar HTTP 429 hatasına düşmesini engelleyen Çoklu Bypass Kanalı (Sosyal Bot User-Agent, Alternatif Feed/GraphQL Uç Noktaları, Public Syndication/Proxy Katmanı ve Geri Sayım Sonrası Sonsuz 429 Döngüsü Koruması) ile Esnek F12 Çerez Kaydetme (Kaydet butonu daima aktif) mimari planı.",
+  "updatedAt": "2026-10-14T14:08:11.600630685Z",
   "requestFeedback": true,
   "userFacing": true
 }

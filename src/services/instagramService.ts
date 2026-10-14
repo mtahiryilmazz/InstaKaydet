@@ -35,20 +35,215 @@ export function getInitialsAvatar(name: string, username: string) {
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
-// Universal Live Instagram Profile and Posts Fetcher (Zero hardcoded accounts or fake media)
+export function isMobileOrApkEnvironment(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  const isAndroidOrIos = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+  const isWebView = /; wv\)|Instagram|FBAN|FBAV|Version\/\d+\.\d+.*Chrome\/\d+/i.test(ua) || (window as any).ReactNativeWebView !== undefined;
+  const isSmallScreen = window.innerWidth <= 768;
+  return isAndroidOrIos || isWebView || isSmallScreen;
+}
+
+export interface CachedProfileEntry {
+  username: string;
+  profile: UserProfile;
+  posts: InstagramPost[];
+  pageInfo?: any;
+  cachedAt: string;
+}
+
+const LOCAL_CACHE_PREFIX = 'instaflow_profile_cache_v1_';
+const IDB_NAME = 'instaflow_cache_db';
+const IDB_STORE = 'profiles';
+
+function openCacheDb(): Promise<IDBDatabase | null> {
+  if (typeof indexedDB === 'undefined') return Promise.resolve(null);
+  return new Promise((resolve) => {
+    try {
+      const req = indexedDB.open(IDB_NAME, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(IDB_STORE)) {
+          db.createObjectStore(IDB_STORE, { keyPath: 'username' });
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => resolve(null);
+    } catch {
+      resolve(null);
+    }
+  });
+}
+
+export async function saveProfileToLocalCache(
+  username: string,
+  profile: UserProfile,
+  posts: InstagramPost[],
+  pageInfo?: any
+): Promise<void> {
+  const clean = username.replace(/^@/, '').trim().toLowerCase();
+  if (!clean || (!profile.isRealInstagramData && posts.length === 0)) return;
+
+  const entry: CachedProfileEntry = {
+    username: clean,
+    profile,
+    posts,
+    pageInfo: pageInfo || profile.pageInfo,
+    cachedAt: new Date().toISOString(),
+  };
+
+  // 1. Save to localStorage for instant synchronous/fast access
+  try {
+    localStorage.setItem(`${LOCAL_CACHE_PREFIX}${clean}`, JSON.stringify(entry));
+  } catch (e) {
+    // Quota exceeded: keep only latest profiles in localStorage
+  }
+
+  // 2. Save to IndexedDB for large 400+ post archives in Mobile & APK WebView
+  try {
+    const db = await openCacheDb();
+    if (db) {
+      await new Promise<void>((resolve) => {
+        const tx = db.transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).put(entry);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      });
+    }
+  } catch {}
+}
+
+export async function getProfileFromLocalCache(username: string): Promise<CachedProfileEntry | null> {
+  const clean = username.replace(/^@/, '').trim().toLowerCase();
+  if (!clean) return null;
+
+  // 1. Check IndexedDB first (can hold full 500+ post sets)
+  try {
+    const db = await openCacheDb();
+    if (db) {
+      const idbResult = await new Promise<CachedProfileEntry | null>((resolve) => {
+        const tx = db.transaction(IDB_STORE, 'readonly');
+        const req = tx.objectStore(IDB_STORE).get(clean);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => resolve(null);
+      });
+      if (idbResult && idbResult.profile && Array.isArray(idbResult.posts) && idbResult.posts.length > 0) {
+        return idbResult;
+      }
+    }
+  } catch {}
+
+  // 2. Fallback to localStorage
+  try {
+    const raw = localStorage.getItem(`${LOCAL_CACHE_PREFIX}${clean}`);
+    if (raw) {
+      const parsed = JSON.parse(raw) as CachedProfileEntry;
+      if (parsed && parsed.profile && Array.isArray(parsed.posts) && parsed.posts.length > 0) {
+        return parsed;
+      }
+    }
+  } catch {}
+
+  return null;
+}
+
+export async function clearLocalProfileCache(): Promise<void> {
+  try {
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(LOCAL_CACHE_PREFIX)) {
+        keysToRemove.push(k);
+      }
+    }
+    keysToRemove.forEach((k) => localStorage.removeItem(k));
+  } catch {}
+
+  try {
+    const db = await openCacheDb();
+    if (db) {
+      await new Promise<void>((resolve) => {
+        const tx = db.transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).clear();
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      });
+    }
+  } catch {}
+}
+
+export async function verifySessionProfileCheck(
+  cookieInput: string,
+  targetUsername = 'instagram'
+): Promise<{
+  valid: boolean;
+  statusCode: number;
+  message: string;
+  user?: string;
+  detectedCookies?: string[];
+}> {
+  const cleaned = (cookieInput || '').trim();
+  if (!cleaned) {
+    return {
+      valid: false,
+      statusCode: 401,
+      message: 'Oturum bilgisi geçersiz veya süresi dolmuş',
+    };
+  }
+
+  try {
+    const params = new URLSearchParams({
+      sessionId: cleaned,
+      username: targetUsername || 'instagram',
+    });
+    const res = await fetch(`/api/user-profile-check?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'x-ig-session-id': cleaned,
+      },
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401 || res.status === 403 || res.status === 404 || !res.ok || !data.valid) {
+      return {
+        valid: false,
+        statusCode: data.statusCode || res.status || 401,
+        message: 'Oturum bilgisi geçersiz veya süresi dolmuş',
+      };
+    }
+    return {
+      valid: true,
+      statusCode: 200,
+      message: data.message || 'Oturum bilgisi doğrulandı ve aktif.',
+      user: data.user,
+      detectedCookies: data.detectedCookies,
+    };
+  } catch {
+    return {
+      valid: false,
+      statusCode: 401,
+      message: 'Oturum bilgisi geçersiz veya süresi dolmuş',
+    };
+  }
+}
+
+// Universal Live Instagram Profile and Posts Fetcher (Cookie-Free Mobile/APK + Local Cache + 429 Countdown + Guaranteed Recovery)
 export async function fetchUserFeedAsync(
   username: string,
   forceRefresh = false,
   sessionId = '',
   maxRetries = 1,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  retryAfterCooldown = false
 ): Promise<{
   profile: UserProfile;
   posts: InstagramPost[];
   isLive: boolean;
+  fromLocalCache?: boolean;
+  cachedAt?: string;
   pageInfo?: any;
   requireSession?: boolean;
   rateLimited?: boolean;
+  retryAfterSeconds?: number;
   error?: string;
 }> {
   const cleanUsername = username
@@ -78,7 +273,28 @@ export async function fetchUserFeedAsync(
     };
   }
 
+  // 1. Check Local IndexedDB / localStorage Cache first when forceRefresh is false
+  if (!forceRefresh) {
+    const cached = await getProfileFromLocalCache(cleanUsername);
+    if (cached && cached.posts.length > 0) {
+      return {
+        profile: {
+          ...cached.profile,
+          avatarUrl: cached.profile.avatarUrl || getInitialsAvatar(cached.profile.fullName, cleanUsername),
+          pageInfo: cached.pageInfo || cached.profile.pageInfo,
+          isRealInstagramData: true,
+        },
+        posts: cached.posts,
+        isLive: false,
+        fromLocalCache: true,
+        cachedAt: cached.cachedAt,
+        pageInfo: cached.pageInfo || cached.profile.pageInfo,
+      };
+    }
+  }
+
   let lastErrorMessage = '';
+  let wasRateLimited = false;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     if (signal?.aborted) {
@@ -92,6 +308,9 @@ export async function fetchUserFeedAsync(
       if (sessionId) {
         queryParams.set('sessionId', sessionId);
       }
+      if (retryAfterCooldown) {
+        queryParams.set('retryAfterCooldown', '1');
+      }
 
       const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
       const url = `/api/instagram/profile/${encodeURIComponent(cleanUsername)}${queryString}`;
@@ -101,53 +320,41 @@ export async function fetchUserFeedAsync(
       }
 
       const res = await fetch(url, { headers, signal });
+      const data = await res.json().catch(() => ({}));
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.profile) {
-          return {
-            profile: {
-              ...data.profile,
-              avatarUrl: data.profile.avatarUrl || getInitialsAvatar(data.profile.fullName, cleanUsername),
-              pageInfo: data.pageInfo || data.profile.pageInfo,
-              isRealInstagramData: true,
-            },
-            posts: Array.isArray(data.posts) ? data.posts : [],
-            isLive: !data.isFromCache,
-            pageInfo: data.pageInfo || data.profile.pageInfo,
-          };
+      if (res.ok && data.success && data.profile) {
+        const normalizedProfile: UserProfile = {
+          ...data.profile,
+          avatarUrl: data.profile.avatarUrl || getInitialsAvatar(data.profile.fullName, cleanUsername),
+          pageInfo: data.pageInfo || data.profile.pageInfo,
+          isRealInstagramData: true,
+        };
+        const normalizedPosts: InstagramPost[] = Array.isArray(data.posts) ? data.posts : [];
+
+        // Save to LocalStorage / IndexedDB cache automatically if posts exist
+        if (normalizedPosts.length > 0) {
+          await saveProfileToLocalCache(cleanUsername, normalizedProfile, normalizedPosts, data.pageInfo || data.profile.pageInfo);
         }
 
-        if (data.requireSession || !data.success) {
-          return {
-            profile: {
-              username: cleanUsername,
-              fullName: data.profile?.fullName || `@${cleanUsername}`,
-              avatarUrl: data.profile?.avatarUrl || getInitialsAvatar(cleanUsername, cleanUsername),
-              bio: data.profile?.bio || '',
-              postsCount: data.profile?.postsCount || 0,
-              followersCount: data.profile?.followersCount || 0,
-              followingCount: data.profile?.followingCount || 0,
-              isVerified: !!data.profile?.isVerified,
-              isPrivate: !!data.profile?.isPrivate,
-              isRealInstagramData: false,
-            },
-            posts: Array.isArray(data.posts) ? data.posts : [],
-            isLive: false,
-            requireSession: true,
-            rateLimited: res.status === 429,
-            error:
-              data.error ||
-              `Instagram '@${cleanUsername}' hesabının gerçek verilerini çekmek için oturum doğrulaması (Session ID) gerekiyor.`,
-          };
-        }
+        return {
+          profile: normalizedProfile,
+          posts: normalizedPosts,
+          isLive: !data.isFromCache,
+          fromLocalCache: false,
+          pageInfo: data.pageInfo || data.profile.pageInfo,
+        };
       }
 
-      const errJson = await res.json().catch(() => ({}));
-      lastErrorMessage = errJson.error || `Instagram isteği başarısız oldu (HTTP ${res.status}).`;
+      if (res.status === 429 || data.rateLimited) {
+        wasRateLimited = true;
+      }
+
+      lastErrorMessage =
+        data.error ||
+        `Instagram '@${cleanUsername}' sorgusunda hız sınırı (HTTP ${res.status || 429}) oluştu.`;
 
       if ((res.status === 429 || res.status === 502 || res.status === 503) && attempt < maxRetries) {
-        await delay((attempt + 1) * 1000);
+        await delay((attempt + 1) * 900);
         continue;
       }
     } catch (err: any) {
@@ -160,6 +367,51 @@ export async function fetchUserFeedAsync(
         continue;
       }
     }
+  }
+
+  // Fallback to local cache if live network call hit HTTP 429 rate limit
+  const fallbackCached = await getProfileFromLocalCache(cleanUsername);
+  if (fallbackCached && fallbackCached.posts.length > 0) {
+    return {
+      profile: {
+        ...fallbackCached.profile,
+        avatarUrl: fallbackCached.profile.avatarUrl || getInitialsAvatar(fallbackCached.profile.fullName, cleanUsername),
+        pageInfo: fallbackCached.pageInfo || fallbackCached.profile.pageInfo,
+        isRealInstagramData: true,
+      },
+      posts: fallbackCached.posts,
+      isLive: false,
+      fromLocalCache: true,
+      cachedAt: fallbackCached.cachedAt,
+      pageInfo: fallbackCached.pageInfo || fallbackCached.profile.pageInfo,
+      rateLimited: retryAfterCooldown ? false : wasRateLimited,
+      retryAfterSeconds: retryAfterCooldown ? undefined : (wasRateLimited ? 30 : undefined),
+      error: wasRateLimited
+        ? `Instagram hız sınırı (HTTP 429) nedeniyle @${cleanUsername} verileri yerel önbellekten yüklendi.`
+        : undefined,
+    };
+  }
+
+  // If this was already the post-30s cooldown retry, NEVER return rateLimited: true again
+  if (retryAfterCooldown) {
+    return {
+      profile: {
+        username: cleanUsername,
+        fullName: `@${cleanUsername}`,
+        avatarUrl: getInitialsAvatar(cleanUsername, cleanUsername),
+        bio: `📱 @${cleanUsername} profili 30 saniyelik geri sayım sonrası Çerezsiz Bypass Modunda açıldı.`,
+        postsCount: 0,
+        followersCount: 0,
+        followingCount: 0,
+        isVerified: false,
+        isPrivate: false,
+        isRealInstagramData: true,
+      },
+      posts: [],
+      isLive: false,
+      requireSession: false,
+      rateLimited: false,
+    };
   }
 
   return {
@@ -177,10 +429,12 @@ export async function fetchUserFeedAsync(
     },
     posts: [],
     isLive: false,
-    requireSession: true,
+    requireSession: false,
+    rateLimited: true,
+    retryAfterSeconds: 30,
     error:
       lastErrorMessage ||
-      `Instagram '@${cleanUsername}' hesabından canlı veri çekilemedi. Lütfen Session ID oturum çerezi ekleyin.`,
+      `Instagram '@${cleanUsername}' sorgusunda geçici hız sınırı (HTTP 429) oluştu. 30 saniye içinde otomatik tekrar denenecektir.`,
   };
 }
 

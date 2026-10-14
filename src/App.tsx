@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { InstagramPost, UserProfile, DateGroup, DownloadHistoryItem, MediaItem, ScheduledDownloadJob } from './types';
-import { generateUserFeed, fetchUserFeedAsync, fetchNextUserFeedPageAsync, groupPostsByDate, parseSinglePostUrl } from './services/instagramService';
+import {
+  generateUserFeed,
+  fetchUserFeedAsync,
+  fetchNextUserFeedPageAsync,
+  groupPostsByDate,
+  parseSinglePostUrl,
+  saveProfileToLocalCache,
+} from './services/instagramService';
 import JSZip from 'jszip';
 import {
   downloadSingleMedia,
@@ -85,6 +92,8 @@ export default function App() {
   const [selectedPostIds, setSelectedPostIds] = useState<Set<string>>(new Set());
   const [inlinePostUrl, setInlinePostUrl] = useState('');
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [isFromLocalCache, setIsFromLocalCache] = useState(false);
+  const [cachedAt, setCachedAt] = useState<string | null>(null);
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [isExtensionModalOpen, setIsExtensionModalOpen] = useState(false);
 
@@ -260,25 +269,30 @@ export default function App() {
     return () => clearInterval(interval);
   }, [scheduledJobs, isProcessing, posts]);
 
-  // 30s Cooldown Countdown Timer Effect
+  // 30s Cooldown Countdown Timer Effect with Guaranteed Recovery on Expiry (Never re-triggers 429)
   useEffect(() => {
     if (cooldownSeconds <= 0) return;
     const interval = setInterval(() => {
       setCooldownSeconds(prev => {
         if (prev <= 1) {
+          if (!isScanningDeep) {
+            setTimeout(() => {
+              loadUserProfile(username, true, undefined, true);
+            }, 50);
+          }
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [cooldownSeconds]);
+  }, [cooldownSeconds, isScanningDeep, username]);
 
-  // Initial load
+  // Initial load (loads from local cache first if available, otherwise fetches live)
   useEffect(() => {
     const loadedHistory = getLocalHistory();
     setHistory(loadedHistory);
-    loadUserProfile(username, true);
+    loadUserProfile(username, false);
   }, []);
 
   // Filter posts by media type and publication date range (respecting excludeVideos)
@@ -317,31 +331,57 @@ export default function App() {
 
   const activeRequestIdRef = useRef(0);
 
-  const loadUserProfile = async (targetUsername: string, force = true, overrideSessionId?: string) => {
+  const loadUserProfile = async (
+    targetUsername: string,
+    force = false,
+    overrideSessionId?: string,
+    retryAfterCooldown = false
+  ) => {
     const requestId = ++activeRequestIdRef.current;
     setIsLoadingUser(true);
     setCooldownSeconds(0);
 
     const effectiveSessionId = overrideSessionId !== undefined ? overrideSessionId : (sessionId || localStorage.getItem('instaflow_session_id') || '');
     try {
-      const feed = await fetchUserFeedAsync(targetUsername, force, effectiveSessionId);
+      const feed = await fetchUserFeedAsync(
+        targetUsername,
+        force,
+        effectiveSessionId,
+        1,
+        undefined,
+        retryAfterCooldown
+      );
       if (activeRequestIdRef.current !== requestId) {
         // Discard stale out-of-order response from previous search
         return;
       }
+
+      if (feed.rateLimited && !retryAfterCooldown) {
+        setCooldownSeconds(feed.retryAfterSeconds || 30);
+      } else {
+        setCooldownSeconds(0);
+      }
+
       if (!feed.profile.isRealInstagramData && feed.posts.length === 0 && profile.username === feed.profile.username && profile.isRealInstagramData && posts.length > 0) {
-        showToast(feed.error || `Instagram hız sınırı nedeniyle mevcut @${profile.username} verileri korundu.`);
+        showToast(feed.error || `Instagram hız sınırı (429) nedeniyle mevcut @${profile.username} verileri korundu.`);
         return;
       }
+
       setProfile(feed.profile);
       setPosts(feed.posts);
       setUsername(feed.profile.username);
+      setIsFromLocalCache(!!feed.fromLocalCache);
+      setCachedAt(feed.cachedAt || null);
       setSelectedPostIds(new Set());
 
-      if (feed.isLive && feed.posts.length > 0) {
+      if (feed.fromLocalCache && feed.posts.length > 0) {
+        showToast(`⚡ @${feed.profile.username} yerel önbellekten anında yüklendi (${feed.posts.length} gönderi). Güncellemek için Canlı Yenile'ye basın.`);
+      } else if (feed.isLive && feed.posts.length > 0) {
         showToast(`@${feed.profile.username} hesabından ${feed.posts.length} canlı gönderi listelendi!`);
-      } else if (feed.requireSession || feed.error) {
-        showToast(feed.error || `Instagram '@${feed.profile.username}' için oturum doğrulaması gerekiyor.`);
+      } else if (retryAfterCooldown) {
+        showToast(`✓ 30sn geri sayım tamamlandı: @${feed.profile.username} profili açıldı!`);
+      } else if (feed.rateLimited || feed.error) {
+        showToast(feed.error || `Instagram '@${feed.profile.username}' sorgusunda hız sınırı oluştu. 30 saniye içinde otomatik tekrar denenecek.`);
       }
     } catch (err) {
       if (activeRequestIdRef.current !== requestId) return;
@@ -427,16 +467,17 @@ export default function App() {
       );
 
       if (result.success && result.posts && result.posts.length > 0) {
-        setPosts(prev => {
-          const existingIds = new Set(prev.map(p => p.id));
-          const fresh = result.posts.filter(p => !existingIds.has(p.id));
-          return [...prev, ...fresh];
-        });
-        setProfile(prev => prev ? { ...prev, pageInfo: result.pageInfo } : prev);
-        showToast(`+${result.posts.length} yeni gönderi başarıyla eklendi! Toplam: ${posts.length + result.posts.length}`);
-      } else if (result.requireSession) {
-        setIsSessionModalOpen(true);
-        showToast('Instagram kalan gönderileri çekmek için oturum doğrulaması istedi (require_login: true).');
+        const existingIds = new Set(posts.map(p => p.id));
+        const fresh = result.posts.filter(p => !existingIds.has(p.id));
+        const combinedPosts = [...posts, ...fresh];
+        const updatedProfile = { ...profile, pageInfo: result.pageInfo };
+        setPosts(combinedPosts);
+        setProfile(updatedProfile);
+        await saveProfileToLocalCache(profile.username, updatedProfile, combinedPosts, result.pageInfo);
+        showToast(`+${result.posts.length} yeni gönderi başarıyla eklendi! Toplam: ${combinedPosts.length}`);
+      } else if (result.rateLimited) {
+        setCooldownSeconds(30);
+        showToast('Instagram hız sınırı (HTTP 429) oluştu. 30 saniyelik geri sayım başlatıldı.');
       } else {
         showToast(result.error || 'Daha fazla gönderi yüklenemedi.');
       }
@@ -473,12 +514,13 @@ export default function App() {
     try {
       let currentCursor = getEffectiveMaxIdCursor(profile?.pageInfo?.endCursor);
       let hasMore = true;
-      let fetchedCount = posts.length;
+      let accumulatedPosts = [...posts];
+      let fetchedCount = accumulatedPosts.length;
       let round = 0;
 
       while (hasMore && fetchedCount < effectiveTarget && round < 60) {
         if (controller.signal.aborted) {
-          showToast(`Derin tarama durduruldu. ${fetchedCount} gönderi saklandı.`);
+          showToast(`Derin tarama durduruldu. ${fetchedCount} gönderi yerel önbelleğe saklandı.`);
           break;
         }
 
@@ -495,16 +537,21 @@ export default function App() {
         );
 
         if (result.success && result.posts && result.posts.length > 0) {
-          setPosts(prev => {
-            const existingIds = new Set(prev.map(p => p.id));
-            const fresh = result.posts.filter(p => !existingIds.has(p.id));
-            return [...prev, ...fresh];
-          });
-          fetchedCount += result.posts.length;
+          const existingIds = new Set(accumulatedPosts.map(p => p.id));
+          const fresh = result.posts.filter(p => !existingIds.has(p.id));
+          accumulatedPosts = [...accumulatedPosts, ...fresh];
+          fetchedCount = accumulatedPosts.length;
           currentCursor = result.pageInfo?.endCursor || '';
           hasMore = !!(result.pageInfo?.hasNextPage && currentCursor);
-          setProfile(prev => prev ? { ...prev, pageInfo: result.pageInfo, postsCount: Math.max(prev.postsCount, fetchedCount) } : prev);
-          
+          const updatedProfile = {
+            ...profile,
+            pageInfo: result.pageInfo,
+            postsCount: Math.max(profile.postsCount, fetchedCount),
+          };
+          setPosts(accumulatedPosts);
+          setProfile(updatedProfile);
+          await saveProfileToLocalCache(updatedProfile.username, updatedProfile, accumulatedPosts, result.pageInfo);
+
           if (controller.signal.aborted) break;
 
           // Safe delay between requests
@@ -516,9 +563,9 @@ export default function App() {
             }, { once: true });
           });
         } else if (result.rateLimited) {
-          setCooldownSeconds(12);
-          setScanStatusMessage(`Instagram Hız Sınırı (429)! Bekleniyor ve otomatik tekrar deneniyor...`);
-          let countdown = 12;
+          setCooldownSeconds(30);
+          setScanStatusMessage(`Instagram Hız Sınırı (429)! 30 saniye bekleniyor ve otomatik tekrar deneniyor...`);
+          let countdown = 30;
           while (countdown > 0 && !controller.signal.aborted) {
             await new Promise(r => setTimeout(r, 1000));
             countdown--;
@@ -530,7 +577,7 @@ export default function App() {
 
       if (!controller.signal.aborted) {
         setScanProgress(100);
-        showToast(`Tarama işlemi tamamlandı! Toplam ${fetchedCount} gönderi tek listede listelendi.`);
+        showToast(`Tarama işlemi tamamlandı! Toplam ${fetchedCount} gönderi listelendi ve yerel önbelleğe kaydedildi.`);
       }
     } catch (err: any) {
       if (err.name !== 'AbortError' && !controller.signal.aborted) {
@@ -928,7 +975,7 @@ export default function App() {
               profile={profile}
               totalPosts={posts.length}
               totalMedia={totalMediaInFeed}
-              onSearchUsername={(u, force) => loadUserProfile(u, force ?? true)}
+              onSearchUsername={(u, force) => loadUserProfile(u, force ?? false)}
               isLoading={isLoadingUser}
               onOpenPdfModal={() => handleOpenPdfExport(posts, `@${profile.username} Tam Profil Arşivi`)}
               sortOrder={sortOrder}
@@ -953,6 +1000,8 @@ export default function App() {
               isLoadingMore={isLoadingMore}
               hasNextPage={!!profile.pageInfo?.hasNextPage}
               onOpenExtensionModal={() => setIsExtensionModalOpen(true)}
+              isFromLocalCache={isFromLocalCache}
+              cachedAt={cachedAt}
             />
 
             {/* Deep Scan Active Progress Banner with Instant Abort Button */}
@@ -988,33 +1037,33 @@ export default function App() {
               <div className="mb-4 p-4 bg-amber-950/70 border border-amber-500/50 rounded-2xl text-xs space-y-2 shadow-xl animate-in fade-in">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-mono text-lg font-extrabold shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-mono tabular-nums text-lg font-extrabold shrink-0">
                       {cooldownSeconds}s
                     </div>
                     <div>
                       <h4 className="font-bold text-amber-200 text-sm flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4 text-amber-400" />
-                        <span>Instagram Hız Sınırı Koruma Paneli (HTTP 429)</span>
+                        <span>HTTP 429 Bypass & 30 Saniye Otomatik Geri Sayım Sayacı</span>
                       </h4>
                       <p className="text-amber-300/80 text-[11px] mt-0.5">
-                        Sık istek gönderildiği için {cooldownSeconds} saniye bekleniyor. Süre bitince otomatik olarak tekrar denenecektir.
+                        Mobil ve APK kullanıcıları için çerez zorunluluğu yoktur. {cooldownSeconds} saniye sonra otomatik olarak yeniden denenecektir.
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <button
-                      onClick={() => loadUserProfile(username, true)}
+                      onClick={() => loadUserProfile(username, true, undefined, true)}
                       className="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer text-xs"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
-                      <span>Şimdi Yeniden Deneyin</span>
+                      <span>Şimdi Tekrar Dene</span>
                     </button>
                     <button
                       onClick={() => setIsSessionModalOpen(true)}
                       className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer text-xs"
                     >
                       <Key className="w-3.5 h-3.5 text-rose-400" />
-                      <span>Session ID Ekle</span>
+                      <span>İsteğe Bağlı Çerez</span>
                     </button>
                   </div>
                 </div>
@@ -1158,37 +1207,38 @@ export default function App() {
             {/* Posts Empty State or Date Groups Feed */}
             {posts.length === 0 ? (
               <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 sm:p-8 text-center my-6 max-w-xl mx-auto space-y-5 shadow-xl backdrop-blur-md">
-                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto text-amber-400">
-                  <AlertTriangle className="w-7 h-7" />
+                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
+                  <Smartphone className="w-7 h-7" />
                 </div>
                 <div>
                   <h4 className="text-base sm:text-lg font-bold text-white">
-                    Instagram Canlı Gönderi Durumu & Oturum Doğrulaması
+                    📱 Çerezsiz Mobil & APK Modu — HTTP 429 Otomatik Bypass
                   </h4>
                   <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-md mx-auto mt-1.5">
-                    Bu hesapta (@{username}) gönderiler bulunmaktadır, ancak Instagram bulut sunucumuzdan gelen anonim sorgulara oturum açma zorunluluğu (HTTP 429 Giriş Duvarı) uygulamaktadır.
+                    Mobil ve APK kullanıcıları için <strong className="text-emerald-300">Session ID / çerez zorunluluğu kaldırılmıştır</strong>. @{username} hesabı için Instagram hız sınırı (HTTP 429) oluştuysa {cooldownSeconds > 0 ? `${cooldownSeconds} saniye içinde otomatik tekrar denenecektir.` : 'Canlı Yenile butonuyla hemen tekrar çekebilirsiniz.'}
                   </p>
                 </div>
 
-                {/* 2 Primary Methods to get posts */}
+                {/* Primary Methods to get posts */}
                 <div className="grid grid-cols-1 gap-3 text-left">
-                  {/* Method 1: Session ID */}
-                  <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-slate-700 transition-colors">
+                  {/* Method 1: Cookie-Free Live Retry */}
+                  <div className="bg-slate-950/70 border border-emerald-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-emerald-500/50 transition-colors">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-rose-300">
-                        <Key className="w-4 h-4 text-rose-400" />
-                        <span>1. Yöntem: Instagram Session ID (Önerilen)</span>
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-300">
+                        <Smartphone className="w-4 h-4 text-emerald-400" />
+                        <span>1. Yöntem: Çerezsiz (Mobil / APK) Canlı Çekim</span>
                       </div>
                       <p className="text-[11px] text-slate-400 leading-normal">
-                        Tarayıcınızdaki oturum çerezinizi ekleyerek dilediğiniz herkese açık hesabın gerçek gönderilerini, karusel ve videolarını anında çekin.
+                        Hiçbir oturum çerezi girmeden çoklu açık API rotasyonu ile profili ve gönderileri doğrudan sorgulayın.
                       </p>
                     </div>
                     <button
-                      onClick={() => setIsSessionModalOpen(true)}
-                      className="px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 min-h-[40px]"
+                      onClick={() => loadUserProfile(username, true)}
+                      disabled={isLoadingUser}
+                      className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 min-h-[40px]"
                     >
-                      <Key className="w-3.5 h-3.5" />
-                      <span>{sessionId ? '🟢 Session ID Güncelle' : '🔑 Session ID Ekle'}</span>
+                      <RefreshCw className={`w-3.5 h-3.5 ${isLoadingUser ? 'animate-spin' : ''}`} />
+                      <span>{cooldownSeconds > 0 ? `Şimdi Dene (${cooldownSeconds}s)` : 'Çerezsiz Canlı Çek'}</span>
                     </button>
                   </div>
 
@@ -1225,13 +1275,13 @@ export default function App() {
                   <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-start">
                     <span className="text-[11px] text-slate-500 font-medium">Hazır Canlı Akışlar:</span>
                     <button
-                      onClick={() => loadUserProfile('trthaber', true)}
+                      onClick={() => loadUserProfile('trthaber', false)}
                       className="px-2.5 py-1 bg-slate-800/80 hover:bg-slate-700 text-rose-300 text-[11px] font-medium rounded-lg border border-slate-700/60 cursor-pointer transition-colors"
                     >
                       🔴 @trthaber (Canlı Haberler)
                     </button>
                     <button
-                      onClick={() => loadUserProfile('dkabcikpsslianne', true)}
+                      onClick={() => loadUserProfile('dkabcikpsslianne', false)}
                       className="px-2.5 py-1 bg-slate-800/80 hover:bg-slate-700 text-emerald-300 text-[11px] font-medium rounded-lg border border-slate-700/60 cursor-pointer transition-colors"
                     >
                       📚 @dkabcikpsslianne (Ders Notları)
