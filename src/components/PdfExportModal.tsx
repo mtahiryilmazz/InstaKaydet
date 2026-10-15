@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { InstagramPost, UserProfile, PdfExportOptions } from '../types';
-import { generateSinglePdfArchive, generatePerPostPdfZipArchive } from '../services/pdfService';
 import {
   FileText,
   X,
@@ -67,6 +66,8 @@ export const PdfExportModal: React.FC<PdfExportModalProps> = ({
     setStatusMessage('Doküman hazırlanıyor...');
 
     try {
+      // PDF motorunu yalnızca kullanıcı PDF dışa aktarmayı başlattığında yükle.
+      const { generateSinglePdfArchive, generatePerPostPdfZipArchive } = await import('../services/pdfService');
       if (options.pdfMode === 'per_post' && effectivePosts.length > 1) {
         // PER-POST PDF ARCHIVE (Bundled in ZIP)
         const result = await generatePerPostPdfZipArchive(
