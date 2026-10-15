@@ -269,30 +269,20 @@ export default function App() {
     return () => clearInterval(interval);
   }, [scheduledJobs, isProcessing, posts]);
 
-  // Cooldown countdown: keep one stable timer and retry at most once when it expires.
-  // Do not schedule side effects inside a React state updater (StrictMode may invoke it twice).
+  // Rate-limit countdown only. Never start live requests automatically:
+  // the user explicitly asked to avoid continuous Instagram fetches.
   useEffect(() => {
     if (cooldownSeconds <= 0) return;
 
     let remaining = cooldownSeconds;
-    let retryStarted = false;
     const interval = setInterval(() => {
       remaining = Math.max(0, remaining - 1);
       setCooldownSeconds(remaining);
-
-      if (remaining === 0) {
-        clearInterval(interval);
-        if (!retryStarted && !isScanningDeep) {
-          retryStarted = true;
-          void loadUserProfile(username, true, undefined, true);
-        }
-      }
+      if (remaining === 0) clearInterval(interval);
     }, 1000);
 
     return () => clearInterval(interval);
-    // The boolean prevents restarting the interval every second as the countdown changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cooldownSeconds > 0, isScanningDeep, username]);
+  }, [cooldownSeconds > 0]);
 
   // Initial load (loads from local cache first if available, otherwise fetches live)
   useEffect(() => {
