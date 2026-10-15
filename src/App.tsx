@@ -30,7 +30,6 @@ import { QuickDownloader } from './components/QuickDownloader';
 import { PdfExportModal } from './components/PdfExportModal';
 import { CloudBackupView } from './components/CloudBackupView';
 import { DateRangeFilter } from './components/DateRangeFilter';
-import { InstagramSessionModal } from './components/InstagramSessionModal';
 import { ErrorLogViewer } from './components/ErrorLogViewer';
 import { BulkDownloadModal } from './components/BulkDownloadModal';
 import { ChromeExtensionModal } from './components/ChromeExtensionModal';
@@ -119,7 +118,6 @@ export default function App() {
   // Session Cookie ID state for overcoming rate limits
   // InstaFlow public mode deliberately does not load or use personal Instagram session IDs.
   const [sessionId] = useState<string>('');
-  const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
 
   // Media Type Filter: 'all' | 'video' | 'image' | 'carousel'
   const [mediaFilter, setMediaFilter] = useState<'all' | 'video' | 'image' | 'carousel'>('all');
@@ -955,7 +953,7 @@ export default function App() {
         enhanceResolution={enhanceResolution}
         onToggleEnhanceResolution={toggleEnhanceResolution}
         onOpenExtensionModal={() => setIsExtensionModalOpen(true)}
-        onOpenSessionModal={() => setIsSessionModalOpen(true)}
+        onOpenSessionModal={() => showToast('InstaFlow kişisel Instagram oturum bilgisi kullanmaz. Herkese açık erişimle sınırlıdır.')}
         onOpenScheduledModal={() => setIsScheduledModalOpen(true)}
         sessionId={sessionId}
         scheduledCount={scheduledJobs.filter(j => j.status === 'pending').length}
@@ -1058,7 +1056,7 @@ export default function App() {
                       className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer text-xs"
                     >
                       <Key className="w-3.5 h-3.5 text-rose-400" />
-                      <span>İsteğe Bağlı Çerez</span>
+                      <span>Oturumsuz Mod</span>
                     </button>
                   </div>
                 </div>
@@ -1406,7 +1404,7 @@ export default function App() {
                   </div>
 
                   {/* Informational Callout regarding Instagram 12-posts pagination & Session ID */}
-                  {!sessionId && profile.postsCount > posts.length && (
+                  {false && profile.postsCount > posts.length && (
                     <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-amber-500/30 text-xs text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                       <div className="space-y-1">
                         <div className="flex items-center gap-1.5 font-bold text-amber-300">
@@ -1422,7 +1420,7 @@ export default function App() {
                         onClick={() => setIsSessionModalOpen(true)}
                         className="px-3.5 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap"
                       >
-                        🔑 Session ID Ekle
+                        Oturumsuz Mod
                       </button>
                     </div>
                   )}
@@ -1589,7 +1587,7 @@ export default function App() {
         />
       )}
 
-      {/* Instagram Session ID Cookie Modal */}
+      {/* Personal Instagram session credentials are not used by InstaFlow. */}
 
 
       {/* Chrome Extension Modal */}
