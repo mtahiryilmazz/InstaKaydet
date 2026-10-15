@@ -624,7 +624,7 @@ async function startServer() {
   // 1-Second Cookie & Session Verifier Endpoint: GET /api/user-profile-check (Desktop Chrome UA + Flexible F12 Validation)
   app.get('/api/user-profile-check', async (req, res) => {
     const startMs = Date.now();
-    const rawCookie = (req.query.sessionId as string) || (req.query.cookie as string) || (req.headers['x-ig-session-id'] as string) || '';
+    const rawCookie = (req.headers['x-ig-session-id'] as string) || '';
     const targetUsername = ((req.query.username as string) || 'instagram').replace(/^@/, '').trim().toLowerCase();
 
     if (!rawCookie || !rawCookie.trim()) {
@@ -727,32 +727,48 @@ async function startServer() {
         }
       }
 
-      // Flexible Desktop UA Validation: Even if Cloud IP differs from user's home IP (returning 401/429 on remote ping),
-      // when valid F12 cookies (sessionid / csrftoken / ds_user_id / mid / ig_did / datr) are detected, approve & allow saving!
+      const confirmed = httpCode === 200 && !!bodyStr && bodyStr.startsWith('{');
+      const failureStatus = httpCode === 429 ? 429 : httpCode === 401 || httpCode === 403 ? 401 : 502;
       addInstagramLog({
         username: targetUsername,
-        status: 200,
-        success: true,
-        strategyUsed: 'GET /api/user-profile-check (Esnek F12 Çerez Onayı)',
+        status: confirmed ? 200 : httpCode,
+        success: confirmed,
+        strategyUsed: 'GET /api/user-profile-check (Sunucu doğrulaması)',
         hasSessionId: true,
-        diagnosis: `F12 çerez anahtarları (${detectedKeys.join(', ')}) Masaüstü User-Agent uyumuyla onaylandı (Uzaktan durum: HTTP ${httpCode}).`,
-        suggestedAction: 'Kaydet & Uygula butonu ile çerezlerinizi kaydedip hemen kullanabilirsiniz.',
+        error: confirmed ? undefined : `Instagram çerez doğrulaması tamamlanamadı (HTTP ${httpCode}).`,
+        diagnosis: confirmed
+          ? `Instagram yanıtı alındı. Algılanan çerez anahtarları: ${detectedKeys.join(', ')}`
+          : `Çerez biçimi algılandı ancak Instagram sunucusu oturumu doğrulamadı (HTTP ${httpCode}).`,
+        suggestedAction: confirmed
+          ? 'Oturum sunucu tarafından doğrulandı.'
+          : 'Çerezi doğrulamadan geçerli saymayın. Oturum süresini ve Instagram erişimini kontrol edip tekrar deneyin.',
         latencyMs: Date.now() - startMs,
       });
-      return res.status(200).json({
-        valid: true,
-        statusCode: 200,
+      return res.status(confirmed ? 200 : failureStatus).json({
+        valid: confirmed,
+        statusCode: confirmed ? 200 : failureStatus,
         remoteStatusCode: httpCode,
-        message: `F12 çerezleri algılandı ve Masaüstü User-Agent uyumuyla onaylandı (${detectedKeys.join(', ')}). Kaydedip kullanabilirsiniz.`,
-        user: jar.userId ? `ID:${jar.userId}` : targetUsername,
+        message: confirmed
+          ? 'Instagram oturumu sunucu tarafından doğrulandı.'
+          : 'Çerez biçimi algılandı ancak oturum doğrulanamadı. Instagram erişimi veya oturum süresini kontrol edin.',
         detectedCookies: detectedKeys,
       });
     } catch (err: any) {
-      // Even on curl timeout, if F12 cookies are structurally valid, approve saving
-      return res.status(200).json({
-        valid: true,
-        statusCode: 200,
-        message: `Çerez anahtarları (${detectedKeys.join(', ')}) algılandı ve kullanıma hazır.`,
+      addInstagramLog({
+        username: targetUsername,
+        status: 502,
+        success: false,
+        strategyUsed: 'GET /api/user-profile-check',
+        hasSessionId: true,
+        error: 'Instagram doğrulama isteği tamamlanamadı.',
+        diagnosis: 'Ağ hatası veya zaman aşımı nedeniyle oturum doğrulanamadı.',
+        suggestedAction: 'Bağlantıyı kontrol edin ve daha sonra yeniden deneyin.',
+        latencyMs: Date.now() - startMs,
+      });
+      return res.status(502).json({
+        valid: false,
+        statusCode: 502,
+        message: 'Instagram oturumu doğrulanamadı; ağ bağlantısını kontrol edip tekrar deneyin.',
         detectedCookies: detectedKeys,
       });
     }
@@ -811,7 +827,7 @@ async function startServer() {
     const cacheFile = path.join(CACHE_DIR, `${cleanUsername}.json`);
 
     try {
-      const sessionId = (req.query.sessionId as string) || (req.headers['x-ig-session-id'] as string) || '';
+      const sessionId = (req.headers['x-ig-session-id'] as string) || '';
 
       const getValidCache = () => {
         if (fs.existsSync(cacheFile)) {
