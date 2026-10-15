@@ -172,60 +172,6 @@ export async function clearLocalProfileCache(): Promise<void> {
   } catch {}
 }
 
-export async function verifySessionProfileCheck(
-  cookieInput: string,
-  targetUsername = 'instagram'
-): Promise<{
-  valid: boolean;
-  statusCode: number;
-  message: string;
-  user?: string;
-  detectedCookies?: string[];
-}> {
-  const cleaned = (cookieInput || '').trim();
-  if (!cleaned) {
-    return {
-      valid: false,
-      statusCode: 401,
-      message: 'Oturum bilgisi geçersiz veya süresi dolmuş',
-    };
-  }
-
-  try {
-    const params = new URLSearchParams({
-      username: targetUsername || 'instagram',
-    });
-    const res = await fetch(`/api/user-profile-check?${params.toString()}`, {
-      method: 'GET',
-      cache: 'no-store',
-      headers: {
-        'x-ig-session-id': cleaned,
-      },
-    });
-    const data = await res.json().catch(() => ({}));
-    if (res.status === 401 || res.status === 403 || res.status === 404 || !res.ok || !data.valid) {
-      return {
-        valid: false,
-        statusCode: data.statusCode || res.status || 401,
-        message: 'Oturum bilgisi geçersiz veya süresi dolmuş',
-      };
-    }
-    return {
-      valid: true,
-      statusCode: 200,
-      message: data.message || 'Oturum bilgisi doğrulandı ve aktif.',
-      user: data.user,
-      detectedCookies: data.detectedCookies,
-    };
-  } catch {
-    return {
-      valid: false,
-      statusCode: 401,
-      message: 'Oturum bilgisi geçersiz veya süresi dolmuş',
-    };
-  }
-}
-
 // Universal Live Instagram Profile and Posts Fetcher (Cookie-Free Mobile/APK + Local Cache + 429 Countdown + Guaranteed Recovery)
 export async function fetchUserFeedAsync(
   username: string,
