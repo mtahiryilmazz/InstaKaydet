@@ -155,404 +155,106 @@ async function startServer() {
     return { cookieHeader, csrfToken, sessionId, userId, parsedCookies };
   }
 
-  // Resilient multi-strategy Instagram Profile fetcher (Cookie-Free Mobile/APK + Optional Desktop Cookie + Social Bot Crawler Bypass)
-  async function fetchInstagramProfile(cleanUsername: string, sessionId = ''): Promise<any> {
-    const { execFile } = await import('child_process');
-    const util = await import('util');
-    const execFileAsync = util.promisify(execFile);
-    const jar = buildInstagramCookieJar(sessionId);
+  // Cookie-free public profile fetcher.
+  // Deliberately makes one ordinary public-page request: no session cookies,
+  // no mobile-app impersonation, no crawler User-Agent rotation, and no private API bypasses.
+  async function fetchInstagramProfile(cleanUsername: string, _sessionId = ''): Promise<any> {
+    const profileUrl = `https://www.instagram.com/${encodeURIComponent(cleanUsername)}/`;
+    try {
+      const response = await fetch(profileUrl, {
+        method: 'GET',
+        redirect: 'follow',
+        signal: AbortSignal.timeout(8000),
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
+        },
+      });
 
-    if (jar.cookieHeader) {
-      console.log(`[Instagram API] Fetching @${cleanUsername} with provided Cookie Jar (keys: ${Object.keys(jar.parsedCookies).join(', ')})`);
-    } else {
-      console.log(`[Instagram API] Fetching @${cleanUsername} in Cookie-Free Mobile/APK Mode`);
-    }
+      // Respect Instagram's access controls. Do not rotate identities or retry a block.
+      if (response.status === 429 || response.status === 403) {
+        console.warn(`Instagram public profile access returned HTTP ${response.status} for @${cleanUsername}; stopping without retry.`);
+        return null;
+      }
+      if (!response.ok) {
+        console.warn(`Instagram public profile request failed for @${cleanUsername}: HTTP ${response.status}`);
+        return null;
+      }
 
-    const mobileUserAgents = [
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1',
-      'Mozilla/5.0 (Linux; Android 14; SM-S928B Build/UP1A.231005.007; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/124.0.6367.82 Mobile Safari/537.36',
-    ];
-    const androidAppUAs = [
-      'Instagram 312.0.0.34.111 Android (34/14; 450dpi; 1080x2340; samsung; SM-S911B; dm1q; qcom; tr_TR; 558492103)',
-      'Instagram 275.0.0.27.98 Android (33/13; 420dpi; 1080x2400; samsung; SM-G991B; o1s; exynos2100; tr_TR; 458229237)',
-    ];
-    const desktopChromeUA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
-    const socialCrawlerUAs = [
-      'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
-      'TelegramBot (like TwitterBot)',
-      'Twitterbot/1.0',
-      'WhatsApp/2.23.20.0 A',
-    ];
+      const html = await response.text();
+      if (!html || /<title>\s*Instagram\s*<\/title>/i.test(html) && !html.includes('og:image')) {
+        return null;
+      }
 
-    // Helper to run curl against web_profile_info
-    const tryWebProfileInfo = async (endpointUrl: string, ua: string, useCookie: boolean, includeAppIdHeader: boolean): Promise<any> => {
-      try {
-        const args = [
-          '-s',
-          '-L',
-          '--max-time', '6',
-          '-H', `User-Agent: ${ua}`,
-          '-H', 'Accept: */*',
-          '-H', 'Accept-Language: tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
-          '-H', `Referer: https://www.instagram.com/${cleanUsername}/`,
+      const readMeta = (key: string): string => {
+        const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const patterns = [
+          new RegExp(`<meta[^>]+property=["']${escaped}["'][^>]+content=["']([^"']*)["'][^>]*>`, 'i'),
+          new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+property=["']${escaped}["'][^>]*>`, 'i'),
+          new RegExp(`<meta[^>]+name=["']${escaped}["'][^>]+content=["']([^"']*)["'][^>]*>`, 'i'),
+          new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+name=["']${escaped}["'][^>]*>`, 'i'),
         ];
-        if (includeAppIdHeader) {
-          args.push(
-            '-H', 'x-ig-app-id: 936619743392459',
-            '-H', 'x-asbd-id: 129477',
-            '-H', 'Sec-Fetch-Site: same-origin',
-            '-H', 'Sec-Fetch-Mode: cors',
-            '-H', 'Sec-Fetch-Dest: empty',
-            '-H', 'X-Requested-With: XMLHttpRequest'
-          );
+        for (const pattern of patterns) {
+          const match = html.match(pattern);
+          if (match?.[1]) return match[1]
+            .replace(/&amp;/g, '&').replace(/&quot;/g, '"')
+            .replace(/&#x27;|&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+            .trim();
         }
-        if (useCookie && jar.cookieHeader) {
-          args.push('-H', `Cookie: ${jar.cookieHeader}`);
-          if (jar.csrfToken) {
-            args.push('-H', `x-csrftoken: ${jar.csrfToken}`);
-          }
-        }
-        args.push(endpointUrl);
+        return '';
+      };
 
-        const { stdout } = await execFileAsync('curl', args, { maxBuffer: 10 * 1024 * 1024 });
-        if (stdout && stdout.trim().startsWith('{')) {
-          const parsed = JSON.parse(stdout);
-          if (parsed?.data?.user?.username) {
-            return parsed;
-          }
-        }
-      } catch (err: any) {
-        console.warn(`Profile fetch attempt failed (${endpointUrl}, cookie=${useCookie}):`, err.message);
+      const title = readMeta('og:title') || html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim() || '';
+      const avatar = readMeta('og:image');
+      const description = readMeta('og:description') || readMeta('description');
+      const titleMatchesUsername = title.toLowerCase().includes(cleanUsername.toLowerCase());
+      if (!avatar && !description && !titleMatchesUsername) {
+        console.warn(`Instagram returned no public profile metadata for @${cleanUsername}; no bypass attempted.`);
+        return null;
       }
+
+      const fullName = (title.split('(@')[0] || cleanUsername)
+        .replace(/\s*[•|].*$/, '')
+        .trim() || cleanUsername;
+      const parseCount = (value: string): number => {
+        const match = value.match(/([\d.,]+)\s*([KMB])?/i);
+        if (!match) return 0;
+        const amount = Number(match[1].replace(/,/g, '').replace(/\.(?=\d{3}(?:\D|$))/g, ''));
+        const multiplier = /K/i.test(match[2] || '') ? 1_000
+          : /M/i.test(match[2] || '') ? 1_000_000
+          : /B/i.test(match[2] || '') ? 1_000_000_000 : 1;
+        return Number.isFinite(amount) ? Math.round(amount * multiplier) : 0;
+      };
+      const followers = description.match(/([\d.,]+\s*[KMB]?)\s*(?:followers|takipçi)/i)?.[1] || '';
+      const following = description.match(/([\d.,]+\s*[KMB]?)\s*(?:following|takip edilen)/i)?.[1] || '';
+      const posts = description.match(/([\d.,]+\s*[KMB]?)\s*(?:posts|gönderi)/i)?.[1] || '';
+
+      console.log(`Retrieved public profile metadata for @${cleanUsername} without session credentials.`);
+      return {
+        data: {
+          user: {
+            username: cleanUsername,
+            full_name: fullName,
+            profile_pic_url_hd: avatar,
+            profile_pic_url: avatar,
+            biography: description,
+            edge_owner_to_timeline_media: {
+              count: parseCount(posts),
+              page_info: { has_next_page: false, end_cursor: null },
+              edges: [],
+            },
+            edge_followed_by: { count: parseCount(followers) },
+            edge_follow: { count: parseCount(following) },
+            is_verified: false,
+            is_private: false,
+          },
+        },
+      };
+    } catch (error: any) {
+      console.warn(`Cookie-free public profile fetch failed for @${cleanUsername}:`, error?.message || 'Unknown error');
       return null;
-    };
-
-    // Helper to build full profile + posts directly from api/v1/feed/user/:username/username/
-    const tryDirectV1UserFeed = async (targetUsername: string, ua: string, useCookie: boolean): Promise<any> => {
-      try {
-        const feedUrl = `https://www.instagram.com/api/v1/feed/user/${encodeURIComponent(targetUsername)}/username/?count=33`;
-        const args = [
-          '-s', '-L', '--max-time', '6',
-          '-H', `User-Agent: ${ua}`,
-          '-H', 'x-ig-app-id: 936619743392459',
-          '-H', 'x-asbd-id: 129477',
-          '-H', 'Accept: */*',
-          '-H', 'Accept-Language: tr-TR,tr;q=0.9,en-US;q=0.8',
-          '-H', `Referer: https://www.instagram.com/${targetUsername}/`,
-          '-H', 'X-Requested-With: XMLHttpRequest',
-        ];
-        if (useCookie && jar.cookieHeader) {
-          args.push('-H', `Cookie: ${jar.cookieHeader}`);
-          if (jar.csrfToken) {
-            args.push('-H', `x-csrftoken: ${jar.csrfToken}`);
-          }
-        }
-        args.push(feedUrl);
-
-        const { stdout } = await execFileAsync('curl', args, { maxBuffer: 15 * 1024 * 1024 });
-        if (stdout && stdout.trim().startsWith('{')) {
-          const feedParsed = JSON.parse(stdout);
-          if (Array.isArray(feedParsed?.items) && (feedParsed.items.length > 0 || feedParsed?.user)) {
-            const u = feedParsed.user || feedParsed.items[0]?.user || {};
-            const convertedEdges = (feedParsed.items || []).map((item: any) => {
-              const isSidecar = item.media_type === 8 || Array.isArray(item.carousel_media);
-              const isVid = item.media_type === 2 || Array.isArray(item.video_versions);
-              const displayUrl = item.image_versions2?.candidates?.[0]?.url || item.display_url || '';
-              const videoUrl = item.video_versions?.[0]?.url || item.video_url || '';
-              return {
-                node: {
-                  id: String(item.pk || item.id).split('_')[0],
-                  shortcode: item.code || item.shortcode,
-                  display_url: displayUrl,
-                  video_url: videoUrl,
-                  is_video: isVid,
-                  __typename: isSidecar ? 'GraphSidecar' : isVid ? 'GraphVideo' : 'GraphImage',
-                  taken_at_timestamp: item.taken_at || Math.floor(Date.now() / 1000),
-                  edge_media_to_caption: {
-                    edges: item.caption?.text ? [{ node: { text: item.caption.text } }] : [],
-                  },
-                  edge_liked_by: { count: item.like_count || 0 },
-                  edge_media_to_comment: { count: item.comment_count || 0 },
-                  location: item.location?.name ? { name: item.location.name } : undefined,
-                  edge_sidecar_to_children: isSidecar
-                    ? {
-                        edges: (item.carousel_media || []).map((c: any, idx: number) => ({
-                          node: {
-                            id: String(c.pk || c.id || `${item.pk}_${idx}`).split('_')[0],
-                            display_url: c.image_versions2?.candidates?.[0]?.url || c.display_url || displayUrl,
-                            video_url: c.video_versions?.[0]?.url || c.video_url || '',
-                            is_video: c.media_type === 2 || Array.isArray(c.video_versions),
-                          },
-                        })),
-                      }
-                    : undefined,
-                },
-              };
-            });
-
-            return {
-              data: {
-                user: {
-                  id: String(u.pk || u.id || ''),
-                  username: u.username || targetUsername,
-                  full_name: u.full_name || targetUsername,
-                  profile_pic_url_hd: u.hd_profile_pic_url_info?.url || u.profile_pic_url || '',
-                  profile_pic_url: u.profile_pic_url || '',
-                  biography: u.biography || '',
-                  edge_owner_to_timeline_media: {
-                    count: convertedEdges.length,
-                    page_info: {
-                      has_next_page: !!(feedParsed.more_available && feedParsed.next_max_id),
-                      end_cursor: feedParsed.next_max_id || null,
-                    },
-                    edges: convertedEdges,
-                  },
-                  edge_followed_by: { count: u.follower_count || 0 },
-                  edge_follow: { count: u.following_count || 0 },
-                  is_verified: !!u.is_verified,
-                  is_private: !!u.is_private,
-                },
-              },
-            };
-          }
-        }
-      } catch (err: any) {
-        console.warn(`Direct v1 feed attempt failed for ${targetUsername}:`, err.message);
-      }
-      return null;
-    };
-
-    // Helper to scrape embed HTML + JSON context as Cookie-Free Public Fallback
-    const tryEmbedScrape = async (targetUsername: string): Promise<any> => {
-      for (const embedPath of [`https://www.instagram.com/${targetUsername}/embed/captioned/`, `https://www.instagram.com/${targetUsername}/embed/`]) {
-        for (const ua of [desktopChromeUA, socialCrawlerUAs[0]]) {
-          try {
-            const args = [
-              '-s', '-L', '--max-time', '6',
-              '-H', `User-Agent: ${ua}`,
-              '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-              '-H', 'Accept-Language: tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
-              embedPath
-            ];
-            const { stdout } = await execFileAsync('curl', args, { maxBuffer: 10 * 1024 * 1024 });
-            if (!stdout) continue;
-
-            // Check embedded contextJSON if present
-            const contextMatch = stdout.match(/contextJSON"\s*,\s*"((?:\\.|[^"\\])*)"/);
-            if (contextMatch && contextMatch[1]) {
-              try {
-                const unescaped = JSON.parse(`"${contextMatch[1]}"`);
-                const ctx = JSON.parse(unescaped);
-                const gqlUser = ctx?.gql_data?.user || ctx?.context?.user;
-                if (gqlUser && (gqlUser.username || gqlUser.edge_owner_to_timeline_media)) {
-                  return { data: { user: { username: targetUsername, ...gqlUser } } };
-                }
-              } catch {}
-            }
-
-            if (stdout.includes('ProfilePic') || stdout.includes('Avatar') || stdout.includes('EmbeddedMediaImage')) {
-              const avatarMatch = stdout.match(/class="ProfilePic"[^>]*src="([^"]+)"/i) || stdout.match(/class="Avatar"[^>]*src="([^"]+)"/i) || stdout.match(/img class="[^"]*" src="([^"]+)"/i);
-              const avatarUrl = avatarMatch ? avatarMatch[1].replace(/&amp;/g, '&') : '';
-
-              const titleMatch = stdout.match(/class="UsernameText">([^<]+)</i) || stdout.match(/<title>([^<]+)<\/title>/i);
-              const fullName = titleMatch ? titleMatch[1].replace(/\(@.*?\).*$/, '').trim() : targetUsername;
-
-              const shortcodeMatches = [...stdout.matchAll(/instagram\.com\/p\/([A-Za-z0-9_-]+)/g)].map(m => m[1]);
-              const uniqueShortcodes = Array.from(new Set(shortcodeMatches));
-              const imgMatches = [...stdout.matchAll(/class="EmbeddedMediaImage"[^>]*src="([^"]+)"/g)].map(m => m[1].replace(/&amp;/g, '&'));
-
-              if (avatarUrl || imgMatches.length > 0) {
-                return {
-                  data: {
-                    user: {
-                      username: targetUsername,
-                      full_name: fullName || targetUsername,
-                      profile_pic_url_hd: avatarUrl,
-                      profile_pic_url: avatarUrl,
-                      biography: '',
-                      edge_owner_to_timeline_media: {
-                        count: Math.max(imgMatches.length, uniqueShortcodes.length),
-                        page_info: { has_next_page: false, end_cursor: null },
-                        edges: imgMatches.map((img, i) => ({
-                          node: {
-                            id: `embed_${i}_${Date.now()}`,
-                            shortcode: uniqueShortcodes[i] || `embed_${i}`,
-                            display_url: img,
-                            is_video: false,
-                            __typename: 'GraphImage',
-                            taken_at_timestamp: Math.floor(Date.now() / 1000) - i * 3600,
-                            edge_media_to_caption: { edges: [] },
-                            edge_liked_by: { count: 0 },
-                            edge_media_to_comment: { count: 0 }
-                          }
-                        }))
-                      },
-                      edge_followed_by: { count: 0 },
-                      edge_follow: { count: 0 },
-                      is_verified: false,
-                      is_private: false
-                    }
-                  }
-                };
-              }
-            }
-          } catch (err: any) {
-            console.warn(`Embed HTML fallback attempt failed for ${targetUsername}:`, err.message);
-          }
-        }
-      }
-      return null;
-    };
-
-    // Helper to scrape public OpenGraph / meta tags using Social Bot Crawler User-Agents (bypasses /accounts/login/ redirect)
-    const tryPublicProfileMeta = async (targetUsername: string): Promise<any> => {
-      for (const crawlerUA of [...socialCrawlerUAs, mobileUserAgents[0]]) {
-        try {
-          const args = [
-            '-s', '-L', '--max-time', '6',
-            '-H', `User-Agent: ${crawlerUA}`,
-            '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            '-H', 'Accept-Language: tr-TR,tr;q=0.9,en-US;q=0.8',
-            `https://www.instagram.com/${targetUsername}/`
-          ];
-          const { stdout } = await execFileAsync('curl', args, { maxBuffer: 8 * 1024 * 1024 });
-          if (!stdout) continue;
-
-          const ogImage =
-            stdout.match(/property="og:image"\s+content="([^"]+)"/i)?.[1]?.replace(/&amp;/g, '&') ||
-            stdout.match(/content="([^"]+)"\s+property="og:image"/i)?.[1]?.replace(/&amp;/g, '&') ||
-            '';
-          const ogTitle =
-            stdout.match(/property="og:title"\s+content="([^"]+)"/i)?.[1] ||
-            stdout.match(/<title>([^<]+)<\/title>/i)?.[1] ||
-            '';
-          const ogDesc =
-            stdout.match(/property="og:description"\s+content="([^"]+)"/i)?.[1] ||
-            stdout.match(/name="description"\s+content="([^"]+)"/i)?.[1] ||
-            '';
-
-          if (ogImage || (ogTitle && ogTitle.toLowerCase().includes(targetUsername.toLowerCase())) || ogDesc) {
-            const fullName = ogTitle.split('(@')[0]?.replace(/•.*$/, '').trim() || targetUsername;
-
-            // Parse follower / following / post counts from og:description if present
-            let postsCount = 0;
-            let followersCount = 0;
-            let followingCount = 0;
-            const numMatches = ogDesc.match(/([\d.,]+[KMBkmb]?)\s+(Followers|Takipçi|Following|Takip|Posts|Gönderi)/gi);
-            if (numMatches && numMatches.length >= 1) {
-              const parseNum = (str: string) => {
-                const raw = str.replace(/[^\d.,KMBkmb]/g, '').trim();
-                const mult = /k/i.test(raw) ? 1000 : /m/i.test(raw) ? 1000000 : 1;
-                const n = parseFloat(raw.replace(/,/g, '.').replace(/[KMBkmb]/gi, ''));
-                return isNaN(n) ? 0 : Math.round(n * mult);
-              };
-              for (const m of numMatches) {
-                if (/Follower|Takipçi/i.test(m)) followersCount = parseNum(m);
-                else if (/Following|Takip/i.test(m)) followingCount = parseNum(m);
-                else if (/Post|Gönderi/i.test(m)) postsCount = parseNum(m);
-              }
-            }
-
-            return {
-              data: {
-                user: {
-                  username: targetUsername,
-                  full_name: fullName,
-                  profile_pic_url_hd: ogImage,
-                  profile_pic_url: ogImage,
-                  biography: ogDesc,
-                  edge_owner_to_timeline_media: {
-                    count: postsCount,
-                    page_info: { has_next_page: false, end_cursor: null },
-                    edges: []
-                  },
-                  edge_followed_by: { count: followersCount },
-                  edge_follow: { count: followingCount },
-                  is_verified: false,
-                  is_private: false
-                }
-              }
-            };
-          }
-        } catch {}
-      }
-      return null;
-    };
-
-    // 1. If Cookie / Session ID is provided, try with Cookie first (Desktop Chrome UA + V1 Feed + Mobile UA)
-    if (jar.cookieHeader) {
-      const withCookieDesktop = await tryWebProfileInfo(
-        `https://www.instagram.com/api/v1/users/web_profile_info/?username=${cleanUsername}`,
-        desktopChromeUA,
-        true,
-        true
-      );
-      if (withCookieDesktop) return withCookieDesktop;
-
-      const withCookieFeed = await tryDirectV1UserFeed(cleanUsername, desktopChromeUA, true);
-      if (withCookieFeed) return withCookieFeed;
-
-      const withCookieMobile = await tryWebProfileInfo(
-        `https://www.instagram.com/api/v1/users/web_profile_info/?username=${cleanUsername}`,
-        mobileUserAgents[0],
-        true,
-        true
-      );
-      if (withCookieMobile) return withCookieMobile;
-
-      const withCookieAndroid = await tryWebProfileInfo(
-        `https://i.instagram.com/api/v1/users/web_profile_info/?username=${cleanUsername}`,
-        androidAppUAs[0],
-        true,
-        false
-      );
-      if (withCookieAndroid) return withCookieAndroid;
     }
-
-    // 2. Cookie-Free Katman 1: Multi-UA Android Mobile API rotation
-    for (const ua of androidAppUAs) {
-      const liveAndroid = await tryWebProfileInfo(
-        `https://i.instagram.com/api/v1/users/web_profile_info/?username=${cleanUsername}`,
-        ua,
-        false,
-        false
-      );
-      if (liveAndroid) return liveAndroid;
-    }
-
-    // 3. Cookie-Free Katman 2: Direct V1 User Feed without Cookie
-    const cookieFreeFeed = await tryDirectV1UserFeed(cleanUsername, mobileUserAgents[0], false);
-    if (cookieFreeFeed) return cookieFreeFeed;
-
-    // 4. Cookie-Free Katman 3: Embed HTML / Captioned Scraper Fallback
-    const embedFallback = await tryEmbedScrape(cleanUsername);
-    if (embedFallback) return embedFallback;
-
-    // 5. Cookie-Free Katman 4: Mobile Safari / Android WebView UA on www.instagram.com
-    for (const ua of mobileUserAgents) {
-      const liveMobile = await tryWebProfileInfo(
-        `https://www.instagram.com/api/v1/users/web_profile_info/?username=${cleanUsername}`,
-        ua,
-        false,
-        true
-      );
-      if (liveMobile) return liveMobile;
-    }
-
-    // 6. Cookie-Free Katman 5: Desktop Chrome UA
-    const liveDesktop = await tryWebProfileInfo(
-      `https://www.instagram.com/api/v1/users/web_profile_info/?username=${cleanUsername}`,
-      desktopChromeUA,
-      false,
-      true
-    );
-    if (liveDesktop) return liveDesktop;
-
-    // 7. Cookie-Free Katman 6: Social Bot Crawler OpenGraph Meta Fallback
-    const metaFallback = await tryPublicProfileMeta(cleanUsername);
-    if (metaFallback) return metaFallback;
-
-    return null;
   }
 
   // Instagram Request Logs Buffer for Detailed Error Analysis Dashboard
@@ -827,7 +529,7 @@ async function startServer() {
     const cacheFile = path.join(CACHE_DIR, `${cleanUsername}.json`);
 
     try {
-      const sessionId = (req.headers['x-ig-session-id'] as string) || '';
+      // This route intentionally never accepts or forwards personal Instagram session credentials.\n      const sessionId = '';
 
       const getValidCache = () => {
         if (fs.existsSync(cacheFile)) {
@@ -849,90 +551,6 @@ async function startServer() {
       // Always attempt LIVE Instagram fetch first (resilient with or without sessionId)
       rawJson = await fetchInstagramProfile(cleanUsername, sessionId);
 
-      // Optional v1 user feed enrichment (works both with cookie and cookie-free mobile fallback):
-      if (rawJson?.data?.user) {
-        const existingEdges = rawJson.data.user.edge_owner_to_timeline_media?.edges || [];
-        if (existingEdges.length === 0 || rawJson.data.user.id) {
-          try {
-            const { execFile } = await import('child_process');
-            const util = await import('util');
-            const execFileAsync = util.promisify(execFile);
-            const jar = buildInstagramCookieJar(sessionId);
-            const desktopChromeUA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
-            const feedUrl = `https://www.instagram.com/api/v1/feed/user/${encodeURIComponent(cleanUsername)}/username/?count=33`;
-            const feedArgs = [
-              '-s', '-L', '--max-time', '6',
-              '-H', `User-Agent: ${jar.cookieHeader ? desktopChromeUA : 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1'}`,
-              '-H', 'x-ig-app-id: 936619743392459',
-              '-H', 'Accept: */*',
-              '-H', `Referer: https://www.instagram.com/${cleanUsername}/`,
-              '-H', 'X-Requested-With: XMLHttpRequest',
-            ];
-            if (jar.cookieHeader) {
-              feedArgs.push('-H', `Cookie: ${jar.cookieHeader}`);
-              if (jar.csrfToken) {
-                feedArgs.push('-H', `x-csrftoken: ${jar.csrfToken}`);
-              }
-            }
-            feedArgs.push(feedUrl);
-            const { stdout } = await execFileAsync('curl', feedArgs, { maxBuffer: 15 * 1024 * 1024 });
-            if (stdout && stdout.trim().startsWith('{')) {
-              const feedParsed = JSON.parse(stdout);
-              if (Array.isArray(feedParsed?.items) && feedParsed.items.length > 0) {
-                const convertedEdges = feedParsed.items.map((item: any) => {
-                  const isSidecar = item.media_type === 8 || Array.isArray(item.carousel_media);
-                  const isVid = item.media_type === 2 || Array.isArray(item.video_versions);
-                  const displayUrl = item.image_versions2?.candidates?.[0]?.url || item.display_url || '';
-                  const videoUrl = item.video_versions?.[0]?.url || item.video_url || '';
-                  return {
-                    node: {
-                      id: String(item.pk || item.id).split('_')[0],
-                      shortcode: item.code || item.shortcode,
-                      display_url: displayUrl,
-                      video_url: videoUrl,
-                      is_video: isVid,
-                      __typename: isSidecar ? 'GraphSidecar' : isVid ? 'GraphVideo' : 'GraphImage',
-                      taken_at_timestamp: item.taken_at || Math.floor(Date.now() / 1000),
-                      edge_media_to_caption: {
-                        edges: item.caption?.text ? [{ node: { text: item.caption.text } }] : [],
-                      },
-                      edge_liked_by: { count: item.like_count || 0 },
-                      edge_media_to_comment: { count: item.comment_count || 0 },
-                      location: item.location?.name ? { name: item.location.name } : undefined,
-                      edge_sidecar_to_children: isSidecar
-                        ? {
-                            edges: (item.carousel_media || []).map((c: any, idx: number) => ({
-                              node: {
-                                id: String(c.pk || c.id || `${item.pk}_${idx}`).split('_')[0],
-                                display_url: c.image_versions2?.candidates?.[0]?.url || c.display_url || displayUrl,
-                                video_url: c.video_versions?.[0]?.url || c.video_url || '',
-                                is_video: c.media_type === 2 || Array.isArray(c.video_versions),
-                              },
-                            })),
-                          }
-                        : undefined,
-                    },
-                  };
-                });
-
-                if (convertedEdges.length >= existingEdges.length) {
-                  rawJson.data.user.edge_owner_to_timeline_media = {
-                    count: rawJson.data.user.edge_owner_to_timeline_media?.count || convertedEdges.length,
-                    page_info: {
-                      has_next_page: !!(feedParsed.more_available && feedParsed.next_max_id),
-                      end_cursor: feedParsed.next_max_id || rawJson.data.user.edge_owner_to_timeline_media?.page_info?.end_cursor || null,
-                    },
-                    edges: convertedEdges,
-                  };
-                }
-              }
-            }
-          } catch (feedErr: any) {
-            console.warn(`Optional v1 feed enrichment failed for ${cleanUsername}:`, feedErr.message);
-          }
-        }
-      }
-
       if (rawJson?.data?.user?.username) {
         try {
           fs.writeFileSync(cacheFile, JSON.stringify(rawJson, null, 2), 'utf-8');
@@ -949,38 +567,6 @@ async function startServer() {
       }
 
       let userData = rawJson?.data?.user;
-
-      // CRITICAL FIX: If the 30-second countdown already completed (retryAfterCooldown === true),
-      // NEVER return HTTP 429 again! Synthesize a guaranteed recovery profile response so the user is never stuck in an infinite 429 loop.
-      if (!userData && retryAfterCooldown) {
-        addInstagramLog({
-          username: cleanUsername,
-          status: 200,
-          success: true,
-          strategyUsed: '30sn Geri Sayım Sonrası Derin Bypass & Kurtarma Modu',
-          hasSessionId: !!sessionId,
-          diagnosis: `30 saniyelik geri sayım tamamlandı; bulut IP kısıtlaması bypass edilerek @${cleanUsername} profili çerezsiz kurtarma modunda açıldı.`,
-          suggestedAction: 'Profil açık. Gönderi linki yapıştırabilir, Chrome Eklentisi JSON aktarabilir veya F12 çerezi ekleyebilirsiniz.'
-        });
-
-        userData = {
-          id: '',
-          username: cleanUsername,
-          full_name: `@${cleanUsername}`,
-          profile_pic_url_hd: '',
-          profile_pic_url: '',
-          biography: `📱 @${cleanUsername} profili 30 saniyelik geri sayım sonrası Çerezsiz Bypass Modunda açıldı. Bulut sunucu IP yoğunluğu nedeniyle gönderileri tekil link ile ekleyebilir veya F12 çereziyle tam akışı çekebilirsiniz.`,
-          edge_owner_to_timeline_media: {
-            count: 0,
-            page_info: { has_next_page: false, end_cursor: null },
-            edges: [],
-          },
-          edge_followed_by: { count: 0 },
-          edge_follow: { count: 0 },
-          is_verified: false,
-          is_private: false,
-        };
-      }
 
       if (!userData) {
         addInstagramLog({
