@@ -1036,17 +1036,18 @@ export default function App() {
                     <div>
                       <h4 className="font-bold text-amber-200 text-sm flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4 text-amber-400" />
-                        <span>HTTP 429 Bypass & 30 Saniye Otomatik Geri Sayım Sayacı</span>
+                        <span>HTTP 429 · Bekleme Süresi</span>
                       </h4>
                       <p className="text-amber-300/80 text-[11px] mt-0.5">
-                        Mobil ve APK kullanıcıları için çerez zorunluluğu yoktur. {cooldownSeconds} saniye sonra otomatik olarak yeniden denenecektir.
+                        Oturum bilgisi kullanılmıyor. {cooldownSeconds} saniye bekleyin; Instagram erişimi sınırlandırdıysa otomatik tekrar yapılmaz.
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => loadUserProfile(username, true, undefined, true)}
-                      className="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer text-xs"
+                      disabled={cooldownSeconds > 0}
+                      className="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer text-xs"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
                       <span>Şimdi Tekrar Dene</span>
