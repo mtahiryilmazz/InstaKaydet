@@ -718,213 +718,22 @@ async function startServer() {
     }
   });
 
-  // Timeline Pagination Endpoint for Deep Scanning & Subsequent Post Pages (400+ Posts)
-  app.get('/api/instagram/profile/:username/paginate', async (req, res) => {
-    const { username } = req.params;
-    const { userId, maxId } = req.query;
-    const cleanUsername = username.replace(/^@/, '').trim().toLowerCase();
-    const sessionId = (req.query.sessionId as string) || (req.headers['x-ig-session-id'] as string) || (req.headers['x-ig-sessionid'] as string) || '';
-
-    if (!cleanUsername) {
-      return res.status(400).json({ error: 'Kullanıcı adı gerekli' });
+  // Pagination is intentionally unavailable in credential-free mode.
+  // Do not impersonate mobile clients or call private feed endpoints to bypass limits.
+  app.get('/api/instagram/profile/:username/paginate', (req, res) => {
+    const cleanUsername = String(req.params.username || '').replace(/^@/, '').trim().toLowerCase();
+    if (!/^[a-z0-9._]{1,30}$/.test(cleanUsername)) {
+      return res.status(400).json({ success: false, posts: [], error: 'Geçerli bir Instagram kullanıcı adı girin.' });
     }
-
-    if (!maxId) {
-      return res.status(400).json({ error: 'maxId parametresi zorunludur' });
-    }
-
-    const jar = buildInstagramCookieJar(sessionId);
-
-    try {
-      const { execFile } = await import('child_process');
-      const util = await import('util');
-      const execFileAsync = util.promisify(execFile);
-
-      const mobileSafariUA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1';
-      const androidAppUA = 'Instagram 275.0.0.27.98 Android (33/13; 420dpi; 1080x2400; samsung; SM-G991B; o1s; exynos2100; tr_TR; 458229237)';
-
-      const tryFetchFeedPage = async (feedUrl: string, ua: string, useCookie: boolean, includeWebHeaders: boolean): Promise<any> => {
-        try {
-          const args = [
-            '-s', '-L', '--max-time', '8',
-            '-H', `User-Agent: ${ua}`,
-            '-H', 'Accept: */*',
-            '-H', 'Accept-Language: tr-TR,tr;q=0.9',
-            '-H', `Referer: https://www.instagram.com/${cleanUsername}/`,
-          ];
-          if (includeWebHeaders) {
-            args.push(
-              '-H', 'x-ig-app-id: 936619743392459',
-              '-H', 'Sec-Fetch-Site: same-origin',
-              '-H', 'Sec-Fetch-Mode: cors',
-              '-H', 'Sec-Fetch-Dest: empty',
-              '-H', 'X-Requested-With: XMLHttpRequest'
-            );
-          }
-          if (useCookie && jar.cookieHeader) {
-            args.push('-H', `Cookie: ${jar.cookieHeader}`);
-            if (jar.csrfToken) {
-              args.push('-H', `x-csrftoken: ${jar.csrfToken}`);
-            }
-          }
-          args.push(feedUrl);
-
-          const { stdout } = await execFileAsync('curl', args, { maxBuffer: 10 * 1024 * 1024 });
-          if (stdout && stdout.trim().startsWith('{')) {
-            const p = JSON.parse(stdout);
-            if (Array.isArray(p?.items) && p.items.length > 0) {
-              return p;
-            }
-          }
-        } catch (e) {}
-        return null;
-      };
-
-      const encodedMaxId = encodeURIComponent(String(maxId));
-      const usernameFeedUrl = `https://www.instagram.com/api/v1/feed/user/${encodeURIComponent(cleanUsername)}/username/?count=12&max_id=${encodedMaxId}`;
-      const userIdFeedUrl = userId ? `https://www.instagram.com/api/v1/feed/user/${encodeURIComponent(String(userId))}/?count=12&max_id=${encodedMaxId}` : '';
-      const mobileUserIdFeedUrl = userId ? `https://i.instagram.com/api/v1/feed/user/${encodeURIComponent(String(userId))}/?count=12&max_id=${encodedMaxId}` : '';
-
-      let parsed: any = null;
-
-      // 1. If Session ID is provided, try with Session ID first
-      if (jar.cookieHeader) {
-        parsed = await tryFetchFeedPage(usernameFeedUrl, mobileSafariUA, true, true);
-        if (!parsed && userIdFeedUrl) {
-          parsed = await tryFetchFeedPage(userIdFeedUrl, mobileSafariUA, true, true);
-        }
-        if (!parsed && mobileUserIdFeedUrl) {
-          parsed = await tryFetchFeedPage(mobileUserIdFeedUrl, androidAppUA, true, false);
-        }
-      }
-
-      // 2. Fallback to cookie-less username feed endpoint (works even if Session ID had IP mismatch or was omitted)
-      if (!parsed) {
-        parsed = await tryFetchFeedPage(usernameFeedUrl, mobileSafariUA, false, true);
-      }
-      if (!parsed && mobileUserIdFeedUrl) {
-        parsed = await tryFetchFeedPage(mobileUserIdFeedUrl, androidAppUA, false, false);
-      }
-
-      // If Instagram returned genuine items
-      if (parsed && Array.isArray(parsed.items) && parsed.items.length > 0) {
-        const newPosts = parsed.items.map((item: any) => {
-          const dt = formatTurkishEpoch(item.taken_at);
-          const isVideo = item.media_type === 2;
-          const isCarousel = item.media_type === 8 && Array.isArray(item.carousel_media);
-          const cleanItemId = String(item.pk || item.id).split('_')[0];
-
-          let mediaItems: any[] = [];
-          if (isCarousel && item.carousel_media.length > 0) {
-            mediaItems = item.carousel_media.map((cItem: any, idx: number) => {
-              const childIsVideo = cItem.media_type === 2;
-              const bestImg = cItem.image_versions2?.candidates?.[0]?.url || '';
-              const bestVid = cItem.video_versions?.[0]?.url || bestImg;
-              const originalUrl = childIsVideo ? bestVid : bestImg;
-              const cleanChildId = String(cItem.pk || cItem.id || `${cleanItemId}_${idx}`).split('_')[0];
-              return {
-                id: cleanChildId,
-                type: childIsVideo ? 'video' : 'image',
-                url: `/api/proxy-media?url=${encodeURIComponent(originalUrl)}`,
-                originalUrl,
-                thumbnailUrl: `/api/proxy-media?url=${encodeURIComponent(bestImg)}`,
-              };
-            });
-          } else {
-            const bestImg = item.image_versions2?.candidates?.[0]?.url || '';
-            const bestVid = item.video_versions?.[0]?.url || bestImg;
-            const originalUrl = isVideo ? bestVid : bestImg;
-            mediaItems = [
-              {
-                id: `${cleanItemId}_1`,
-                type: isVideo ? 'video' : 'image',
-                url: `/api/proxy-media?url=${encodeURIComponent(originalUrl)}`,
-                originalUrl,
-                thumbnailUrl: `/api/proxy-media?url=${encodeURIComponent(bestImg)}`,
-              }
-            ];
-          }
-
-          const captionText = item.caption?.text || '';
-
-          return {
-            id: `post_${cleanItemId}`,
-            shortcode: item.code,
-            username: cleanUsername,
-            userFullName: item.user?.full_name || cleanUsername,
-            userAvatar: item.user?.profile_pic_url ? `/api/proxy-media?url=${encodeURIComponent(item.user.profile_pic_url)}` : '',
-            caption: captionText,
-            timestamp: dt.iso,
-            dateKey: dt.dateKey,
-            dateFormatted: dt.dateFormatted,
-            timeFormatted: dt.timeFormatted,
-            isCarousel: mediaItems.length > 1,
-            mediaCount: mediaItems.length,
-            media: mediaItems,
-            likesCount: item.like_count || 0,
-            commentsCount: item.comment_count || 0,
-            postUrl: `https://www.instagram.com/p/${item.code}/`,
-            isVideo,
-            location: item.location?.name || undefined,
-          };
-        });
-
-        const hasNextPage = !!parsed.more_available;
-        const endCursor = parsed.next_max_id || null;
-
-        addInstagramLog({
-          username: cleanUsername,
-          status: 200,
-          success: true,
-          strategyUsed: 'Live Pagination Feed',
-          hasSessionId: !!sessionId,
-          diagnosis: `Sayfa başarıyla çekildi: ${newPosts.length} yeni gönderi eklendi (Kalan sayfa: ${hasNextPage ? 'Var' : 'Bitti'}).`,
-          suggestedAction: hasNextPage ? 'Daha fazla gönderi çekilebilir.' : 'Tüm gönderiler başarıyla listelendi.'
-        });
-
-        return res.json({
-          success: true,
-          posts: newPosts,
-          pageInfo: {
-            hasNextPage,
-            endCursor,
-            userId,
-          }
-        });
-      }
-
-      addInstagramLog({
-        username: cleanUsername,
-        status: 429,
-        success: false,
-        strategyUsed: 'Live Pagination Feed',
-        hasSessionId: !!sessionId,
-        error: 'HTTP 429 Hız Sınırı / Geçici Yoğunluk',
-        diagnosis: `Instagram hesabı (@${cleanUsername}) sonraki sayfa sorgusunda hız sınırına (HTTP 429) takıldı.`,
-        suggestedAction: 'Çerez zorunluluğu yoktur; 30 saniye geri sayım sonrasında otomatik tekrar denenecektir.'
-      });
-
-      return res.status(429).json({
-        success: false,
-        requireSession: false,
-        rateLimited: true,
-        retryAfterSeconds: 30,
-        posts: [],
-        error: `Instagram '@${cleanUsername}' sonraki sayfa sorgusunda hız sınırı (HTTP 429) oluştu. 30 saniye içinde otomatik tekrar denenecektir.`,
-        pageInfo: {
-          hasNextPage: true,
-          endCursor: maxId,
-          userId,
-        }
-      });
-    } catch (err: any) {
-      console.error('Pagination error:', err);
-      return res.status(500).json({ error: 'Sayfalama sırasında hata oluştu', details: err.message });
-    }
+    return res.status(501).json({
+      success: false,
+      posts: [],
+      requireSession: false,
+      rateLimited: false,
+      error: 'Oturumsuz modda ek gönderi sayfaları Instagram tarafından herkese açık olarak sunulmuyor. Kişisel oturum bilgisi kullanılmadı ve kısıtlamalar aşılmaya çalışılmadı.',
+    });
   });
 
-  // Media Proxy to avoid CORS issues when fetching images/videos for ZIP or PDF rendering
-  // Media Proxy to avoid CORS issues and serve high-reliability images
   app.get('/api/proxy-media', async (req, res) => {
     const { url } = req.query;
     if (!url || typeof url !== 'string') {
