@@ -18,7 +18,7 @@ if (!fs.existsSync(BACKUP_DIR)) {
 
 async function startServer() {
   const app = express();
-  app.use(express.json({ limit: '50mb' }));
+  app.use(express.json({ limit: '5mb' }));
 
   // --- API Routes ---
 
@@ -624,7 +624,7 @@ async function startServer() {
   // 1-Second Cookie & Session Verifier Endpoint: GET /api/user-profile-check (Desktop Chrome UA + Flexible F12 Validation)
   app.get('/api/user-profile-check', async (req, res) => {
     const startMs = Date.now();
-    const rawCookie = (req.query.sessionId as string) || (req.query.cookie as string) || (req.headers['x-ig-session-id'] as string) || '';
+    const rawCookie = (req.headers['x-ig-session-id'] as string) || '';
     const targetUsername = ((req.query.username as string) || 'instagram').replace(/^@/, '').trim().toLowerCase();
 
     if (!rawCookie || !rawCookie.trim()) {
@@ -727,32 +727,48 @@ async function startServer() {
         }
       }
 
-      // Flexible Desktop UA Validation: Even if Cloud IP differs from user's home IP (returning 401/429 on remote ping),
-      // when valid F12 cookies (sessionid / csrftoken / ds_user_id / mid / ig_did / datr) are detected, approve & allow saving!
+      const confirmed = httpCode === 200 && !!bodyStr && bodyStr.startsWith('{');
+      const failureStatus = httpCode === 429 ? 429 : httpCode === 401 || httpCode === 403 ? 401 : 502;
       addInstagramLog({
         username: targetUsername,
-        status: 200,
-        success: true,
-        strategyUsed: 'GET /api/user-profile-check (Esnek F12 Çerez Onayı)',
+        status: confirmed ? 200 : httpCode,
+        success: confirmed,
+        strategyUsed: 'GET /api/user-profile-check (Sunucu doğrulaması)',
         hasSessionId: true,
-        diagnosis: `F12 çerez anahtarları (${detectedKeys.join(', ')}) Masaüstü User-Agent uyumuyla onaylandı (Uzaktan durum: HTTP ${httpCode}).`,
-        suggestedAction: 'Kaydet & Uygula butonu ile çerezlerinizi kaydedip hemen kullanabilirsiniz.',
+        error: confirmed ? undefined : `Instagram çerez doğrulaması tamamlanamadı (HTTP ${httpCode}).`,
+        diagnosis: confirmed
+          ? `Instagram yanıtı alındı. Algılanan çerez anahtarları: ${detectedKeys.join(', ')}`
+          : `Çerez biçimi algılandı ancak Instagram sunucusu oturumu doğrulamadı (HTTP ${httpCode}).`,
+        suggestedAction: confirmed
+          ? 'Oturum sunucu tarafından doğrulandı.'
+          : 'Çerezi doğrulamadan geçerli saymayın. Oturum süresini ve Instagram erişimini kontrol edip tekrar deneyin.',
         latencyMs: Date.now() - startMs,
       });
-      return res.status(200).json({
-        valid: true,
-        statusCode: 200,
+      return res.status(confirmed ? 200 : failureStatus).json({
+        valid: confirmed,
+        statusCode: confirmed ? 200 : failureStatus,
         remoteStatusCode: httpCode,
-        message: `F12 çerezleri algılandı ve Masaüstü User-Agent uyumuyla onaylandı (${detectedKeys.join(', ')}). Kaydedip kullanabilirsiniz.`,
-        user: jar.userId ? `ID:${jar.userId}` : targetUsername,
+        message: confirmed
+          ? 'Instagram oturumu sunucu tarafından doğrulandı.'
+          : 'Çerez biçimi algılandı ancak oturum doğrulanamadı. Instagram erişimi veya oturum süresini kontrol edin.',
         detectedCookies: detectedKeys,
       });
     } catch (err: any) {
-      // Even on curl timeout, if F12 cookies are structurally valid, approve saving
-      return res.status(200).json({
-        valid: true,
-        statusCode: 200,
-        message: `Çerez anahtarları (${detectedKeys.join(', ')}) algılandı ve kullanıma hazır.`,
+      addInstagramLog({
+        username: targetUsername,
+        status: 502,
+        success: false,
+        strategyUsed: 'GET /api/user-profile-check',
+        hasSessionId: true,
+        error: 'Instagram doğrulama isteği tamamlanamadı.',
+        diagnosis: 'Ağ hatası veya zaman aşımı nedeniyle oturum doğrulanamadı.',
+        suggestedAction: 'Bağlantıyı kontrol edin ve daha sonra yeniden deneyin.',
+        latencyMs: Date.now() - startMs,
+      });
+      return res.status(502).json({
+        valid: false,
+        statusCode: 502,
+        message: 'Instagram oturumu doğrulanamadı; ağ bağlantısını kontrol edip tekrar deneyin.',
         detectedCookies: detectedKeys,
       });
     }
@@ -800,8 +816,8 @@ async function startServer() {
     const cleanUsername = username.replace(/^@/, '').trim().toLowerCase();
     const retryAfterCooldown = req.query.retryAfterCooldown === '1' || req.query.retryAfterCooldown === 'true';
 
-    if (!cleanUsername) {
-      return res.status(400).json({ error: 'Kullanıcı adı gerekli' });
+    if (!/^[a-z0-9._]{1,30}$/.test(cleanUsername) || cleanUsername.startsWith('.') || cleanUsername.endsWith('.')) {
+      return res.status(400).json({ error: 'Geçerli bir Instagram kullanıcı adı girin (1–30 karakter; harf, rakam, nokta ve alt çizgi).' });
     }
 
     const CACHE_DIR = path.join(__dirname, '.cache', 'instagram');
@@ -811,7 +827,7 @@ async function startServer() {
     const cacheFile = path.join(CACHE_DIR, `${cleanUsername}.json`);
 
     try {
-      const sessionId = (req.query.sessionId as string) || (req.headers['x-ig-session-id'] as string) || '';
+      const sessionId = (req.headers['x-ig-session-id'] as string) || '';
 
       const getValidCache = () => {
         if (fs.existsSync(cacheFile)) {
@@ -1610,75 +1626,85 @@ Nasıl Kullanılır?
 
   // Generate OAuth authorization URL
   app.get('/api/auth/instagram/url', (req, res) => {
-    const clientId = (req.query.clientId as string) || process.env.INSTAGRAM_CLIENT_ID || '894217592318491';
-    const redirectUri = `${req.protocol}://${req.get('host')}/api/auth/instagram/callback`;
+    const clientId = process.env.INSTAGRAM_CLIENT_ID;
+    if (!clientId) {
+      return res.status(503).json({
+        success: false,
+        error: 'Instagram OAuth yapılandırılmamış. INSTAGRAM_CLIENT_ID ortam değişkenini ayarlayın.'
+      });
+    }
+    const redirectUri = process.env.INSTAGRAM_REDIRECT_URI ||
+      `${req.protocol}://${req.get('host')}/api/auth/instagram/callback`;
     const scope = 'user_profile,user_media';
-    const authUrl = `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=code`;
-    res.json({ success: true, authUrl, clientId, redirectUri });
+    const authUrl = new URL('https://api.instagram.com/oauth/authorize');
+    authUrl.searchParams.set('client_id', clientId);
+    authUrl.searchParams.set('redirect_uri', redirectUri);
+    authUrl.searchParams.set('scope', scope);
+    authUrl.searchParams.set('response_type', 'code');
+    return res.json({ success: true, authUrl: authUrl.toString(), clientId, redirectUri });
   });
 
-  // OAuth redirect callback handler
+  // OAuth callback: never report a successful connection without a real token exchange.
   app.get('/api/auth/instagram/callback', async (req, res) => {
     const { code, error, error_description } = req.query;
-    if (error || !code) {
-      console.warn('Instagram OAuth callback error:', error, error_description);
-      return res.redirect(`/?oauth_error=${encodeURIComponent(String(error_description || error || 'OAuth yetkilendirmesi başarısız'))}`);
+    if (error || typeof code !== 'string' || !code) {
+      const reason = String(error_description || error || 'OAuth yetkilendirmesi başarısız');
+      return res.redirect(`/?oauth_error=${encodeURIComponent(reason)}`);
+    }
+
+    const clientId = process.env.INSTAGRAM_CLIENT_ID;
+    const clientSecret = process.env.INSTAGRAM_CLIENT_SECRET;
+    const redirectUri = process.env.INSTAGRAM_REDIRECT_URI ||
+      `${req.protocol}://${req.get('host')}/api/auth/instagram/callback`;
+    if (!clientId || !clientSecret) {
+      return res.redirect(`/?oauth_error=${encodeURIComponent('Instagram OAuth yapılandırması eksik; bağlantı kurulmadı.')}`);
     }
 
     try {
+      const body = new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        grant_type: 'authorization_code',
+        redirect_uri: redirectUri,
+        code
+      });
+      const tokenResponse = await fetch('https://api.instagram.com/oauth/access_token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body,
+        signal: AbortSignal.timeout(10000)
+      });
+      const tokenPayload: any = await tokenResponse.json().catch(() => null);
+      if (!tokenResponse.ok || !tokenPayload?.access_token || !tokenPayload?.user_id) {
+        console.warn('Instagram OAuth token exchange failed:', tokenResponse.status);
+        activeOAuthSession = { isConnected: false };
+        return res.redirect(`/?oauth_error=${encodeURIComponent('Instagram token alışverişi başarısız. Uygulama türü, callback URL ve OAuth ayarlarını kontrol edin.')}`);
+      }
+
       activeOAuthSession = {
         isConnected: true,
         user: {
-          id: '41371520611',
-          username: 'dkabcikpsslianne',
-          fullName: 'Dkab öğretmeni (OAuth)',
-          avatarUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&h=400&fit=crop',
-          postsCount: 522,
+          id: String(tokenPayload.user_id),
+          username: typeof tokenPayload.username === 'string' ? tokenPayload.username : '',
+          fullName: typeof tokenPayload.username === 'string' ? tokenPayload.username : '',
           accountType: 'CREATOR'
         },
-        accessToken: `IGQVJ_${Date.now()}_oauth_valid`,
+        accessToken: tokenPayload.access_token,
         connectedAt: new Date().toISOString()
       };
       return res.redirect('/?oauth_success=1');
     } catch (err: any) {
-      return res.redirect(`/?oauth_error=${encodeURIComponent(err.message)}`);
+      activeOAuthSession = { isConnected: false };
+      console.error('Instagram OAuth callback failed:', err?.message || 'unknown error');
+      return res.redirect(`/?oauth_error=${encodeURIComponent('Instagram OAuth isteği tamamlanamadı. Ağ bağlantısını ve sunucu ayarlarını kontrol edin.')}`);
     }
   });
 
-  // Connect via Direct OAuth (Token or One-Click Authorization)
-  app.post('/api/auth/instagram/connect', async (req, res) => {
-    const { accessToken, username, clientId } = req.body;
-    const targetUser = (username || 'dkabcikpsslianne').replace(/^@/, '').trim().toLowerCase();
-
-    activeOAuthSession = {
-      isConnected: true,
-      user: {
-        id: targetUser === 'dkabcikpsslianne' ? '41371520611' : `user_${Date.now()}`,
-        username: targetUser,
-        fullName: targetUser === 'dkabcikpsslianne' ? 'Dkab öğretmeni (OAuth)' : `@${targetUser}`,
-        avatarUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&h=400&fit=crop',
-        postsCount: targetUser === 'dkabcikpsslianne' ? 522 : 120,
-        accountType: 'BUSINESS'
-      },
-      accessToken: accessToken || `IG_OAUTH_${Math.random().toString(36).substring(2, 10).toUpperCase()}_VALID`,
-      connectedAt: new Date().toISOString(),
-      clientId: clientId || undefined
-    };
-
-    addInstagramLog({
-      username: targetUser,
-      status: 200,
-      success: true,
-      strategyUsed: 'Meta Instagram OAuth 2.0',
-      hasSessionId: false,
-      diagnosis: 'Instagram OAuth 2.0 resmi yetkilendirmesi aktif. Oturum duvarı ve hız sınırı aşılmıştır.',
-      suggestedAction: 'Tüm gönderiler resmi Graph API ile çekilebilir.'
-    });
-
-    res.json({
-      success: true,
-      message: `@${targetUser} hesabı Instagram OAuth ile başarıyla yetkilendirildi!`,
-      session: activeOAuthSession
+  // Direct token connection is disabled until a server-side token validation flow is configured.
+  app.post('/api/auth/instagram/connect', async (_req, res) => {
+    return res.status(501).json({
+      success: false,
+      error: 'Doğrudan bağlantı devre dışı. Gerçek Instagram OAuth akışını kullanın; sahte token kabul edilmez.'
     });
   });
 

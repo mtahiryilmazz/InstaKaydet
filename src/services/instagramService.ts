@@ -193,11 +193,11 @@ export async function verifySessionProfileCheck(
 
   try {
     const params = new URLSearchParams({
-      sessionId: cleaned,
       username: targetUsername || 'instagram',
     });
     const res = await fetch(`/api/user-profile-check?${params.toString()}`, {
       method: 'GET',
+      cache: 'no-store',
       headers: {
         'x-ig-session-id': cleaned,
       },
@@ -305,9 +305,7 @@ export async function fetchUserFeedAsync(
       if (forceRefresh && attempt === 0) {
         queryParams.set('force', 'true');
       }
-      if (sessionId) {
-        queryParams.set('sessionId', sessionId);
-      }
+      // Session cookies must only travel in a request header, never in URLs/logs/referrers.
       if (retryAfterCooldown) {
         queryParams.set('retryAfterCooldown', '1');
       }
