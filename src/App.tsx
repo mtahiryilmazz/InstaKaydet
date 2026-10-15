@@ -977,7 +977,7 @@ export default function App() {
               onSelectAllPosts={handleSelectAllPosts}
               onClearSelection={handleClearSelection}
               onExportSelectedPdf={handleExportSelectedPostsPdf}
-              onOpenSessionModal={() => setIsSessionModalOpen(true)}
+              onOpenSessionModal={() => showToast('InstaFlow kişisel Instagram oturum bilgisi kullanmaz. Herkese açık erişimle sınırlıdır.')}
               onOpenBulkDownloadModal={() => setIsBulkModalOpen(true)}
               onExportCsvStandalone={handleExportCsvStandalone}
               sessionId={sessionId}
@@ -1052,7 +1052,7 @@ export default function App() {
                       <span>Şimdi Tekrar Dene</span>
                     </button>
                     <button
-                      onClick={() => setIsSessionModalOpen(true)}
+                      onClick={() => showToast('InstaFlow kişisel Instagram oturum bilgisi kullanmaz. Herkese açık erişimle sınırlıdır.')}
                       className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer text-xs"
                     >
                       <Key className="w-3.5 h-3.5 text-rose-400" />
@@ -1417,7 +1417,7 @@ export default function App() {
                       </div>
 
                       <button
-                        onClick={() => setIsSessionModalOpen(true)}
+                        onClick={() => showToast('InstaFlow kişisel Instagram oturum bilgisi kullanmaz. Herkese açık erişimle sınırlıdır.')}
                         className="px-3.5 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap"
                       >
                         Oturumsuz Mod
@@ -1501,7 +1501,7 @@ export default function App() {
         {/* TAB 4: Live Error & Request Diagnostics Logs Viewer */}
         {activeTab === 'logs' && (
           <ErrorLogViewer
-            onOpenSessionModal={() => setIsSessionModalOpen(true)}
+            onOpenSessionModal={() => showToast('InstaFlow kişisel Instagram oturum bilgisi kullanmaz. Herkese açık erişimle sınırlıdır.')}
             onRefreshFeed={() => loadUserProfile(username, true)}
           />
         )}
