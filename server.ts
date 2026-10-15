@@ -277,7 +277,7 @@ async function startServer() {
       let isFromCache = false;
 
       // Make one ordinary, credential-free public profile request.
-      rawJson = await fetchInstagramProfile(cleanUsername, sessionId);
+      rawJson = await fetchInstagramProfile(cleanUsername);
 
       if (rawJson?.data?.user?.username) {
         try {
@@ -302,7 +302,7 @@ async function startServer() {
           status: 429,
           success: false,
           strategyUsed: 'Cookie-Free Public Profile',
-          hasSessionId: !!sessionId,
+          hasSessionId: false,
           error: 'HTTP 429 Hız Sınırı / Geçici Yoğunluk',
           diagnosis: 'Instagram herkese açık profil verisi oturumsuz istekle alınamadı veya erişim sınırlandı.',
           suggestedAction: 'Oturum bilgisi eklemeyin ve istekleri tekrarlamayın. Daha sonra elle yeniden deneyin veya önbellekteki veriyi kullanın.'
@@ -313,7 +313,7 @@ async function startServer() {
           requireSession: false,
           rateLimited: true,
           retryAfterSeconds: 30,
-          error: `Instagram '@${cleanUsername}' sorgusunda geçici hız sınırı (HTTP 429) oluştu. Çerez gerekmeden 30 saniye içinde otomatik tekrar denenecektir.`,
+          error: `Instagram '@${cleanUsername}' için oturumsuz herkese açık profil verisi alınamadı veya erişim sınırlandı. Otomatik tekrar yapılmadı.`,
           profile: {
             username: cleanUsername,
             fullName: `@${cleanUsername}`,
@@ -335,7 +335,7 @@ async function startServer() {
         username: cleanUsername,
         status: 200,
         success: true,
-        strategyUsed: isFromCache ? 'Disk Cache' : retryAfterCooldown ? 'Cooldown Recovery Bypass' : 'Live Instagram API',
+        strategyUsed: isFromCache ? 'Disk Cache' : 'Cookie-Free Public Profile',
         hasSessionId: !!sessionId,
         diagnosis: isFromCache ? 'Önbellekten gerçek profil ve gönderiler sunuldu.' : 'Instagram API üzerinden profil başarıyla açıldı.',
         suggestedAction: 'İşlem tamamlandı.'
