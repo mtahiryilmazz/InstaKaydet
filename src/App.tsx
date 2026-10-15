@@ -117,9 +117,8 @@ export default function App() {
   const [pdfCustomTitle, setPdfCustomTitle] = useState('');
 
   // Session Cookie ID state for overcoming rate limits
-  const [sessionId, setSessionId] = useState<string>(() => {
-    return localStorage.getItem('instaflow_session_id') || '';
-  });
+  // InstaFlow public mode deliberately does not load or use personal Instagram session IDs.
+  const [sessionId] = useState<string>('');
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
 
   // Media Type Filter: 'all' | 'video' | 'image' | 'carousel'
@@ -337,7 +336,7 @@ export default function App() {
     setIsLoadingUser(true);
     setCooldownSeconds(0);
 
-    const effectiveSessionId = overrideSessionId !== undefined ? overrideSessionId : (sessionId || localStorage.getItem('instaflow_session_id') || '');
+    const effectiveSessionId = ''; // Always use credential-free public profile mode.
     try {
       const feed = await fetchUserFeedAsync(
         targetUsername,
@@ -1591,23 +1590,7 @@ export default function App() {
       )}
 
       {/* Instagram Session ID Cookie Modal */}
-      <InstagramSessionModal
-        isOpen={isSessionModalOpen}
-        onClose={() => setIsSessionModalOpen(false)}
-        currentSessionId={sessionId}
-        onSaveSessionId={(newId) => {
-          setSessionId(newId);
-          if (newId) {
-            localStorage.setItem('instaflow_session_id', newId);
-            showToast('Instagram Session ID kaydedildi, veriler canlı yenileniyor!');
-            loadUserProfile(username, true, newId);
-          } else {
-            localStorage.removeItem('instaflow_session_id');
-            showToast('Session ID kaldırıldı');
-            loadUserProfile(username, true, '');
-          }
-        }}
-      />
+
 
       {/* Chrome Extension Modal */}
       <ChromeExtensionModal
