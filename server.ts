@@ -257,7 +257,7 @@ async function startServer() {
     const cacheFile = path.join(CACHE_DIR, `${cleanUsername}.json`);
 
     try {
-      // Public-only route; no personal session credentials are accepted or forwarded.\n      const sessionId = '';
+      // Public-only route; no personal session credentials are accepted or forwarded.
 
       const getValidCache = () => {
         if (fs.existsSync(cacheFile)) {
@@ -336,7 +336,7 @@ async function startServer() {
         status: 200,
         success: true,
         strategyUsed: isFromCache ? 'Disk Cache' : 'Cookie-Free Public Profile',
-        hasSessionId: !!sessionId,
+        hasSessionId: false,
         diagnosis: isFromCache ? 'Önbellekten gerçek profil ve gönderiler sunuldu.' : 'Instagram API üzerinden profil başarıyla açıldı.',
         suggestedAction: 'İşlem tamamlandı.'
       });
