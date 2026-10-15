@@ -312,12 +312,8 @@ export async function fetchUserFeedAsync(
 
       const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
       const url = `/api/instagram/profile/${encodeURIComponent(cleanUsername)}${queryString}`;
-      const headers: Record<string, string> = {};
-      if (sessionId) {
-        headers['x-ig-session-id'] = sessionId;
-      }
-
-      const res = await fetch(url, { headers, signal });
+      // Public-profile mode never transmits personal session cookies or IDs.
+      const res = await fetch(url, { signal });
       const data = await res.json().catch(() => ({}));
 
       if (res.ok && data.success && data.profile) {
@@ -351,7 +347,8 @@ export async function fetchUserFeedAsync(
         data.error ||
         `Instagram '@${cleanUsername}' sorgusunda hız sınırı (HTTP ${res.status || 429}) oluştu.`;
 
-      if ((res.status === 429 || res.status === 502 || res.status === 503) && attempt < maxRetries) {
+      // Respect rate limits: never automatically retry HTTP 429.
+      if ((res.status === 502 || res.status === 503) && attempt < maxRetries) {
         await delay((attempt + 1) * 900);
         continue;
       }
@@ -390,27 +387,6 @@ export async function fetchUserFeedAsync(
     };
   }
 
-  // If this was already the post-30s cooldown retry, NEVER return rateLimited: true again
-  if (retryAfterCooldown) {
-    return {
-      profile: {
-        username: cleanUsername,
-        fullName: `@${cleanUsername}`,
-        avatarUrl: getInitialsAvatar(cleanUsername, cleanUsername),
-        bio: `📱 @${cleanUsername} profili 30 saniyelik geri sayım sonrası Çerezsiz Bypass Modunda açıldı.`,
-        postsCount: 0,
-        followersCount: 0,
-        followingCount: 0,
-        isVerified: false,
-        isPrivate: false,
-        isRealInstagramData: true,
-      },
-      posts: [],
-      isLive: false,
-      requireSession: false,
-      rateLimited: false,
-    };
-  }
 
   return {
     profile: {
@@ -556,17 +532,9 @@ export async function fetchNextUserFeedPageAsync(
       userId,
       maxId,
     });
-    if (sessionId) {
-      queryParams.set('sessionId', sessionId);
-    }
-
     const url = `/api/instagram/profile/${encodeURIComponent(cleanUsername)}/paginate?${queryParams.toString()}`;
-    const headers: Record<string, string> = {};
-    if (sessionId) {
-      headers['x-ig-session-id'] = sessionId;
-    }
-
-    const res = await fetch(url, { headers, signal });
+    // Pagination also stays credential-free.
+    const res = await fetch(url, { signal });
     const data = await res.json();
     if (res.status === 429) {
       data.rateLimited = true;
