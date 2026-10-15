@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { InstagramPost, MediaItem, UserProfile } from '../types';
 import JSZip from 'jszip';
 import { fetchMediaBlob, convertBlobToTrueJpeg, embedCaptionInImage, saveMediaToDevice } from '../services/downloadService';
-import { generateSinglePdfArchive, generateSinglePostPdf } from '../services/pdfService';
 import {
   Download,
   X,
@@ -161,6 +160,8 @@ export const BulkDownloadModal: React.FC<BulkDownloadModalProps> = ({
 
       // PHASE 2: Generate PDF Archive and add into ZIP
       if (includePdfInZip && effectivePosts.length > 0) {
+        // PDF motorunu yalnızca PDF/ZIP seçeneği kullanıldığında yükle.
+        const { generateSinglePdfArchive, generateSinglePostPdf } = await import('../services/pdfService');
         setCurrentStep('pdf');
         setStatusText(`[2/3] Gönderiler PDF'e dönüştürülüyor (${pdfStructure === 'per_post' ? 'Her gönderi ayrı PDF' : 'Tek master PDF'})...`);
         setProgress(includeImagesInZip ? 60 : 20);
