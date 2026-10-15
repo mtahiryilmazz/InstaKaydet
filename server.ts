@@ -66,95 +66,6 @@ async function startServer() {
     return { dateKey, dateFormatted, timeFormatted, iso: d.toISOString() };
   }
 
-  function buildInstagramCookieJar(raw: string): {
-    cookieHeader: string;
-    csrfToken: string;
-    sessionId: string;
-    userId: string;
-    parsedCookies: Record<string, string>;
-  } {
-    const rawTrimmed = (raw || '').trim();
-    if (!rawTrimmed) {
-      return { cookieHeader: '', csrfToken: '', sessionId: '', userId: '', parsedCookies: {} };
-    }
-
-    const supportedKeys = [
-      'csrftoken',
-      'datr',
-      'dpr',
-      'ds_user_id',
-      'ig_did',
-      'ig_nrcb',
-      'mid',
-      'ps_l',
-      'ps_n',
-      'rur',
-      'sessionid',
-      'wd',
-    ];
-    const parsedCookies: Record<string, string> = {};
-
-    // 1. Parse tab/newline separated Chrome DevTools F12 Application->Cookies table rows if pasted directly
-    const lines = rawTrimmed.split(/\r?\n/);
-    for (const line of lines) {
-      const trimmedLine = line.trim();
-      if (!trimmedLine) continue;
-      const tabParts = trimmedLine.split(/\t+/);
-      if (tabParts.length >= 2) {
-        const keyCandidate = tabParts[0].trim().toLowerCase();
-        const valCandidate = tabParts[1].trim();
-        if (supportedKeys.includes(keyCandidate) && valCandidate) {
-          parsedCookies[keyCandidate] = valCandidate.replace(/^["']+|["']+$/g, '');
-          continue;
-        }
-      }
-    }
-
-    // 2. Parse semicolon or whitespace separated key=value pairs
-    let str = rawTrimmed.replace(/^cookie:\s*/i, '').replace(/^["']+|["']+$/g, '').trim();
-    for (const key of supportedKeys) {
-      const regex = new RegExp(`(?:^|[;\\s,])${key}\\s*=\\s*([^;\\s\\r\\n]+)`, 'i');
-      const m = str.match(regex);
-      if (m && m[1]) {
-        parsedCookies[key] = m[1].replace(/^["']+|["']+$/g, '');
-      }
-    }
-
-    // 3. If single sessionid value was provided without key=value
-    let sessionId = parsedCookies['sessionid'] || '';
-    if (!sessionId && !str.includes('=') && !str.includes('\t')) {
-      sessionId = str.split(/\s+/)[0];
-    }
-
-    if (sessionId) {
-      try {
-        const decoded = decodeURIComponent(sessionId);
-        sessionId = decoded.replace(/:/g, '%3A');
-      } catch {
-        sessionId = sessionId.replace(/:/g, '%3A');
-      }
-      parsedCookies['sessionid'] = sessionId;
-    }
-
-    const csrfToken = parsedCookies['csrftoken'] || '';
-    const decodedForUid = sessionId.replace(/%3A/gi, ':');
-    const uidFromSession = decodedForUid.match(/^(\d{5,})/)?.[1] || '';
-    const userId = parsedCookies['ds_user_id'] || uidFromSession;
-    if (userId) {
-      parsedCookies['ds_user_id'] = userId;
-    }
-
-    const cookieParts: string[] = [];
-    for (const key of supportedKeys) {
-      if (parsedCookies[key]) {
-        cookieParts.push(`${key}=${parsedCookies[key]}`);
-      }
-    }
-
-    const cookieHeader = cookieParts.length > 0 ? cookieParts.join('; ') + ';' : '';
-    return { cookieHeader, csrfToken, sessionId, userId, parsedCookies };
-  }
-
   // Cookie-free public profile fetcher.
   // Deliberately makes one ordinary public-page request: no session cookies,
   // no mobile-app impersonation, no crawler User-Agent rotation, and no private API bypasses.
@@ -323,189 +234,6 @@ async function startServer() {
     });
   });
 
-  // 1-Second Cookie & Session Verifier Endpoint: GET /api/user-profile-check (Desktop Chrome UA + Flexible F12 Validation)
-  app.get('/api/user-profile-check', async (req, res) => {
-    const startMs = Date.now();
-    const rawCookie = (req.headers['x-ig-session-id'] as string) || '';
-    const targetUsername = ((req.query.username as string) || 'instagram').replace(/^@/, '').trim().toLowerCase();
-
-    if (!rawCookie || !rawCookie.trim()) {
-      addInstagramLog({
-        username: targetUsername,
-        status: 401,
-        success: false,
-        strategyUsed: 'GET /api/user-profile-check',
-        hasSessionId: false,
-        error: 'Oturum bilgisi boş veya eksik',
-        diagnosis: 'Oturum bilgisi geçersiz veya süresi dolmuş (401 Unauthorized).',
-        suggestedAction: 'Geçerli bir sessionid/F12 çerez listesi girin veya Çerezsiz Mobil/APK Modunda devam edin.',
-        latencyMs: Date.now() - startMs,
-      });
-      return res.status(401).json({
-        valid: false,
-        statusCode: 401,
-        message: 'Oturum bilgisi geçersiz veya süresi dolmuş',
-      });
-    }
-
-    const jar = buildInstagramCookieJar(rawCookie);
-    const detectedKeys = Object.keys(jar.parsedCookies);
-    const hasValidF12Keys = (jar.sessionId && jar.sessionId.length >= 6) || detectedKeys.length >= 2;
-
-    if (!hasValidF12Keys) {
-      addInstagramLog({
-        username: targetUsername,
-        status: 401,
-        success: false,
-        strategyUsed: 'GET /api/user-profile-check',
-        hasSessionId: false,
-        error: 'Format hatası: geçerli çerez anahtarı bulunamadı',
-        diagnosis: 'Oturum bilgisi geçersiz veya süresi dolmuş (sessionid veya F12 anahtarları eksik).',
-        suggestedAction: 'F12 -> Application -> Cookies altındaki çerezleri kontrol edin veya Çerezsiz Modda devam edin.',
-        latencyMs: Date.now() - startMs,
-      });
-      return res.status(401).json({
-        valid: false,
-        statusCode: 401,
-        message: 'Oturum bilgisi geçersiz veya süresi dolmuş',
-      });
-    }
-
-    const desktopChromeUA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
-
-    try {
-      const { execFile } = await import('child_process');
-      const util = await import('util');
-      const execFileAsync = util.promisify(execFile);
-
-      const args = [
-        '-s', '-L', '--max-time', '4',
-        '-w', '\n%{http_code}',
-        '-H', `User-Agent: ${desktopChromeUA}`,
-        '-H', 'x-ig-app-id: 936619743392459',
-        '-H', 'x-asbd-id: 129477',
-        '-H', 'Accept: */*',
-        '-H', 'Accept-Language: tr-TR,tr;q=0.9,en-US;q=0.8',
-        '-H', 'Sec-Fetch-Site: same-origin',
-        '-H', 'Sec-Fetch-Mode: cors',
-        '-H', 'Sec-Fetch-Dest: empty',
-        '-H', `Referer: https://www.instagram.com/${targetUsername}/`,
-        '-H', 'X-Requested-With: XMLHttpRequest',
-        '-H', `Cookie: ${jar.cookieHeader}`,
-      ];
-      if (jar.csrfToken) {
-        args.push('-H', `x-csrftoken: ${jar.csrfToken}`);
-      }
-      args.push(`https://www.instagram.com/api/v1/users/web_profile_info/?username=${encodeURIComponent(targetUsername)}`);
-
-      const { stdout } = await execFileAsync('curl', args, { maxBuffer: 5 * 1024 * 1024 });
-      const lines = (stdout || '').trim().split('\n');
-      const httpCodeStr = lines.pop()?.trim() || '200';
-      const bodyStr = lines.join('\n').trim();
-      const httpCode = parseInt(httpCodeStr, 10) || 200;
-
-      if (bodyStr && bodyStr.startsWith('{')) {
-        const parsed = JSON.parse(bodyStr);
-        if (parsed?.data?.user?.username) {
-          addInstagramLog({
-            username: parsed.data.user.username,
-            status: 200,
-            success: true,
-            strategyUsed: 'GET /api/user-profile-check (Masaüstü Chrome UA)',
-            hasSessionId: true,
-            diagnosis: `Oturum çerezi doğrulandı (@${parsed.data.user.username}). Algılanan çerez anahtarları: ${detectedKeys.join(', ')}`,
-            suggestedAction: 'Oturum aktif ve kullanıma hazır.',
-            latencyMs: Date.now() - startMs,
-          });
-          return res.status(200).json({
-            valid: true,
-            statusCode: 200,
-            message: `Oturum çerezi doğrulandı ve aktif (${detectedKeys.join(', ')}).`,
-            user: parsed.data.user.username,
-            fullName: parsed.data.user.full_name,
-            avatarUrl: parsed.data.user.profile_pic_url,
-            detectedCookies: detectedKeys,
-          });
-        }
-      }
-
-      const confirmed = httpCode === 200 && !!bodyStr && bodyStr.startsWith('{');
-      const failureStatus = httpCode === 429 ? 429 : httpCode === 401 || httpCode === 403 ? 401 : 502;
-      addInstagramLog({
-        username: targetUsername,
-        status: confirmed ? 200 : httpCode,
-        success: confirmed,
-        strategyUsed: 'GET /api/user-profile-check (Sunucu doğrulaması)',
-        hasSessionId: true,
-        error: confirmed ? undefined : `Instagram çerez doğrulaması tamamlanamadı (HTTP ${httpCode}).`,
-        diagnosis: confirmed
-          ? `Instagram yanıtı alındı. Algılanan çerez anahtarları: ${detectedKeys.join(', ')}`
-          : `Çerez biçimi algılandı ancak Instagram sunucusu oturumu doğrulamadı (HTTP ${httpCode}).`,
-        suggestedAction: confirmed
-          ? 'Oturum sunucu tarafından doğrulandı.'
-          : 'Çerezi doğrulamadan geçerli saymayın. Oturum süresini ve Instagram erişimini kontrol edip tekrar deneyin.',
-        latencyMs: Date.now() - startMs,
-      });
-      return res.status(confirmed ? 200 : failureStatus).json({
-        valid: confirmed,
-        statusCode: confirmed ? 200 : failureStatus,
-        remoteStatusCode: httpCode,
-        message: confirmed
-          ? 'Instagram oturumu sunucu tarafından doğrulandı.'
-          : 'Çerez biçimi algılandı ancak oturum doğrulanamadı. Instagram erişimi veya oturum süresini kontrol edin.',
-        detectedCookies: detectedKeys,
-      });
-    } catch (err: any) {
-      addInstagramLog({
-        username: targetUsername,
-        status: 502,
-        success: false,
-        strategyUsed: 'GET /api/user-profile-check',
-        hasSessionId: true,
-        error: 'Instagram doğrulama isteği tamamlanamadı.',
-        diagnosis: 'Ağ hatası veya zaman aşımı nedeniyle oturum doğrulanamadı.',
-        suggestedAction: 'Bağlantıyı kontrol edin ve daha sonra yeniden deneyin.',
-        latencyMs: Date.now() - startMs,
-      });
-      return res.status(502).json({
-        valid: false,
-        statusCode: 502,
-        message: 'Instagram oturumu doğrulanamadı; ağ bağlantısını kontrol edip tekrar deneyin.',
-        detectedCookies: detectedKeys,
-      });
-    }
-  });
-
-  // Test Session ID Endpoint (POST alias compatible with GET /api/user-profile-check)
-  app.post('/api/instagram/test-session', async (req, res) => {
-    const { sessionId } = req.body;
-    if (!sessionId || typeof sessionId !== 'string' || !sessionId.trim()) {
-      return res.status(401).json({
-        valid: false,
-        statusCode: 401,
-        message: 'Oturum bilgisi geçersiz veya süresi dolmuş'
-      });
-    }
-
-    const jar = buildInstagramCookieJar(sessionId);
-    const detectedKeys = Object.keys(jar.parsedCookies);
-    if ((!jar.sessionId || jar.sessionId.length < 6) && detectedKeys.length < 2) {
-      return res.status(401).json({
-        valid: false,
-        statusCode: 401,
-        message: 'Oturum bilgisi geçersiz veya süresi dolmuş'
-      });
-    }
-
-    return res.status(200).json({
-      valid: true,
-      statusCode: 200,
-      message: `F12 çerezleri algılandı ve onaylandı (${detectedKeys.join(', ')}).`,
-      user: jar.userId || 'instagram',
-      detectedCookies: detectedKeys,
-    });
-  });
-
   // Clear Diagnostics Logs Endpoint
   app.post('/api/instagram/clear-logs', (req, res) => {
     instagramRequestLogs.length = 0;
@@ -529,7 +257,7 @@ async function startServer() {
     const cacheFile = path.join(CACHE_DIR, `${cleanUsername}.json`);
 
     try {
-      // This route intentionally never accepts or forwards personal Instagram session credentials.\n      const sessionId = '';
+      // Public-only route; no personal session credentials are accepted or forwarded.\n      const sessionId = '';
 
       const getValidCache = () => {
         if (fs.existsSync(cacheFile)) {
@@ -548,7 +276,7 @@ async function startServer() {
       let rawJson: any = null;
       let isFromCache = false;
 
-      // Always attempt LIVE Instagram fetch first (resilient with or without sessionId)
+      // Make one ordinary, credential-free public profile request.
       rawJson = await fetchInstagramProfile(cleanUsername, sessionId);
 
       if (rawJson?.data?.user?.username) {
@@ -573,11 +301,11 @@ async function startServer() {
           username: cleanUsername,
           status: 429,
           success: false,
-          strategyUsed: sessionId ? 'Cookie + Multi-API Rotation' : 'Cookie-Free Mobile/APK Multi-API',
+          strategyUsed: 'Cookie-Free Public Profile',
           hasSessionId: !!sessionId,
           error: 'HTTP 429 Hız Sınırı / Geçici Yoğunluk',
-          diagnosis: 'Instagram açık uç noktaları geçici hız sınırına (HTTP 429) ulaştı. 30 saniyelik geri sayım sonrası otomatik tekrar denenecek.',
-          suggestedAction: 'Çerez zorunluluğu yoktur; 30 saniye bekleyin veya otomatik geri sayımın tamamlanmasını bekleyin.'
+          diagnosis: 'Instagram herkese açık profil verisi oturumsuz istekle alınamadı veya erişim sınırlandı.',
+          suggestedAction: 'Oturum bilgisi eklemeyin ve istekleri tekrarlamayın. Daha sonra elle yeniden deneyin veya önbellekteki veriyi kullanın.'
         });
 
         return res.status(429).json({
