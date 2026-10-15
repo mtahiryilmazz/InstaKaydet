@@ -1687,6 +1687,8 @@ Nasıl Kullanılır?
           id: String(tokenPayload.user_id),
           username: typeof tokenPayload.username === 'string' ? tokenPayload.username : '',
           fullName: typeof tokenPayload.username === 'string' ? tokenPayload.username : '',
+          avatarUrl: '',
+          postsCount: 0,
           accountType: 'CREATOR'
         },
         accessToken: tokenPayload.access_token,
