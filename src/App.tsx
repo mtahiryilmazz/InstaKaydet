@@ -30,7 +30,7 @@ import { QuickDownloader } from './components/QuickDownloader';
 import { PdfExportModal } from './components/PdfExportModal';
 import { CloudBackupView } from './components/CloudBackupView';
 import { DateRangeFilter } from './components/DateRangeFilter';
-import { InstagramSessionModal } from './components/InstagramSessionModal';
+import { AccountSafetyModal } from './components/AccountSafetyModal';
 import { ErrorLogViewer } from './components/ErrorLogViewer';
 import { BulkDownloadModal } from './components/BulkDownloadModal';
 import { ChromeExtensionModal } from './components/ChromeExtensionModal';
@@ -116,11 +116,8 @@ export default function App() {
   const [pdfScopePosts, setPdfScopePosts] = useState<InstagramPost[]>([]);
   const [pdfCustomTitle, setPdfCustomTitle] = useState('');
 
-  // Session Cookie ID state for overcoming rate limits
-  const [sessionId, setSessionId] = useState<string>(() => {
-    return localStorage.getItem('instaflow_session_id') || '';
-  });
-  const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+  // Privacy-first state: Zero personal data collected, 100% public profile mode
+  const [isSafetyModalOpen, setIsSafetyModalOpen] = useState(false);
 
   // Media Type Filter: 'all' | 'video' | 'image' | 'carousel'
   const [mediaFilter, setMediaFilter] = useState<'all' | 'video' | 'image' | 'carousel'>('all');
@@ -288,7 +285,7 @@ export default function App() {
         if (prev <= 1) {
           if (!isScanningDeep) {
             setTimeout(() => {
-              loadUserProfile(username, true, undefined, true);
+              loadUserProfile(username, true, true);
             }, 50);
           }
           return 0;
@@ -345,19 +342,17 @@ export default function App() {
   const loadUserProfile = async (
     targetUsername: string,
     force = false,
-    overrideSessionId?: string,
     retryAfterCooldown = false
   ) => {
     const requestId = ++activeRequestIdRef.current;
     setIsLoadingUser(true);
     setCooldownSeconds(0);
 
-    const effectiveSessionId = overrideSessionId !== undefined ? overrideSessionId : (sessionId || localStorage.getItem('instaflow_session_id') || '');
     try {
       const feed = await fetchUserFeedAsync(
         targetUsername,
         force,
-        effectiveSessionId,
+        '',
         1,
         undefined,
         retryAfterCooldown
@@ -474,7 +469,7 @@ export default function App() {
         profile.username,
         profile.pageInfo?.userId || '',
         effectiveCursor,
-        sessionId
+        ''
       );
 
       if (result.success && result.posts && result.posts.length > 0) {
@@ -543,7 +538,7 @@ export default function App() {
           profile?.username || username,
           profile?.pageInfo?.userId || '',
           currentCursor,
-          sessionId,
+          '',
           controller.signal
         );
 
@@ -971,9 +966,8 @@ export default function App() {
         enhanceResolution={enhanceResolution}
         onToggleEnhanceResolution={toggleEnhanceResolution}
         onOpenExtensionModal={() => setIsExtensionModalOpen(true)}
-        onOpenSessionModal={() => setIsSessionModalOpen(true)}
+        onOpenSafetyModal={() => setIsSafetyModalOpen(true)}
         onOpenScheduledModal={() => setIsScheduledModalOpen(true)}
-        sessionId={sessionId}
         scheduledCount={scheduledJobs.filter(j => j.status === 'pending').length}
       />
 
@@ -995,10 +989,9 @@ export default function App() {
               onSelectAllPosts={handleSelectAllPosts}
               onClearSelection={handleClearSelection}
               onExportSelectedPdf={handleExportSelectedPostsPdf}
-              onOpenSessionModal={() => setIsSessionModalOpen(true)}
+              onOpenSafetyModal={() => setIsSafetyModalOpen(true)}
               onOpenBulkDownloadModal={() => setIsBulkModalOpen(true)}
               onExportCsvStandalone={handleExportCsvStandalone}
-              sessionId={sessionId}
               isDataSaver={isDataSaver}
               onToggleDataSaver={toggleDataSaver}
               cooldownSeconds={cooldownSeconds}
@@ -1063,18 +1056,18 @@ export default function App() {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <button
-                      onClick={() => loadUserProfile(username, true, undefined, true)}
+                      onClick={() => loadUserProfile(username, true, true)}
                       className="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer text-xs"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
                       <span>Şimdi Tekrar Dene</span>
                     </button>
                     <button
-                      onClick={() => setIsSessionModalOpen(true)}
+                      onClick={() => setIsSafetyModalOpen(true)}
                       className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer text-xs"
                     >
-                      <Key className="w-3.5 h-3.5 text-rose-400" />
-                      <span>İsteğe Bağlı Çerez</span>
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Hesap Güvenliği Rehberi</span>
                     </button>
                   </div>
                 </div>
@@ -1514,24 +1507,25 @@ export default function App() {
                     </button>
                   </div>
 
-                  {/* Informational Callout regarding Instagram 12-posts pagination & Session ID */}
-                  {!sessionId && profile.postsCount > posts.length && (
-                    <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-amber-500/30 text-xs text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  {/* Privacy-First Public Browsing Status Callout */}
+                  {profile.postsCount > posts.length && (
+                    <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-emerald-500/30 text-xs text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                       <div className="space-y-1">
-                        <div className="flex items-center gap-1.5 font-bold text-amber-300">
-                          <Key className="w-3.5 h-3.5 text-amber-400" />
-                          <span>Instagram 400+ Gönderi Bilgilendirmesi</span>
+                        <div className="flex items-center gap-1.5 font-bold text-emerald-300">
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Herkese Açık & Güvenli Profil Modu</span>
                         </div>
                         <p className="text-[11px] text-slate-300 leading-relaxed">
-                          Instagram herkese açık web profilinde ilk 12 gönderiyi şifresiz sunar. Kalan <strong>{profile.postsCount - posts.length} gönderinin</strong> tamamını hız sınırına takılmadan tek seferde tarayıp indirmek için tarayıcınızdan alabileceğiniz <strong className="text-amber-200">Session ID</strong> çerezini ekleyebilirsiniz.
+                          Sıfır kişisel veri politikası: Hesabınıza veya şifrenize asla erişilmez. Kalan <strong>{(profile.postsCount - posts.length).toLocaleString('tr-TR')} gönderiyi</strong> yukarıdaki &quot;Sonraki Gönderileri Yükle (+12)&quot; veya &quot;Tüm Gönderileri Otomatik Tara&quot; ile şifresiz çekebilirsiniz.
                         </p>
                       </div>
 
                       <button
-                        onClick={() => setIsSessionModalOpen(true)}
-                        className="px-3.5 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+                        onClick={() => setIsSafetyModalOpen(true)}
+                        className="px-3.5 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 border border-emerald-500/40 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap flex items-center gap-1.5"
                       >
-                        🔑 Session ID Ekle
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>Güvenlik Rehberi</span>
                       </button>
                     </div>
                   )}
@@ -1612,7 +1606,7 @@ export default function App() {
         {/* TAB 4: Live Error & Request Diagnostics Logs Viewer */}
         {activeTab === 'logs' && (
           <ErrorLogViewer
-            onOpenSessionModal={() => setIsSessionModalOpen(true)}
+            onOpenSessionModal={() => setIsSafetyModalOpen(true)}
             onRefreshFeed={() => loadUserProfile(username, true)}
           />
         )}
@@ -1698,23 +1692,11 @@ export default function App() {
         />
       )}
 
-      {/* Instagram Session ID Cookie Modal */}
-      <InstagramSessionModal
-        isOpen={isSessionModalOpen}
-        onClose={() => setIsSessionModalOpen(false)}
-        currentSessionId={sessionId}
-        onSaveSessionId={(newId) => {
-          setSessionId(newId);
-          if (newId) {
-            localStorage.setItem('instaflow_session_id', newId);
-            showToast('Instagram Session ID kaydedildi, veriler canlı yenileniyor!');
-            loadUserProfile(username, true, newId);
-          } else {
-            localStorage.removeItem('instaflow_session_id');
-            showToast('Session ID kaldırıldı');
-            loadUserProfile(username, true, '');
-          }
-        }}
+      {/* Account Safety & Privacy Modal */}
+      <AccountSafetyModal
+        isOpen={isSafetyModalOpen}
+        onClose={() => setIsSafetyModalOpen(false)}
+        onOpenExtensionModal={() => setIsExtensionModalOpen(true)}
       />
 
       {/* Chrome Extension Modal */}

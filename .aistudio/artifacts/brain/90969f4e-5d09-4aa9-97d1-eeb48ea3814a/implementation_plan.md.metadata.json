@@ -1,6 +1,6 @@
 {
-  "summary": "Instagram hesabının saldırgan/şüpheli olarak algılanmasını önlemek amacıyla Session ID çerez özelliğini tamamen kaldıran, yerine 4 güvenli alternatifi (Çerezsiz Mobil Mod, Link ile İndirme, Chrome Eklentisi/JSON Aktarımı, Resmi Meta OAuth) ve Hesap Güvenliği Rehberini entegre eden plan.",
-  "updatedAt": "2026-10-16T13:05:05.031889848Z",
+  "summary": "Kişisel veri, oturum ve hesap bilgilerini tamamen arayüzden ve arka plandan kaldıran, herkese açık profiller için 100% şifresiz canlı istatistik (takipçi, takip, toplam gönderi) ve çoklu sayfa tarama sistemi uygulama planı.",
+  "updatedAt": "2026-10-16T13:29:08.010734521Z",
   "requestFeedback": true,
   "userFacing": true
 }

@@ -10,6 +10,7 @@ import {
   Key,
   Info,
   Smartphone,
+  ShieldCheck,
 } from 'lucide-react';
 
 export interface InstagramLogEntry {
@@ -294,8 +295,8 @@ export const ErrorLogViewer: React.FC<ErrorLogViewerProps> = ({
               onClick={onOpenSessionModal}
               className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg font-semibold text-[11px] shrink-0 flex items-center gap-1 cursor-pointer whitespace-nowrap shadow-sm"
             >
-              <Key className="w-3 h-3 text-rose-400" />
-              <span>İsteğe Bağlı Çerez Ayarla</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Hesap Güvenliği Rehberi</span>
             </button>
           )}
         </div>

@@ -1,59 +1,58 @@
-# Instagram Hesap Güvenliği & Session ID Yerine Güvenli Alternatifler Planı
+# Kişisel Verisiz Açık Profil ve Canlı İstatistik Entegrasyon Planı
 
-Kullanıcı geri bildirimi doğrultusunda: Kullanıcının kişisel Instagram hesabının güvenliğini tehlikeye atan, Instagram tarafından "saldırgan/şüpheli oturum" olarak algılanmasına yol açan **Session ID / çerez özelliği tamamen kaldırılacaktır**. Yerine arayüze bir **Hesap Güvenliği Rehberi** ve **4 güvenli alternatif yöntem** entegre edilecektir.
-
----
-
-### 1. Instagram Hesabının Saldırgan Olarak Algılanma Nedeni
-
-- **IP & ASN Uyuşmazlığı**: Bir kullanıcı kendi ev internetinden (bireysel ISS, Türkiye IP'si) giriş yaptığı oturumun `sessionid` çerezini kopyalayıp bulut sunucuya aktardığında, Instagram güvenlik sistemleri bu oturum çerezinin aynı anda binlerce kilometre uzaktaki bir veri merkezi IP'sinden (Google Cloud / yabancı ASN) kullanıldığını tespit eder.
-- **Güvenlik Alarmı (Checkpoint)**: Instagram bunu doğrudan "Hesap Ele Geçirme / Bot Saldırısı" olarak değerlendirir ve kullanıcının gerçek hesabını koruma amacıyla kilitler veya şüpheli giriş uyarısı verir.
-- **Kesin Çözüm**: Kullanıcıdan asla Instagram çerezi veya oturum bilgisi **istenmemeli** ve sunucuya aktarılmamalıdır.
+Kullanıcının *"kişisel hiçbir veriyi toplama, kullanıcı hesabı bilgilerini de alma, zaten aradığım tüm profiller herkese açık"* talebi ve anket yanıtları doğrultusunda; tüm oturum/çerez istemleri ve kişisel veri alanları kaldırılacak, yerine **%100 anonim, şifresiz, herkese açık profil tarayıcısı** ve **canlı profil istatistik motoru** entegre edilecektir.
 
 ---
 
-### 2. Yapılacak Değişiklikler ve Güvenli Mimari
+## 1. Mimari ve Temel Değişiklikler
 
-#### A. Session ID Özelliğinin Kaldırılması & Temizlenmesi
-1. **Yerel Depolama Temizliği**:
-   - Tarayıcıda saklanan `instaflow_session_id` anahtarı otomatik temizlenecektir (`localStorage.removeItem('instaflow_session_id')`).
-2. **Arayüzden Kaldırılanlar**:
-   - `InstagramSessionModal.tsx` içindeki çerez girme formu yerine yeni `AccountSafetyModal.tsx` (Hesap Güvenliği & Alternatif Yöntemler Rehberi) getirilecektir.
-   - Başlık (`Header.tsx`), profil başlığı (`UserProfileHeader.tsx`), hata kayıtları paneli (`ErrorLogViewer.tsx`) ve 429 panosundaki "Session ID Ayarla" butonları kaldırılacaktır.
-3. **Yeni Buton ve Rehber**:
-   - Yerine yeşil kalkan ikonuyla **🛡️ Hesap Güvenliği & Yöntemler** butonu eklenecektir.
+### A. Kişisel Veri & Oturum (Session ID) Temizliği
+- **Kişisel Veri ve Çerez İstemlerinin Tamamen Kaldırılması**:
+  - `src/App.tsx`, `UserProfileHeader.tsx` ve bileşenlerdeki Session ID giriş kutuları, çerez doğrulama pencereleri ve yerel depolama (`instaflow_session_id`) tamamen devre dışı bırakılacak.
+  - Varsa oturum istemi içeren uyarı kutuları kaldırılacak; yerine **"Herkese Açık Profil Modu: Sıfır Kişisel Veri, Tam Gizlilik"** prensibi benimsenecek.
+  - Kullanıcıdan hiçbir hesap şifresi, çerez veya kişisel bilgi talep edilmeyecek; tüm işlemler Instagram'ın herkese açık uç noktaları üzerinden anonim olarak yürütülecek.
 
-#### B. 4 Güvenli Alternatif Yöntemin Öne Çıkarılması
-Kullanıcının tercih ettiği 4 güvenli alternatif rehberde ve ana ekranda belirgin olarak sunulacaktır:
-1. **Çerezsiz Güvenli Mobil & APK Modu (Varsayılan & %100 Güvenli)**:
-   - Kullanıcının hiçbir Instagram hesabıyla bağlantısı yoktur.
-   - Herkese açık Instagram web ve embed API'leri üzerinden anonim olarak profilleri ve gönderileri çeker. Hesabınızın etkilenme riski sıfırdır.
-2. **Doğrudan Gönderi / Reels Bağlantısı (Link ile İndirme)**:
-   - Instagram uygulamasında veya tarayıcıda görülen herhangi bir gönderinin ("Bağlantıyı Kopyala") linki yapıştırılarak tek tıkla albüm/video olarak çekilir.
-3. **Chrome Eklentisi / Yerel JSON Aktarımı**:
-   - Kullanıcı kendi ev bilgisayarındaki tarayıcıdan tek tıkla profil gönderilerini JSON olarak dışa aktarır ve bu uygulamaya yükler. İstekler kullanıcının kendi IP'sinden yapıldığı için Instagram hiçbir şüphe duymaz.
-4. **Resmi Meta Instagram OAuth 2.0 (Resmi Graph API)**:
-   - Meta Developer Portal üzerinden oluşturulacak yasal istemci kimliği (Client ID & Secret) ile güvenli ve onaylı entegrasyon.
+### B. Canlı Profil İstatistikleri (Takipçi, Takip, Toplam Gönderi)
+- **Dinamik ve Genel Veri Zenginleştirme (`enrichUniversalProfileStats`)**:
+  - Hesaplara özel sabit kodlama yapılmaksızın; `@kozanbel` (1.531 gönderi, 12,2 B takipçi, 28 takip), `@trthaber` (52.844 gönderi, 3,3 Mn takipçi, 3 takip) ve diğer tüm açık hesapların anlık canlı sayıları tespit edilecek.
+  - Instagram'ın bulut IP kısıtlamalarına takılmayan arama motoru OpenGraph/Snippet okuyucusu üzerinden `Followers`, `Following`, `Posts` ve biyografi bilgisi parse edilerek profile eklenecek.
+  - Profil başlığında `12 gönderi · 0 takipçi` hatası yerine gerçek rakamlar (örn. `1.531 gönderi · 12,2 B takipçi · 28 takip`) gösterilecek.
 
-#### C. Profil İstatistikleri Zenginleştirme Düzeltmesi (`server.ts`)
-- Kamuya açık embed sayfalarındaki (`https://www.instagram.com/:username/embed/`) ters eğik çizgi ile kaçırılmış (`\"edge_followed_by\":{\"count\":3313210}`) JSON verisini okuyan regex düzeltilerek:
-  - Toplam gönderi sayısı (örn. 52.883)
-  - Takipçi sayısı (örn. 3,3 Mn)
-  - Onaylı hesap rozeti (Mavi Tik)
-  tüm hesaplar için dinamik ve genel olarak doldurulacaktır.
+### C. Çoklu Sayfa ve Kesintisiz Gönderi Akışı (12 Gönderi Sınırını Aşma)
+- **İlk Yüklemede Zenginleştirilmiş Ön Yükleme**:
+  - Kullanıcı profili ilk açtığında yalnızca ilk 12 gönderiyle sınırlı kalmayacak; arka planda 2. sayfa otomatik birleştirilerek anında 24 gönderi sunulacak.
+- **Şifresiz Sayfa Yükleme & Derin Tarama**:
+  - Sayfa sonundaki **`[Sonraki Gönderileri Yükle (+12)]`** butonu ve **`[Tüm Gönderileri Otomatik Tara]`** derin tarama motoru oturumsuz/şifresiz olarak sonraki `max_id` sayfalarını çekecek.
+  - Gönderi listesi altında anlık durum sayacı:
+    `Şu anda {posts.length} / {profile.postsCount.toLocaleString('tr-TR')} gönderi yüklü`
+    olarak net biçimde gösterilecek.
 
 ---
 
-### 3. Kullanıcı Deneyimi ve Arayüz Akışı
+## 2. Kullanıcı Arayüzü & Görsel Düzenlemeler (Tasarım Standartları)
 
-1. Kullanıcı arayüzde artık şüpheli çerez girişine zorlanmaz veya yönlendirilmez.
-2. Üst menüde ve profil kartında **🛡️ Hesap Güvenliği** rozeti yer alır.
-3. Tıklandığında açılan rehber penceresinde 4 güvenli yöntem kartlar halinde listelenir ve tek tıkla istenen alternatif (Linkle İndirme, Eklenti JSON Yükleme veya Çerezsiz Canlı Yenileme) başlatılabilir.
-4. `@trthaber` ve tüm diğer profillerde gerçek gönderi sayısı (52.883+) ve takipçi sayısı (3,3 Mn) eksiksiz görüntülenir.
+1. **Profil Başlığı (`UserProfileHeader.tsx`)**:
+   - Statik etiketlerde pill/rozet kirliliği olmadan, şık tipografik ayraçlarla (`·`) unboxed metin hiyerarşisi:
+     `1.531 gönderi · 12,2 B takipçi · 28 takip · 24 yüklü`
+   - Biyografi ve doğrulanmış rozetleri tam ve temiz görünecek.
+2. **Hesap Güvenliği & Gizlilik Bilgilendirmesi**:
+   - Eski Session ID ekleme çağrıları kaldırılarak yerine:
+     *🛡️ Herkese Açık & Güvenli Mod: Hesabınıza veya kişisel verilerinize asla erişilmez.*
+     bilgisi yer alacak.
+3. **Akıcı Sayfalama Kontrolleri**:
+   - Tek tıkla sonraki sayfaları çekme veya hesaptaki yüzlerce gönderiyi duraklatılabilir derin taramayla hafızaya alma özellikleri belirgin olacak.
 
 ---
 
-### 4. Doğrulama ve Test Adımları
-- `server.ts` ve frontend bileşenleri derlenecek (`compile_applet` & `lint_applet`).
-- Yerel depolamadaki eski session ID'nin temizlendiği ve hiçbir isteğe `x-ig-session-id` başlığı eklenmediği test edilecek.
-- `@trthaber` profili sorgulanarak 52.883 gönderi ve 3,3 Mn takipçinin çerezsiz ve güvenli biçimde geldiği teyit edilecek.
+## 3. Doğrulama ve Test Adımları
+
+1. **`kozanbel` Hesabı Testi**:
+   - Profil detaylarının (1.531 gönderi, 12,2 B takipçi, 28 takip) canlı olarak doğrulanması.
+   - İlk açılışta 12 yerine doğrudan 24 gönderinin listelenmesi.
+   - "Sonraki Gönderileri Yükle" butonuna tıklandığında sonraki sayfaların hatasız eklenmesi.
+2. **`trthaber` Hesabı Testi**:
+   - Toplam gönderi ve takipçi sayısının doğru yansıması.
+3. **Gizlilik Testi**:
+   - Arayüzde hiçbir oturum/şifre kutusu veya kişisel veri kaydedici bulunmadığının teyidi.
+4. **Derleme Kontrolü**:
+   - `compile_applet` ve `lint_applet` ile sıfır hata doğrulaması.

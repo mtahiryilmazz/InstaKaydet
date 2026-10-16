@@ -3,7 +3,7 @@ import {
   DownloadCloud,
   Layers,
   Puzzle,
-  Key,
+  ShieldCheck,
   SlidersHorizontal,
   Clock,
   Zap,
@@ -23,9 +23,8 @@ interface HeaderProps {
   enhanceResolution?: boolean;
   onToggleEnhanceResolution?: () => void;
   onOpenExtensionModal?: () => void;
-  onOpenSessionModal?: () => void;
+  onOpenSafetyModal?: () => void;
   onOpenScheduledModal?: () => void;
-  sessionId?: string;
   scheduledCount?: number;
 }
 
@@ -40,9 +39,8 @@ export const Header: React.FC<HeaderProps> = ({
   enhanceResolution = true,
   onToggleEnhanceResolution,
   onOpenExtensionModal,
-  onOpenSessionModal,
+  onOpenSafetyModal,
   onOpenScheduledModal,
-  sessionId = '',
   scheduledCount = 0,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -128,24 +126,15 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right Compact Action Cluster (Mobile & Desktop friendly) */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Session Cookie Status Trigger */}
-          {onOpenSessionModal && (
+          {/* Privacy & Account Safety Trigger */}
+          {onOpenSafetyModal && (
             <button
-              onClick={onOpenSessionModal}
-              className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border min-h-[40px] ${
-                sessionId
-                  ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/60'
-                  : 'bg-slate-900 hover:bg-slate-800 border-slate-800 text-slate-300'
-              }`}
-              title="Instagram Oturum Çerezi (Session ID) Ayarları"
+              onClick={onOpenSafetyModal}
+              className="px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border min-h-[40px] bg-emerald-950/40 border-emerald-500/30 text-emerald-300 hover:bg-emerald-900/50"
+              title="Hesap Güvenliği: Sıfır Kişisel Veri, Herkese Açık Mod"
             >
-              <span
-                className={`w-2 h-2 rounded-full shrink-0 ${
-                  sessionId ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
-                }`}
-              />
-              <Key className="w-3.5 h-3.5 text-rose-400 hidden sm:inline" />
-              <span>{sessionId ? 'Oturum Aktif' : 'Oturum Ekle'}</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Açık Profil Modu</span>
             </button>
           )}
 

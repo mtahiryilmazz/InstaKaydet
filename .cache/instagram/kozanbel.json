@@ -1,0 +1,765 @@
+{
+  "data": {
+    "user": {
+      "id": "6299018983",
+      "username": "kozanbel",
+      "full_name": "Kozan Belediyesi",
+      "profile_pic_url_hd": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-19/731761351_18359943193210984_1238054928705878245_n.jpg?stp=dst-jpg_e0_s150x150_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_cat=104&_nc_oc=Q6cZ2gEEBQvPbx1aIeLx4-l-hLn_V3JC8w089JJGwnhecms1hUybNazEBY58v91Oo7ITHCikKJB0d3B2BQX6LVtPDBJU&_nc_ohc=KIuDmkRxhfsQ7kNvwEO7kKi&_nc_gid=03a5AieDe6F_Vou750C6FQ&edm=ACWDqb8BAAAA&ccb=7-5&oh=00_AQPCJ5sVYJovd3BSC-rkEX8d-J4ySg8lQ159YzislpgP2Q&oe=6AD7EF38&_nc_sid=ee9879",
+      "profile_pic_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-19/731761351_18359943193210984_1238054928705878245_n.jpg?stp=dst-jpg_e0_s150x150_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_cat=104&_nc_oc=Q6cZ2gEEBQvPbx1aIeLx4-l-hLn_V3JC8w089JJGwnhecms1hUybNazEBY58v91Oo7ITHCikKJB0d3B2BQX6LVtPDBJU&_nc_ohc=KIuDmkRxhfsQ7kNvwEO7kKi&_nc_gid=03a5AieDe6F_Vou750C6FQ&edm=ACWDqb8BAAAA&ccb=7-5&oh=00_AQPCJ5sVYJovd3BSC-rkEX8d-J4ySg8lQ159YzislpgP2Q&oe=6AD7EF38&_nc_sid=ee9879",
+      "biography": "Kozan Belediyesi Resmi Instagram Hesabı",
+      "edge_owner_to_timeline_media": {
+        "count": 1531,
+        "page_info": {
+          "has_next_page": true,
+          "end_cursor": "3986120337912109679_36656873282"
+        },
+        "edges": [
+          {
+            "node": {
+              "id": "4009188660325176312",
+              "shortcode": "Dejf9hQNNP4",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.71878-15/848733244_961985063646016_6529166872635046056_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=101&ig_cache_key=NDAwOTE4ODY2MDMyNTE3NjMxMg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fZGVmYXVsdF9jb3Zlcl9mcmFtZS5DMyJ9&_nc_ohc=L9sovd0EpuQQ7kNvwER9tQO&_nc_oc=AdoDsTb4e_YBb-tcY3_fZSj4c0wX_ZUOD6JplblsfW4GWc9FP7CTTjFLJYn_Gy9_VGEijJDMwQ99tn_oLGz0qTIw&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&oh=00_AQMq11u_TxedPuxevG5f4jNAj7eUzTvcw7K-C6uVOFAgbg&oe=6AD8097B",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQPBUGGnmCXvIo8Z8U3imq38xlvVkPSdJbFnQ1XI9-GuOov2lYsAaCJv5HAwFKiodg2cmG7p1E_kMlPOLeILaZo-QjGBYTPqVjySr3c.mp4?_nc_cat=110&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=B1UXCyLnVsgQ7kNvwFUQGHZ&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTA0NTkzODU5ODQ1OTQ2MCwiYXNzZXRfYWdlX2RheXMiOjAsInZpX3VzZWNhc2VfaWQiOjEwMDk5LCJkdXJhdGlvbl9zIjo4MSwidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&ccb=17-1&vs=b48c79b3cf43dc97&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC81QTczM0JDODJDNTQ0MjgwODkxNzY1NDY5ODE0NUZDRF92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyL0VFRTVFMTgzNUU5NjQzNzY4OTE3QjZBRDc1N0RBOEFGX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACaI4fHp0dHbAxUCKAJDMywXQFRuFHrhR64YEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&_nc_zt=28&oh=00_AQOS0pqQ6IbH80lHn25FSa-fHTZ1wlQKNYRWWy1E4QEWwA&oe=6AD40ADF",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792154572,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "MAHALLELERİMİZİN PEHLİVANLARI ER MEYDANINDA!\n\nÇandık, Çanaklı, Kuyubeli, Kızıllar, Şevkiye, Kuytucak, Cumhuriyet, Karacaoğlan, Tufanpaşa, Tavşantepe, Kurtoğlu ve diğer tüm mahallelerimizi temsilen Kozan Belediye Spor Kulübü sporcularımız er meydanına çıkıyor.\n\nMahallelerimizin pehlivanlarına destek olmak ve ata sporumuzun heyecanını birlikte yaşamak için tüm Kozan halkımızı 18 Ekim Pazar günü saat 10.00’da İsmet Atlı Er Meydanı’na davet ediyoruz!\n\n#İsmetAtlıGüreşleri #Kozan #KarakucakGüreşleri #AtaSporu #KozanBelediyesi"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 235
+              },
+              "edge_media_to_comment": {
+                "count": 20
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4007892771023546711",
+              "shortcode": "Dee5T2StulX",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.71878-15/850304447_2195805001283191_2070109614255724361_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=106&ig_cache_key=NDAwNzg5Mjc3MTAyMzU0NjcxMQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fZGVmYXVsdF9jb3Zlcl9mcmFtZS5DMyJ9&_nc_ohc=nEzEGWU_Z_EQ7kNvwEZ4_Zd&_nc_oc=AdrlsPbL2QqAvo1TFRTmV4S8-BUTV_TxKHqub0LiUe_XxgLSwPoaMo_Txj29wwKfhpAapQpOwCV7Kq2flBANCC3j&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&oh=00_AQOX9ao2rXfy19tTeBqSUG4JPO5G2URUE2O1mtuuvHBArQ&oe=6AD80EDD",
+              "video_url": "https://scontent-lhr6-1.cdninstagram.com/o1/v/t2/f2/m86/AQPbQ3Fo6jeoI2lcn4VKzTskXRQ6CUMD8jTPNfQkHOFfpdpYiMs5e3nwhViLNKZLD6u3JrCQlyLWSpXzucdbK5JrG9Ez1RDh0c7jv3I.mp4?_nc_cat=109&_nc_sid=5e9851&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_ohc=B6NT9viBw0EQ7kNvwHrMCRM&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6OTc3NTMwNzk0NzIwMjU3LCJhc3NldF9hZ2VfZGF5cyI6MSwidmlfdXNlY2FzZV9pZCI6MTAwOTksImR1cmF0aW9uX3MiOjY4LCJ1cmxnZW5fc291cmNlIjoid3d3In0%3D&ccb=17-1&vs=22a2512130fa4880&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC80OUJGRkZCMjA1NDI0ODQwQTFCQzM0NkVEMzlDNzExN192aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzZEOUFENTBGRjk0NjRGQkJCQTVEMDcwQTJEQkZCN0ExX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACaC8LX848O8AxUCKAJDMywXQFECHKwIMScYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&_nc_zt=28&oh=00_AQOJGqJL5wiGS4bgm0_IukLxKaPBIW6WC6N_c6sAz1KnIw&oe=6AD3F38A",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1791998795,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Kozan’ımızın gururu, Dünya ve Olimpiyat Şampiyonumuz merhum İsmet Atlı’nın adını yaşatmak için bu yıl 10’uncusunu düzenlediğimiz Karakucak Güreşleri’nde buluşuyoruz.\n\n32 başpehlivan ve yüzlerce güreşçimizin katılacağı bu büyük heyecana tüm hemşehrilerimizi davet ediyoruz.\n\n🥁 KORTEJ YÜRÜYÜŞÜ\n🗓️ 17 Ekim Cumartesi | 15.00\n📍 Kozan Belediye Binamız Önü\n\n🤼 KARAKUCAK GÜREŞLERİ\n🗓️ 18 Ekim Pazar | 10.00\n📍 İsmet Atlı Er Meydanı\n\nGelin, hem efsane güreşçimizi birlikte analım hem de ata sporumuzun coşkusunu hep birlikte yaşayalım.\n\nTüm hemşehrilerimizi bekliyoruz!"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 550
+              },
+              "edge_media_to_comment": {
+                "count": 30
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4007824097055046972",
+              "shortcode": "DeepsgrN308",
+              "display_url": "https://scontent-lhr6-1.cdninstagram.com/v/t51.82787-15/847859910_18107755619217283_2302785565154222842_n.webp?_nc_cat=108&ig_cache_key=NDAwNzgyNDA5NzA1NTA0Njk3Mg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=W3VK_Px6uZgQ7kNvwFMX2J_&_nc_oc=AdoaRzP6ZLK7wNV6_3sjktS4XyGXdfxWqFXO8GQvA2-Bw8KQ1b9rT_MYhxn1qcxprDTWp4v_s7j81YS6fJiu9dBU&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a22e&oh=00_AQNG1fYS9NYklswrlO3pCoOGPyLVRn3lKajCOLflqpYMjA&oe=6AD7FD5D",
+              "video_url": "",
+              "is_video": false,
+              "__typename": "GraphImage",
+              "taken_at_timestamp": 1791989888,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Adana Valimiz Sayın Mustafa Yavuz’u makamında ziyaret ederek 10. Geleneksel İsmet Atlı Karakucak Güreşleri’nin davetiyesini takdim ettik.\n\n17-18 Ekim tarihlerinde Kozan’da gerçekleştireceğimiz güreşlerimizle, ata sporumuzun köklü geleneğini yaşatmayı ve dünya şampiyonu hemşehrimiz İsmet Atlı’nın adını gelecek nesillere aktarmayı hedefliyoruz. Nazik kabulleri ve misafirperverlikleri dolayısıyla Sayın Valimize teşekkür ediyorum.\n\n#Kozan #İsmetAtlı #KarakucakGüreşleri #AtaSporu #KozanBelediyesi"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 435
+              },
+              "edge_media_to_comment": {
+                "count": 10
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4007207119002347657",
+              "shortcode": "DecdaTFjSiJ",
+              "display_url": "https://scontent-lhr6-1.cdninstagram.com/v/t51.82787-15/846101565_18107668832217283_6750052441656465304_n.webp?_nc_cat=102&ig_cache_key=NDAwNzIwNjQwODMzODg1OTg3Ng%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=Dd8LMYmmCgoQ7kNvwHRWLuv&_nc_oc=AdqkNOPbnbdMn-KFjpE6MOAwmKg-PXtG6Lfw5iH_its6CKUOHjP-PDWfeLEoQarcfnQAjr-z97Yvz9ogLmCaE6cN&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a22e&oh=00_AQNcILdI7L65pLjq0-HihTkpGs61CKmzYC5lGEecBtHyNA&oe=6AD812E0",
+              "video_url": "",
+              "is_video": false,
+              "__typename": "GraphSidecar",
+              "taken_at_timestamp": 1791916335,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "10.Geleneksel İsmet Atlı Karakucak Güreşlerimizin lansman tanıtımını Adana Büyükşehir Belediyesinde gerçekleştirdik.\n\nAta sporumuz güreşi yaşatmak ve İsmet Atlı’nın mirasını gelecek nesillere aktarmak için tüm hemşehrilerimizi 18 Ekim Pazar günü saat 10.00’da İsmet Atlı Er Meydanı’nda düzenleyeceğimiz bu büyük güreş şölenine davet ediyorum. Bu heyecanı hep birlikte yaşayalım!\n\n#KozanBelediyesi #İsmetAtlı #KarakucakGüreşleri #AtaSporu #Kozan"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 299
+              },
+              "edge_media_to_comment": {
+                "count": 12
+              },
+              "edge_sidecar_to_children": {
+                "edges": [
+                  {
+                    "node": {
+                      "id": "4007206408338859876",
+                      "display_url": "https://scontent-lhr6-1.cdninstagram.com/v/t51.82787-15/846101565_18107668832217283_6750052441656465304_n.webp?_nc_cat=102&ig_cache_key=NDAwNzIwNjQwODMzODg1OTg3Ng%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=Dd8LMYmmCgoQ7kNvwHRWLuv&_nc_oc=AdqkNOPbnbdMn-KFjpE6MOAwmKg-PXtG6Lfw5iH_its6CKUOHjP-PDWfeLEoQarcfnQAjr-z97Yvz9ogLmCaE6cN&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a22e&oh=00_AQNcILdI7L65pLjq0-HihTkpGs61CKmzYC5lGEecBtHyNA&oe=6AD812E0",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  },
+                  {
+                    "node": {
+                      "id": "4007206410704488221",
+                      "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/846504641_18107668841217283_2665817286153853709_n.webp?_nc_cat=101&ig_cache_key=NDAwNzIwNjQxMDcwNDQ4ODIyMQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=T6wNJbMg7e0Q7kNvwHk3pUV&_nc_oc=Adou6NpR-STa2jJUdN1ca8FspU-Au54yxhFI6OEsybVIOYBnW2-B5Zaiqs4WMQamvGxYSau0K-K5L83hrY1fB75e&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a22e&oh=00_AQOb1b-uBqKPGkSUY8iFZtizoBMlBilhcPg-mkxQozt2EQ&oe=6AD7E63E",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  },
+                  {
+                    "node": {
+                      "id": "4007206414202512840",
+                      "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/848256015_18107668892217283_3369082010823218965_n.webp?_nc_cat=110&ig_cache_key=NDAwNzIwNjQxNDIwMjUxMjg0MA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=p1SGQs5X6QkQ7kNvwFujYOs&_nc_oc=AdqvsJLZQ0xaafpTzfGjLzc4ffNw02K-PouNlGnizqRFBba8jJ-yDfiR0UU5VWcsqrSyNAxYqU5N7NgWmdx8lrRG&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a22e&oh=00_AQPxlfTGFnAnWt0sdHVIiBl3fSHBUNiLu0F_R-FKMzHETw&oe=6AD80109",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  },
+                  {
+                    "node": {
+                      "id": "4007206417289588871",
+                      "display_url": "https://scontent-lhr6-1.cdninstagram.com/v/t51.82787-15/849171460_18107668898217283_683971059114291308_n.webp?_nc_cat=108&ig_cache_key=NDAwNzIwNjQxNzI4OTU4ODg3MQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=h3DzyH_SqHAQ7kNvwF8hI4C&_nc_oc=Adr5bAeQqH0S-xOkh9BvubQkOE7eBy3W-Aaq45Uop8E3aQOAC07RP2MLS1HeyKjba1ydMam8M6DGnNeeqiU30ScH&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a22e&oh=00_AQMvPjP0JgKfrPV52bVhdKzZMquwvcVvQHscawZE7C6n2w&oe=6AD7F90F",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  },
+                  {
+                    "node": {
+                      "id": "4007206420066119149",
+                      "display_url": "https://scontent-lhr6-1.cdninstagram.com/v/t51.82787-15/847006754_18107668913217283_6505945381260533690_n.webp?_nc_cat=102&ig_cache_key=NDAwNzIwNjQyMDA2NjExOTE0OQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=WaPaoWEAj2sQ7kNvwFn9bBB&_nc_oc=AdpfBZLWlPaAue2qxcVTEMRpU8BXsADctBvoMGZKjXlIuWQF0nf4ot1tyamS2dsd6R47IFAeIW-3MeP3_OotxD61&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a22e&oh=00_AQP35NNtml9s__vfylKKURy4EhnSUJEYeWuvkFj5sb_BvA&oe=6AD8041A",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4007146805064446890",
+              "shortcode": "DecPsnWtTOq",
+              "display_url": "https://scontent-lhr6-1.cdninstagram.com/v/t51.82787-15/846101564_18107659922217283_1783533565435661096_n.webp?_nc_cat=108&ig_cache_key=NDAwNzE0NjgwNTA2NDQ0Njg5MA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=JKK5_Hby4zkQ7kNvwEtN3gK&_nc_oc=AdrjvhTbi0dXp6QWFjRmxfryaOcApiNgqsJnbWaAb5glyruLtkB1UAaTWMV16PDcC-JgepJ79poh3cmFmAM0jhOL&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a22e&oh=00_AQONixpIZqYTv1plvJgsd-nRfu3jhR9NzjfN-vQd5aZ9DQ&oe=6AD80647",
+              "video_url": "",
+              "is_video": false,
+              "__typename": "GraphImage",
+              "taken_at_timestamp": 1791909148,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "MHP Adana İl Başkanımız Sayın Hakan Yıldırım’ı makamında ziyaret ederek 10. Geleneksel İsmet Atlı Karakucak Güreşleri’nin davetiyesini takdim ettik.\n\nAta sporumuz güreşi yaşatmak, İsmet Atlı’nın adını ve mirasını gelecek nesillere taşımak amacıyla 17-18 Ekim tarihlerinde düzenleyeceğimiz güreşlerimize verdikleri destek ve misafirperverlikleri için Sayın Hakan Yıldırım’a teşekkür ediyorum.\n\n#Kozan #İsmetAtlı #KarakucakGüreşleri #AtaSporu #KozanBelediyesi"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 635
+              },
+              "edge_media_to_comment": {
+                "count": 13
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4002843168577954337",
+              "shortcode": "DeM9KdisCIh",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.71878-15/839670783_1103653052532925_2053586333768909822_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=100&ig_cache_key=NDAwMjg0MzE2ODU3Nzk1NDMzNzE4MjAzMzI3NDg5ODg0NDc%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fbmZyYW1lX2NvdmVyX2ZyYW1lLkMzIn0%3D&_nc_ohc=DlDBY4Nac9UQ7kNvwGK3ws3&_nc_oc=AdrAVoZpsKCfUJn8MAzUn0YAlhpUbzN0w700ll1uhSJtabeQ8vxKH29mb77Q-pumdpz9cILik6yp4j88Dn8mlPys&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&oh=00_AQMUpFO7-tZdmxDA_XBgnTsk-1Ed_IB5LAP4wcvSTxNteg&oe=6AD810B4",
+              "video_url": "https://scontent-lhr6-1.cdninstagram.com/o1/v/t2/f2/m86/AQNIyO_rEkVCxR4dz0VeaJzF4WvcxlkoJm_a9ccdDMTNtrLpTOxO-QwcimOzaD8W9RyA2Q7bPPZ71M9O-C2uv3aFup36dXkJ5gJPxWA.mp4?_nc_cat=108&_nc_sid=5e9851&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_ohc=ORJtQCvaHvkQ7kNvwFk7-VP&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTgyMDMyODgzODk4ODgzOCwiYXNzZXRfYWdlX2RheXMiOjgsInZpX3VzZWNhc2VfaWQiOjEwMDk5LCJkdXJhdGlvbl9zIjo2MiwidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&ccb=17-1&vs=b5eea3d74d5d43ae&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC9EMzM0RjkxNzI0NEQ0MzY3QjkxQzMzNEU3Rjk2M0FBQ192aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzM2Q0YyOTk5NDk0MzRDQ0RCOTM0MjZFQTIwNkRDMUQ2X2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbMkJTdiuW7BhUCKAJDMywXQE9rhR64UewYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&_nc_zt=28&oh=00_AQNgboNQK2XsuUnLkYtGV3dgDIbwOkxUXEWYLWXUBVRXPQ&oe=6AD411B1",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1791396482,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Ebulfez Elçibey Kültür ve Sanat Merkezimizde yaklaşık 700 öğrencimize eğitim vermeye devam ediyoruz.\n\nResim, bağlama, gitar, ritim, bale, manevi değerlerimiz, dans, halk oyunları ve Türk müziği koroları olmak üzere 9 farklı branşta; çocuklarımızın ve yetişkinlerimizin yeteneklerini geliştirmelerine, sanatla ve kültürel değerlerimizle buluşmalarına katkı sağlıyoruz.\n\nKozan için kültürün, sanatın ve eğitimin her alanında çalışmaya, yeni imkânlar oluşturmaya devam edeceğiz.\n\nBilgi ve kayıt için: 0549 839 44 25\n\n#Kozan #KültürVeSanat #Eğitim #Gençlerimiz #KozanBelediyesi"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 408
+              },
+              "edge_media_to_comment": {
+                "count": 32
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4002098414102138775",
+              "shortcode": "DeKT024tk-X",
+              "display_url": "https://scontent-lhr6-1.cdninstagram.com/v/t51.71878-15/836458917_1439943894131824_6596486209467900029_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=108&ig_cache_key=NDAwMjA5ODQxNDEwMjEzODc3NTEzNzU0NzE4NjEwMTgyNzA%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fbmZyYW1lX2NvdmVyX2ZyYW1lLkMzIn0%3D&_nc_ohc=u6RezG6_PycQ7kNvwHlAZez&_nc_oc=AdorBuR7DBUBjv8SvOiCxizCqIFmJ9rlyyJbHhMftYY2LEddEDrkpLyMtvhGfNzqDwbp63GpX9uKBlLLRJqrv-a7&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&oh=00_AQMMhgXNgBVMoBcbFprVlCJJ7YZWBdkAxkAucpS421PciQ&oe=6AD7F709",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQNtpsRrTH6WvlTLJITAicTnbx7DQrVk5FHNrh-0nrdBruA3srKnazWR7IeOk__bXOzamI1C-lc47RhjUBYl1pfmxN4uuqLsPyjNwKY.mp4?_nc_cat=106&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=crIECboANs8Q7kNvwHY4pij&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTM3NTQ2NzMyNDM1MjA1NywiYXNzZXRfYWdlX2RheXMiOjksInZpX3VzZWNhc2VfaWQiOjEwMDk5LCJkdXJhdGlvbl9zIjo2OSwidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&ccb=17-1&vs=55897759d1394f8c&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC9FNDA2NkE0QkRGMDk0QTBEQUQyQUE5Mzg3ODZFRTE0OF92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyL0QxQTA5N0UxNUM4MzQ2ODM4OUNFMDM5NTU5NjVDMTAwX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbymKWU3r7xBBUCKAJDMywXQFFj1wo9cKQYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&_nc_zt=28&oh=00_AQPStm0sEdokrGPcnqPY_ySWJO6dSndAGv765Ia_-qT13g&oe=6AD42113",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1791307758,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Kozan’ımızın çehresini değiştiren çalışmalarımıza hız kesmeden devam ediyoruz.\n\nDört bir koldan asfalt, sathi kaplama ve kilit parke çalışmalarımızı sürdürürken, yeni yollar açıyor; ulaşım altyapımızı güçlendiriyoruz.\n\nDaha modern, daha güvenli ve daha güçlü bir Kozan için sahadayız.\n\n#Kozan #KozanBelediyesi #MustafaAtlı #GüçlüKozan #KozanİçinÇalışıyoruz"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 431
+              },
+              "edge_media_to_comment": {
+                "count": 42
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4000569702357366278",
+              "shortcode": "DeE4PLIM3YG",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/833494205_18373637524210984_5639937077972094563_n.webp?_nc_cat=106&ig_cache_key=NDAwMDU2OTcwMjM1NzM2NjI3OA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=aTtEA9AeD8YQ7kNvwGwtZFI&_nc_oc=AdrrUZ2szzsPxdqWAfCFmZwiuHhA7_MK52MgAy5ysq0t6w2dLEY57C0faVJ8VEBGcb3smSRrW9Zka6_PKiGAG7Il&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a22e&oh=00_AQMubfumNWw28RVtn-ENqXZwcKms9rxd3IUOewV1R3phZA&oe=6AD7F092",
+              "video_url": "",
+              "is_video": false,
+              "__typename": "GraphImage",
+              "taken_at_timestamp": 1791125096,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "GEÇMİŞ OLSUN\n\nSaimbeyli ve Sumbas merkezli meydana gelen, Kozan’ımızda da hissedilen depremlerden etkilenen tüm hemşehrilerimize geçmiş olsun dileklerimi iletiyorum.\n\nŞu ana kadar ilçemizde herhangi bir olumsuzluk bildirilmemiş olup ekiplerimiz sahada gelişmeleri yakından takip etmektedir.\n\nRabbim ülkemizi, milletimizi ve tüm hemşehrilerimizi her türlü afetten muhafaza eylesin.\n\nMustafa Atlı\nKozan Belediye Başkanı"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 182
+              },
+              "edge_media_to_comment": {
+                "count": 1
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3999700212728181504",
+              "shortcode": "DeByibzt7MA",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/836320139_18106616465217283_4649947523792078118_n.webp?_nc_cat=100&ig_cache_key=Mzk5OTcwMDIxMjcyODE4MTUwNA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=gfJRzx6kG_UQ7kNvwH3ITZY&_nc_oc=Adq5KOdUlSrQsU1VH_3WlIJkkR_XB_OxH2bnRBgjHevaGfYPuMin2oNUoXonAAf4MyohBOFyqItbZWrJbwS5TV8L&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a22e&oh=00_AQNC7us67ryJyT0rN2xozy86QW01l8M-ws4IgHkBOZFIfg&oe=6AD81714",
+              "video_url": "",
+              "is_video": false,
+              "__typename": "GraphImage",
+              "taken_at_timestamp": 1791021445,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Bölgemizin ürünlerini ve üreticilerimizin yaşadığı sorunları her platformda gündeme taşımaya devam ediyoruz.\n\n4 Ekim Pazar günü saat 10.45’te TRT Çukurova Radyosu’nda narenciyeyi, üreticilerimizin beklentilerini ve sektörün güncel sorunlarını konuşacağız.\n\nTüm hemşehrilerimizi yayınımızı dinlemeye davet ediyoruz."
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 94
+              },
+              "edge_media_to_comment": {
+                "count": 0
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3999180405553489806",
+              "shortcode": "Dd_8WPpt-eO",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.71878-15/833763787_1404685088546714_4904212745573590860_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=104&ig_cache_key=Mzk5OTE4MDQwNTU1MzQ4OTgwNg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fZGVmYXVsdF9jb3Zlcl9mcmFtZS5DMyJ9&_nc_ohc=WCZ0KazPC_AQ7kNvwErOvfT&_nc_oc=AdpxJ2KaaYaYf3kTb5jJUgoyzetxCiO9cnpcyhgWzDha2y-mPWE6LB-XYYE5tWPHXoRnQTTN5YCfnSeubGktgyXj&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&oh=00_AQN4SdG654i8InwOOi-nnzVYeGfI4wakO1mXuaqBmKf7aw&oe=6AD7F1C2",
+              "video_url": "https://scontent-lhr6-2.cdninstagram.com/o1/v/t2/f2/m86/AQNCenXUjHaQ39X0Oz8WiE-8Qrb_cU2zr6Z7bxyhQDCd6DIr-MUAurtcTVQQkIcT4E4HMXERiZJFcMQ7x9HftZB_RKVN4Kg9FrHgQS4.mp4?_nc_cat=105&_nc_sid=5e9851&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_ohc=pzAtgTl1tG0Q7kNvwH7fy7Q&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTEwMjE5OTcxNTUxODIwNSwiYXNzZXRfYWdlX2RheXMiOjEzLCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6MTAxLCJ1cmxnZW5fc291cmNlIjoid3d3In0%3D&ccb=17-1&vs=fe6d55a8b378fd39&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC9BRDc5MDM4MEM3RTI0OEFEOUYxMTMyQzM4RjI1MDk4Rl92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzlCNEVGOUUyNjVDMzQyMTdBOEQxMUEzNzAzQUNDMERFX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACb6257ou5z1AxUCKAJDMywXQFlR64UeuFIYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&_nc_zt=28&oh=00_AQOwvLRltU8czoguL_2Az6m6I7g64tEdYNNAvya9b-Tzyg&oe=6AD3FC9A",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1790959729,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Şehit Polis Memurumuz Halil İbrahim Doğan’ın aziz hatırasını yaşattığımız Millet Bahçemizde, kıymetli ailesiyle bir araya geldik. Kahraman Şehidimizin anısını doğduğu köyden getirerek anıtlaştırdığımız abideyle şehrimizde yaşatacağız. \n\nAllah yolunda öldürülenlere sakın “ölüler” demeyin. Çünkü onlar diridir, fakat siz farkında değilsiniz. \n\n#Kozan #MustafaAtlı #ŞehitHalilİbrahimDoğan #MilletBahçesi #ŞehitlerimiziUnutmuyoruz"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 835
+              },
+              "edge_media_to_comment": {
+                "count": 44
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3999024816403330253",
+              "shortcode": "Dd_Y-H9sTTN",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.71878-15/833333518_1113525518027189_5819364831612233530_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=111&ig_cache_key=Mzk5OTAyNDgxNjQwMzMzMDI1Mw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fZGVmYXVsdF9jb3Zlcl9mcmFtZS5DMyJ9&_nc_ohc=eirjj6TJ0qQQ7kNvwHUfKUA&_nc_oc=AdrF9KcMz7kL1eOpGog20FrNEqw_ziIXsZNFZeiRmnEUL0ADlpFno1FNiKZukynryxA0Xctnqg1CrJm0wYcmp1fv&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&oh=00_AQOvvw3tTgQE9DvIVPXdApISn48BcdRHECQ0qviJnwS31g&oe=6AD7E5A0",
+              "video_url": "https://scontent-lhr6-2.cdninstagram.com/o1/v/t2/f2/m86/AQNcHdrsYpBickwxs46A5T1lnw52KhTGGzYsLVhG3PFihtYeqaLlhhOMOV8NHeghBcCw7appqXLn7EWQ5DkaL6NjGpeG-EyyiOcTZ6I.mp4?_nc_cat=103&_nc_sid=5e9851&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_ohc=YqkUCxdft6EQ7kNvwFnUc0y&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6OTgyOTYyOTM4MTYxMDM0LCJhc3NldF9hZ2VfZGF5cyI6MTQsInZpX3VzZWNhc2VfaWQiOjEwMDk5LCJkdXJhdGlvbl9zIjoxOCwidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&ccb=17-1&vs=4b23360c08a66c58&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC81QTdBMTk4QURDRjY0RjNDOUYzNTc4MTZERDdFQTEwNF92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzY4QTc1MDIwODlDQjQyQ0JBRTcyMUI4RDI5MEU2MzE4X2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACaUno3M_P--AxUCKAJDMywXQDIKPXCj1woYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&_nc_zt=28&oh=00_AQOeq2vdQ66OsuapGPvvwVb00nQCzytADaaSoMLd8MMEXg&oe=6AD40D7C",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1790941312,
+              "edge_media_to_caption": {
+                "edges": []
+              },
+              "edge_liked_by": {
+                "count": 73
+              },
+              "edge_media_to_comment": {
+                "count": 0
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3998553091002057562",
+              "shortcode": "Dd9ttnct8Na",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.71878-15/832633558_2290609925046828_8614797359977404962_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=104&ig_cache_key=Mzk5ODU1MzA5MTAwMjA1NzU2MjEwOTIxMjM5NjcwNzYwNjg%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fbmZyYW1lX2NvdmVyX2ZyYW1lLkMzIn0%3D&_nc_ohc=k5mwme1KDJsQ7kNvwFeb3Oc&_nc_oc=AdrItCruao6-VMmcvDh_iXhgv7Jmj75i_seNhOtmh3WDGWvQi0nvow0ynJ0RcX_IsTI3wSUGMRHxWwdQfHBnJcul&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&oh=00_AQMZLIrh63Ay8zRXJMP_7SuyvR3fndvBdOJ2LOhfDsoMiQ&oe=6AD7F49B",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQPTgMWvCla9_HIYmKgJz8WtOe2CxFUv12ZwCJ5HD17ZibnoXY0l0gP76bx82BreviUKKq_eLk4HEZh2ffIBnUsBW2nYGuY6Zrc_378.mp4?_nc_cat=104&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=zxAon2j5KUsQ7kNvwGpQQZ4&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTA5MjEyMjMzMzc0Mjg5OCwiYXNzZXRfYWdlX2RheXMiOjE0LCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6ODksInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=d53058eb26d95ca9&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC9DRTdBNUE0OTRDRDY0NzREOEYxMTJFNDdFODNDRDBDMF92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzIzQ0VFRkFCMDU4MTRBNzVBNkFFODhGMUM0RDdENTFBX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbknIi88dHwAxUCKAJDMywXQFZ3bItDlYEYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=03a5AieDe6F_Vou750C6FQ&_nc_ss=7a20f&_nc_zt=28&oh=00_AQPTlxf1R8CNciW2ugiRadfx1cdeUsC1Vu7A-CY9wT4VWw&oe=6AD41A01",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1790884874,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Uzun soluklu ve meşakkatli bir işti. Bazı işler nasip meselesidir; bu iş de bize nasip oldu.\n\nYıllarca Kozan’a hizmet veren İmam Hatip Lisesi’nin yıkılmasının ardından açtığımız yeni yol, hem ulaşımı rahatlattı hem de bölgemizin trafik yükünü azalttı.\n\nKozan’ımıza hayırlı, uğurlu olsun. Söz değil, hizmet üretiyoruz.\n\n#Kozan #KozanBelediyesi #YolÇalışması #Hizmet #MustafaAtlı"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 843
+              },
+              "edge_media_to_comment": {
+                "count": 52
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3997116766436624205",
+              "shortcode": "Dd4nIV9NodN",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.71878-15/825324489_1872593950780019_5957759317706642571_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=104&ig_cache_key=Mzk5NzExNjc2NjQzNjYyNDIwNTE0NDc1MDY5OTcyNTIxNjY%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fbmZyYW1lX2NvdmVyX2ZyYW1lLkMzIn0%3D&_nc_ohc=Si2wCs1p3akQ7kNvwFynSWO&_nc_oc=AdrnmLlnNSFAIYudS0L80lZzO2sbp-RSa7inVfYTgu72yiVtBGydd-8-fXiDU_NGaMVTXLckd8d44rW_DbKdm-RJ&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&oh=00_AQNxGLMpANUhdWkeOLvZfydDCE5z1J_tzfYKn5W99TkN8Q&oe=6AD7FBE2",
+              "video_url": "https://scontent-lhr6-2.cdninstagram.com/o1/v/t2/f2/m86/AQMbYC99rEWGP5LfmczgzcMLkqrlsdhqSKvxK8rGyoBh7XKRUA4YjkxCEQlW27AuSbh-XbMK-nLzvmKjuYY7dgyG1ezTCbwNb9Vq4X0.mp4?_nc_cat=105&_nc_sid=5e9851&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_ohc=mTv2xNKWeV0Q7kNvwHuTtGu&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTQ0NzUwNTM3MzkxODk5NSwiYXNzZXRfYWdlX2RheXMiOjE2LCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6OTcsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=cda11debc3561ce7&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC8xQTVGNTgwOUU1MEU0RTM5QTc2NzRCN0EyNjAyOEVFRF92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzY1NDIwMkJBNjRERjQ3QkQ4NzIwRjE5OUU2RDc3MUMxX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACam3Pu585-SBRUCKAJDMywXQFheuFHrhR8YEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&_nc_zt=28&oh=00_AQMtqSV0YuQVpBnSJuDKHged1-a1LoiQw6As1CZ4cJf2Yg&oe=6AD3F4DA",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1790713675,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Ahmet Eren Taziye ve Kültür Evimizin ardından, bugün de Bozkurt Dilcioğlu Taziye Evi ve Kur’an Kursumuzun temelini dualarla attık.\n\nHayırsever iş insanlarımız Turgay Bozkurt ve Salih Dilci kardeşlerimize teşekkür ediyor, Kozan Belediyesi olarak destek verdiğimiz bu güzel eserin ilçemize hayırlı olmasını diliyorum.\n\n#Kozan #KozanBelediyesi #MustafaAtlı #TaziyeEvi #KozanHizmet"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 493
+              },
+              "edge_media_to_comment": {
+                "count": 40
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3996255932156143434",
+              "shortcode": "Dd1jZjjtudK",
+              "display_url": "https://scontent-lhr6-1.cdninstagram.com/v/t51.71878-15/828508381_1395656598859984_1195044022769814335_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=109&ig_cache_key=Mzk5NjI1NTkzMjE1NjE0MzQzNDQ3MTEyNjY2NzkxNDk2MjQ%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fbmZyYW1lX2NvdmVyX2ZyYW1lLkMzIn0%3D&_nc_ohc=WhrpSG_npkwQ7kNvwEHIx2G&_nc_oc=Adqwh4BsJimk0hYC5pZOfYo35pqF4fySVK-sJz8FwuPkTuFUCISvlSLVXSx1dMBkxOeKIXWlbSnT1-dKmQWK1qA1&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&oh=00_AQNQhxlucwMjGhvO4pu_uhJcZ85EqW8w5Tqek_hQf-4hpg&oe=6AD7E502",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQOfGCaLUSfAqBiXKeHmD5dQQKLhtZgPV3BPGrB0zAStJF3IbWrtaFO7hfS0AV56_sIiu1HqTkeb5yxSTw8RqZn10WqxfUFlP4jiqxU.mp4?_nc_cat=101&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=d8amspRL0PEQ7kNvwGiZVtP&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6NDcxMTI2MjY2OTE1MDAyNSwiYXNzZXRfYWdlX2RheXMiOjE3LCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6ODcsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=66860d32351e79ce&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC9FQzRFOTRFRjUzNjdDQjE2Q0ZBMkYyQTY5NEY4N0U5Ql92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzM5NDk1QUIxMzVEMzY0MDMwQTUzNEY2OUQxMDlFRjhFX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACaS3bSdyrfeEBUCKAJDMywXQFXPXCj1wo8YEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&_nc_zt=28&oh=00_AQNOdAYaLsr4s8XmfUNjVDepfOhAWzPXFuTwogUYYBvyCA&oe=6AD412FA",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1790611067,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Kozan’da bir ilki yaşıyoruz.\n\nU17 ve U19 Boks Milli Takımı sporcularımız, Avrupa ve Dünya Şampiyonaları hazırlıkları için ilçemizde kampa girdi. Milli sporcularımızı İsmet Atlı Millet Bahçesi’nde ziyaret ederek çalışmalarını yakından takip ettik.\n\nŞampiyonalara hazırlanan tüm sporcularımıza başarılar diliyor, Kozan’ımızda kendilerini ağırlamaktan gurur duyuyoruz.\n\n#Kozan #MilliBoksTakımı #Boks #Spor #Şampiyona"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 882
+              },
+              "edge_media_to_comment": {
+                "count": 36
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3995551990203587171",
+              "shortcode": "DdzDV2hsJpj",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/825320201_18372603637210984_5270286468834861668_n.webp?_nc_cat=106&ig_cache_key=Mzk5NTU1MTk5MDIwMzU4NzE3MQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=3nO6FQ_EU0AQ7kNvwHMWeU_&_nc_oc=Adrq7uxwnXc3wQAqj0OeQqGFe5vEnx_RGzxX0osdZbklGZ7kj2w4YSO6T_7x5ARS6yHO-jfPae5pD1Lt-vI2f2dt&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQPrQD0O93H3EbQBINbXqgTNamDxIggvSfFY40ZMNOqVNw&oe=6AD80235",
+              "video_url": "",
+              "is_video": false,
+              "__typename": "GraphImage",
+              "taken_at_timestamp": 1790526939,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "İş insanlarımız Turgay Bozkurt, Salih Dilci ve Kozan Belediyemizin katkılarıyla ilçemize kazandırılacak Bozkurt Dilcioğlu Taziye Evi – Kur’an Kursu’nun temel atma törenini gerçekleştiriyoruz.\n\nKur’an-ı Kerim tilaveti, ilahi dinletisi ve semazen gösterisinin yer alacağı programımızda birlik ve beraberliğimizi paylaşacağız.\n\nBu anlamlı günde tüm hemşehrilerimizi temel atma törenimize davet ediyoruz.\n\n📅 29 Eylül Salı\n🕖 Saat: 19.00\n📍 Kozan Cuma Pazarı Yanı\n\n#Kozan #KozanBelediyesi #TemelAtmaTöreni #TaziyeEvi #KuranKursu"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 91
+              },
+              "edge_media_to_comment": {
+                "count": 5
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3993914203922670097",
+              "shortcode": "DdtO87MMqIR",
+              "display_url": "https://scontent-lhr6-2.cdninstagram.com/v/t51.82787-15/817663913_18372242368210984_4010893504361655461_n.webp?_nc_cat=105&ig_cache_key=Mzk5MzkxNDIwMzkyMjY3MDA5Nw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=q7GdTZarFUEQ7kNvwHB6CIi&_nc_oc=Adrk-zmNL1Dc2zinjRNFebOLogbpM5v2nycYboeM95OY2-ACcH0m_Uw7Fx1iYU7TxKSwI1fSGXPj3IuQBGCrQx6G&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQMvwAwHBj0ttdSVGfoRQf7bQOpA1nWR_wdOaFYkD21ueg&oe=6AD80438",
+              "video_url": "",
+              "is_video": false,
+              "__typename": "GraphImage",
+              "taken_at_timestamp": 1790331699,
+              "edge_media_to_caption": {
+                "edges": []
+              },
+              "edge_liked_by": {
+                "count": 123
+              },
+              "edge_media_to_comment": {
+                "count": 7
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3993379648149379195",
+              "shortcode": "DdrVaHVN9h7",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.71878-15/824653676_1441065967986483_2779789117181558226_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=107&ig_cache_key=Mzk5MzM3OTY0ODE0OTM3OTE5NTIzNzM1NzcyMDAwOTUzNjQ%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fbmZyYW1lX2NvdmVyX2ZyYW1lLkMzIn0%3D&_nc_ohc=--KAs4_Qon4Q7kNvwHDLemW&_nc_oc=AdpxpSxddo4-HTbh_sLF69MK-Ur9nJxZRUiweT_9oR5W7VQhdGcTt86YcwHn9aL_Ip2AgVbcWTswsKXS6xl_O6Sx&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&oh=00_AQOR22bx2JCOR3JdW3Ntj9g9pvskNCzXszJ7uYsex40Dbw&oe=6AD7FE85",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQNM9LnTIoDK9HTog0mrikaK1sXRhmNBP5M2KiVj91xUGMqe-usT84nhWeWo1Yd--1v5jLlvPKZeI67I-0eR5z3dxQSfndf2o17R4d8.mp4?_nc_cat=110&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=9WEbVKBr7_kQ7kNvwH6--kQ&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MjM3MzU3MTM5MzQyOTI3OCwiYXNzZXRfYWdlX2RheXMiOjIxLCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6NjMsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=44e18af9c2d4c38c&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC9EOTQ2Q0U4NDhBM0Y0MEEyOUVEQTYxOTg2MDhFNTExNl92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzdBNEU1OTA0M0U0ODg2RjAyNjU0RjhCQUE2N0I5NzkxX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACa8_Ij8hLC3CBUCKAJDMywXQE_HrhR64UgYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&_nc_zt=28&oh=00_AQOH-ChC0NwqHGDMz5LTcGrWKDyO1c_OJMmA4m5fWJWk1g&oe=6AD4107B",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1790268341,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Çocuklarımız yeni eğitim yılına eksiksiz ve gönülleri rahat başlasın, hiçbir çocuğumuz kendini yalnız hissetmesin istiyoruz. \n\nİlçe Milli Eğitim Müdürlüğümüz ve Kızılay Kozan Şubemizle birlikte öğrencilerimize kırtasiye ve okul kıyafeti desteklerini teslim ettik.\n\n#KozanBelediyesi #EğitimeDestek #Çocuklarımızİçin #SosyalBelediyecilik #Kozan"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 653
+              },
+              "edge_media_to_comment": {
+                "count": 37
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3992653508419333373",
+              "shortcode": "DdowTZAjSz9",
+              "display_url": "https://scontent-lhr6-2.cdninstagram.com/v/t51.82787-15/807844058_18105635531217283_4015132044854073993_n.webp?_nc_cat=105&ig_cache_key=Mzk5MjY1MTc0OTUzMjEzNzczOA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=MAiZKf9VaRwQ7kNvwGt3Uhx&_nc_oc=AdphgDyn8Sb-KgmSwxIioxfgC7L4ARG1WAJLW_-xF06kb9Qi_D5TwV8MAKQzJDsbl7HsZsg7vgHNWNN4sVVKPfC5&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQMoRnUQ_8aJWiiNTKQgtOW2q31Edm0D74O9zDgxV277DA&oe=6AD7FD8C",
+              "video_url": "",
+              "is_video": false,
+              "__typename": "GraphSidecar",
+              "taken_at_timestamp": 1790181409,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Kozan Kaymakamımız Sayın Bahattin Alp Arslanköylü, İlçe Millî Eğitim Müdürümüz Sayın Özgür Çelik ve Kozan Halk Eğitimi Merkezi Müdürümüz Sayın Ahmet Osmanca’yı, Belediyemiz Nihat Atlı Eğitim Tesislerimizde misafir ettik.\n\nTesisimizde yürütülen eğitim faaliyetleri, öğrencilerimizin elde ettiği başarılar ve gençlerimize sunduğumuz eğitim imkânları üzerine değerlendirmelerde bulunarak yapılabilecek yeni çalışmalar hakkında istişare ettik.\n\nÇocuklarımızın ve gençlerimizin geleceğine yapılan her yatırımın Kozan’ımızın yarınlarına yapılan en kıymetli yatırım olduğuna inanıyoruz.\n\nKurumlarımızla el birliği içerisinde, eğitimin her alanında evlatlarımızın yanında olmaya ve desteklerimizi artırarak sürdürmeye devam edeceğiz.\n\n#Kozan #Eğitim #NihatAtlıEğitimTesisleri #KozanBelediyesi"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 505
+              },
+              "edge_media_to_comment": {
+                "count": 25
+              },
+              "edge_sidecar_to_children": {
+                "edges": [
+                  {
+                    "node": {
+                      "id": "3992651749532137738",
+                      "display_url": "https://scontent-lhr6-2.cdninstagram.com/v/t51.82787-15/807844058_18105635531217283_4015132044854073993_n.webp?_nc_cat=105&ig_cache_key=Mzk5MjY1MTc0OTUzMjEzNzczOA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=MAiZKf9VaRwQ7kNvwGt3Uhx&_nc_oc=AdphgDyn8Sb-KgmSwxIioxfgC7L4ARG1WAJLW_-xF06kb9Qi_D5TwV8MAKQzJDsbl7HsZsg7vgHNWNN4sVVKPfC5&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQMoRnUQ_8aJWiiNTKQgtOW2q31Edm0D74O9zDgxV277DA&oe=6AD7FD8C",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  },
+                  {
+                    "node": {
+                      "id": "3992651751520215748",
+                      "display_url": "https://scontent-lhr6-1.cdninstagram.com/v/t51.82787-15/809039428_18105635540217283_1578025626989685338_n.webp?_nc_cat=108&ig_cache_key=Mzk5MjY1MTc1MTUyMDIxNTc0OA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=8qXh8CKxQtkQ7kNvwHjswN3&_nc_oc=Adr_UbnaNC3zbY581to-lGT11SE3igrh2V_d5CYaF5PCLhopm9mbx42TAb__qHOnWINoiRP3jYinU2jUb1dZD0yL&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQNtQ3XPbDn92DAn56Y54s6CA77nLJQ0jtaRU0XySc-C9w&oe=6AD812FB",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  },
+                  {
+                    "node": {
+                      "id": "3992651754129266554",
+                      "display_url": "https://scontent-lhr6-1.cdninstagram.com/v/t51.82787-15/805485906_18105635561217283_8899866718639840686_n.webp?_nc_cat=102&ig_cache_key=Mzk5MjY1MTc1NDEyOTI2NjU1NA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=z5beAM0Z3LQQ7kNvwEsKI_j&_nc_oc=Adoib5xVlWOCPQpcOqx215P_yO8-T9N0ux1kfStmyQZ62u7JKn-hckftCHSmnUoIKGX0C1SOdv1oYtShxacnFVwj&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQPzUmjm0KZndBU9nybfygQP0tGFsRVFqE7FATOYtq4klw&oe=6AD7E926",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3991996959554924657",
+              "shortcode": "DdmbBWOtfBx",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.71878-15/820335910_2297279994390563_5343188449264867562_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=107&ig_cache_key=Mzk5MTk5Njk1OTU1NDkyNDY1NzE1OTMzOTY3MjQ5NzA4Nzk%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fbmZyYW1lX2NvdmVyX2ZyYW1lLkMzIn0%3D&_nc_ohc=4xvokttKIjwQ7kNvwGkgqni&_nc_oc=AdrpHsjQ7zreEnPCKU47i6r0DqcKFbLU-KdR_K6ITO_reGa3HeE1OS07lVzAiovTD4fIuOdu4L33Uv75umq2IibG&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&oh=00_AQMZTaEypLYxL04XDSkBAwe-ovDcUqnAKyPXARHIHsrLLw&oe=6AD7FE32",
+              "video_url": "https://scontent-lhr6-2.cdninstagram.com/o1/v/t2/f2/m86/AQMDObfv7ZtZBQ-K2x6P87iUX_LHPfFjJnHsSYoOkuzZaho2rZHrHytKxQV4sm1lIlmnHBU1NqqE6ytj9BgZ8s_U7fnPQckYOcnMCR0.mp4?_nc_cat=105&_nc_sid=5e9851&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_ohc=MxAuJr4MmSYQ7kNvwEOjJnH&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTU5MzM5NDgyMTYzNzczNiwiYXNzZXRfYWdlX2RheXMiOjIzLCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6NzEsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=5f6b57850068fd3&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC81NjQ1MEMwRDkzNjcxMEZDREJDNERCOTQyNTRENzNCQl92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzIxNDdDQzlFREE2MTk5MUU5MUU0QjA1NzcyNEFCQjhDX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbQmaXF5MvUBRUCKAJDMywXQFHyn752yLQYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&_nc_zt=28&oh=00_AQN03_XUZSPzM7V39ull4wSfA_4MTmfz71UbSFgLaF5Qsg&oe=6AD3F9AA",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1790103363,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Kozan’ın merkezinde de kırsalında da aynı anlayışla çalışıyoruz.\n\nBugüne kadar ilçe genelinde 179 bin 881 m² sathi kaplama, 174 bin 483 m² sıcak asfalt ve 128 bin 636 m² kilit parke olmak üzere toplam 483 bin m² yol ve üstyapı çalışmasını tamamladık.\n\nBizim için hizmetin merkezi, kırsalı yok. İhtiyaç olan her noktada sahadayız.\n\nKozan’ın yollarını yeniliyor, ulaşımını güçlendiriyor, her mahallemize hizmet götürmeye devam ediyoruz."
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 723
+              },
+              "edge_media_to_comment": {
+                "count": 72
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3989085378321430551",
+              "shortcode": "DdcFAQ5jbgX",
+              "display_url": "https://scontent-lhr6-2.cdninstagram.com/v/t51.82787-15/816087441_18105129779217283_7460254935512018451_n.webp?_nc_cat=105&ig_cache_key=Mzk4OTA4NDU5ODQxOTU2MDIyNw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=03LSbBXTvskQ7kNvwHDZcTl&_nc_oc=Adr0Ru-o0m6IU1W9apC7WLuJg-YFwv-Si8bP7lEtvpTKn1g379WeWncC-E4GWHdz8HauXc1xoOyQhFBgA3PUeGUQ&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQMEFSTPUwgDE3k3zlfu7PduAp2ZCvUfWsTuw7ff-7HEcQ&oe=6AD7EF16",
+              "video_url": "",
+              "is_video": false,
+              "__typename": "GraphSidecar",
+              "taken_at_timestamp": 1789756055,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "19 Eylül Gaziler Günü vesilesiyle, Kozan Kaymakamlığımızın düzenlediği yemek programında kahraman gazilerimiz ve kıymetli şehit ailelerimizle bir araya geldik.\n\nVatanımız için fedakârlık gösteren tüm gazilerimize minnet ve şükranlarımı sunuyor, ebediyete irtihal eden gazilerimizi ve aziz şehitlerimizi rahmetle anıyorum. \n\n#GazilerGünü #19Eylül #Kozan #ŞehitlerimiziUnutmadık #GazilerimizeMinnet"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 766
+              },
+              "edge_media_to_comment": {
+                "count": 14
+              },
+              "edge_sidecar_to_children": {
+                "edges": [
+                  {
+                    "node": {
+                      "id": "3989084598419560227",
+                      "display_url": "https://scontent-lhr6-2.cdninstagram.com/v/t51.82787-15/816087441_18105129779217283_7460254935512018451_n.webp?_nc_cat=105&ig_cache_key=Mzk4OTA4NDU5ODQxOTU2MDIyNw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=03LSbBXTvskQ7kNvwHDZcTl&_nc_oc=Adr0Ru-o0m6IU1W9apC7WLuJg-YFwv-Si8bP7lEtvpTKn1g379WeWncC-E4GWHdz8HauXc1xoOyQhFBgA3PUeGUQ&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQMEFSTPUwgDE3k3zlfu7PduAp2ZCvUfWsTuw7ff-7HEcQ&oe=6AD7EF16",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  },
+                  {
+                    "node": {
+                      "id": "3989084601715125667",
+                      "display_url": "https://scontent-lhr6-2.cdninstagram.com/v/t51.82787-15/817456035_18105129788217283_380269490438217595_n.webp?_nc_cat=103&ig_cache_key=Mzk4OTA4NDYwMTcxNTEyNTY2Nw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=UKqM0vMOPi0Q7kNvwEi6k9L&_nc_oc=AdrS_NjEIYjcYzZpysyhIoZVnV843UB5mSI5XbPGFGnl7JZJiByUd1_KdZ2LEdkdpAn5fozrMmNtDL8ImlSoU-21&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQOscDqfhjeyf_5dnur8TGW32yJ3pPOMxY4py8VccVKW0A&oe=6AD7F265",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  },
+                  {
+                    "node": {
+                      "id": "3989084609944353560",
+                      "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/799724532_18105129821217283_7785161615895398134_n.webp?_nc_cat=104&ig_cache_key=Mzk4OTA4NDYwOTk0NDM1MzU2MA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=V95cONiJkM8Q7kNvwGfv9aR&_nc_oc=Adp3zhbbvSQgQ8t0Ju2_J0IQ3oGoo0dMedXCmWcvppbE1V6fB6rQJ-9fE95kRAzWaT_8s_1mx0Zv4gk1-RfWZ25A&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQPhY1DJu79PFttMs87mivqPY66zv6Vq1CiYPXFENCgZYg&oe=6AD81BC7",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  },
+                  {
+                    "node": {
+                      "id": "3989084620748853882",
+                      "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/811102713_18105129842217283_275970519453457696_n.webp?_nc_cat=110&ig_cache_key=Mzk4OTA4NDYyMDc0ODg1Mzg4Mg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=5xi2383Z08gQ7kNvwFMAdGN&_nc_oc=AdppCYFlna-ECS1elQNxyHBq_uKQhL2B0O0CM0DwdEhPZVwORMX_j-acuIupGWPEPQqGvC3c_FF_eNyDh7jOzE6m&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQNguwbYm86oY3eEfdsxUiQk38wzM07tzVr_caUTTGSCwQ&oe=6AD7F978",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  },
+                  {
+                    "node": {
+                      "id": "3989084627728218708",
+                      "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/817176731_18105129863217283_2135704675869234980_n.webp?_nc_cat=100&ig_cache_key=Mzk4OTA4NDYyNzcyODIxODcwOA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=7eFJWWMHwWsQ7kNvwFOcopg&_nc_oc=Adqf96wJkT8o_2lCmBb0FHHskTE4E4iW_Z1Ct_bYCR8jps1BwkQ4lHCSg87gaNfbIGx53c_Adp7v2LeOZpXPHs2B&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQN9nZ9TMgKfghu1KSXXDBlOw11chD56qnIzDJHzgUjg6A&oe=6AD803A6",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  },
+                  {
+                    "node": {
+                      "id": "3989084636343404219",
+                      "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/814873602_18105129884217283_1510890528414487101_n.webp?_nc_cat=111&ig_cache_key=Mzk4OTA4NDYzNjM0MzQwNDIxOQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=5ENJcGB0XokQ7kNvwG0tTRq&_nc_oc=AdrAWOqLJsIB6CxREQ8WudpHu9ifsukx95D7YobYzSETEe98j3mLk285idlKriG40iLLcVQD5gAgw5beiLQcRv5k&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQPrwHiJpUUQI-SZMOnQcJYOJG4YXnxe9LkDf9gqMj4uEQ&oe=6AD7F7DE",
+                      "video_url": "",
+                      "is_video": false
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3989013309553012298",
+              "shortcode": "Ddb0nhoNm5K",
+              "display_url": "https://scontent-lhr6-2.cdninstagram.com/v/t51.71878-15/815576293_1544997697311455_8944243511219228731_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=105&ig_cache_key=Mzk4OTAxMzMwOTU1MzAxMjI5OA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fZGVmYXVsdF9jb3Zlcl9mcmFtZS5DMyJ9&_nc_ohc=SGTYhojT0ccQ7kNvwGjNA1Y&_nc_oc=AdpD74xs05kubiN8FJJewAN49jTjz4mOLVweqj7t6M5Ts8oEWrpUFb5h6lRsN9j47zHxpluo8ORtoT1_zbaRYYnk&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&oh=00_AQMhLJAvEEec3_i2Ui7JWj9WrytKpNbfD_ZK8fHc6moHIw&oe=6AD817CA",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQN33sfu2MqLz1_O8hCdTGzZoe49uLdA2E1dd47T0S68h2bbNGtSnrf8yBocK56SD96xYKKdS6lEviTPIjqPYh2DmODpphWBqeQu9uE.mp4?_nc_cat=100&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=CkEVf0MwS3kQ7kNvwFMCT71&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTEyOTk4OTM1MjcwNDQ3NiwiYXNzZXRfYWdlX2RheXMiOjI3LCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6NTUsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=a26541b7c44a40f1&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC8zMzQyNDI2MjhCNzE2MjZBRjk3MDE4QUMxNDMxMEU4RV92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyL0I2NEQ3NzRFNTkwN0JGREZBMzY1ODZBNUM5NzQ2NDg4X2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACa4p77fhO6BBBUCKAJDMywXQEv6n752yLQYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&_nc_zt=28&oh=00_AQMungu-2C4XqznldgoCxJQY4Y8rehkLrE3aBUFNtNKDtw&oe=6AD3FA59",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1789747601,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Selamünaleyküm diyerek esnaflarımızın çayına ortak olduk, samimi bir sohbet gerçekleştirdik.\n\nHemşehrilerimizin ve esnaflarımızın sorunlarını, taleplerini ve beklentilerini yerinde dinledik. Kozan’ımızın ihtiyaçlarına yönelik çözüm odaklı çalışmalarımız için ilk adımları attık.\n\nSahada olmaya, dinlemeye ve çözüm üretmeye devam edeceğiz.\n\n#Kozan #EsnafımızınYanındayız #KozanBelediyesi #MustafaAtlı #Hizmet"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 1137
+              },
+              "edge_media_to_comment": {
+                "count": 47
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3988027699836915132",
+              "shortcode": "DdYUhBDMo28",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.71878-15/813650248_1409438127811832_7571415121264254104_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=107&ig_cache_key=Mzk4ODAyNzY5OTgzNjkxNTEzMg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fZGVmYXVsdF9jb3Zlcl9mcmFtZS5DMyJ9&_nc_ohc=ZB6vRULdLecQ7kNvwFcqgq0&_nc_oc=AdoBw3ouI8RL4faAkp6qq2O0bLcE90ZuD6LokzBvux5jjsniEAE79S-PXhUuDJQEl4nZZRzCMe8qv6EjcUABGWRg&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&oh=00_AQOmIvJOgK17yxGs2w8ajpEPUD0tahHaSGs1CzZ_aUJ0gA&oe=6AD80F68",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQMggZLy2U8371-5u05UtCRAV0sNHo1ldSLdxi6vF5Epb-X-P_SmdguSYTHrNxy2C-bt2itKfaVzPgHKpUZ7Qww4LdVtp4DE-A7Tr9A.mp4?_nc_cat=110&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=utmH00VG_u0Q7kNvwGFyPeF&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTA2OTcxMDQ2MjQzNDM5MCwiYXNzZXRfYWdlX2RheXMiOjI5LCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6ODIsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=a0f264bcf95f9618&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC81RTRCMDhDNTA1NzJEMEZBREU4MUZBMTkxQTFFMkU4MF92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyL0VDNDAzMURCQzA4MzgwQjI2MTMwMkRCQzcyOTdFODk3X2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACas8YGCrLnmAxUCKAJDMywXQFSR64UeuFIYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&_nc_zt=28&oh=00_AQNMwKSaCT638M34hwug7amk66TzEfztAGaDOWqFrAnsnQ&oe=6AD40ED3",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1789630074,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Türkiye’nin en büyük gastronomi festivaline dün de hazırdık, bugün de hazırız, yarın da…\n\nEmeğimizle, lezzetimizle ve tüm misafirperverliğimizle.\n\nPeki ya siz hazır mısınız? ❤️‍🔥\n\n📍 Merkez Park\n📅 9–10–11 Ekim\n\n#AdanaLezzetFestivali #10YılOncaLezzet"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 108
+              },
+              "edge_media_to_comment": {
+                "count": 0
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3986594557129192172",
+              "shortcode": "DdTOqC5MPLs",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.71878-15/811792331_1387928516254049_3011593552402439629_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=100&ig_cache_key=Mzk4NjU5NDU1NzEyOTE5MjE3MjE4MTEwNTI5NjMzODY1NTY%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjY0MC5zZHIudmlkZW9fbmZyYW1lX2NvdmVyX2ZyYW1lLkMzIn0%3D&_nc_ohc=LvK0wUfRf80Q7kNvwGeDHrp&_nc_oc=AdpPfmj6XJydZMOKrqGjoOuhZH1gP3D5lslK4rfLwh1hdcFoWksX9R7Ha_DNLsWNfv9wX6zyHgRpL4LEr7_XW-gC&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&oh=00_AQOiCMUbCNUBVlmSU0iz3IwOBgY68whmEwABZ2Qsfxjong&oe=6AD802D5",
+              "video_url": "https://scontent-lhr6-1.cdninstagram.com/o1/v/t2/f2/m86/AQPevGaKnMqMYLpZJhQ3po_XKc0M2LB8VpOJ2TzMEMwiAxCsetot3yTfB3_ZMTSGXaPzGmJ2ZvrJqt6FTE5XFZVx5mcn5msL4Ef2Wmc.mp4?_nc_cat=102&_nc_sid=5e9851&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_ohc=McXQlqJhQIUQ7kNvwGWCCDm&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTgxMTA1MTMyMDA1MzM4NywiYXNzZXRfYWdlX2RheXMiOjMxLCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6NDMsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=57decd21ecc2e9c5&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC9FOTRDMTcxRDU0MDgyNjE3MDczNUU5MDA5NkREOTc4Q192aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzA5NEFERjlDREZEM0EyODg4ODM1M0QxQzdBMTBEQUFCX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACaWutDph8m3BhUCKAJDMywXQEWUeuFHrhQYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a20f&_nc_zt=28&oh=00_AQP5ngqQu8gplwlhVUsRr1XgqsPkR0AWacN1-2yKgdYeyg&oe=6AD3FFB7",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1789459289,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Yeni eğitim öğretim yılı öncesinde okullarımızı öğrencilerimiz için hazırladık.\n\nPark ve Bahçeler Müdürlüğü ekiplerimiz, okullarımızda genel bakım ve temizlik çalışmalarını gerçekleştirdi.\n\nÇocuklarımızın daha temiz ve düzenli ortamlarda eğitim görmesi için çalışmaya devam ediyoruz.\n\n#KozanBelediyesi #MustafaAtlı #EğitimeDestek #Kozan #YeniEğitimYılı"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 233
+              },
+              "edge_media_to_comment": {
+                "count": 17
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "3986120337912109679",
+              "shortcode": "DdRi1P1Nhpv",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/810778108_18104702444217283_2336140200657528221_n.webp?_nc_cat=110&ig_cache_key=Mzk4NjEyMDMzNzkxMjEwOTY3OQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=L8fM3SEjaoMQ7kNvwH5a-h4&_nc_oc=Adovg4OdlVdtBQ-QmDDkAFO1La9z-uVLKeJvMpJ_XJdy-E0w6yN6pKL7i5e_2xX2xVgC2iAdNlrUJFBZwvbb5c-c&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=dnDAVkCBYzjDKc2GdQR4hA&_nc_ss=7a22e&oh=00_AQMQ8mHwuWNjgzZu71D4mfieEMK0Y6lnsrEFTrUMYZW7dg&oe=6AD81CEB",
+              "video_url": "",
+              "is_video": false,
+              "__typename": "GraphImage",
+              "taken_at_timestamp": 1789402598,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Mansurlu Kozan yolunun son durumunu görüşmek üzere Karayolları Genel Müdür Yardımcımız Sayın Ahmet Sağlam’ı ziyaret ettik.\n\nProjenin en sorunlu noktası olan, yeni tamamlanan yol ile İndirme mevkii arasındaki 3,5 kilometrelik bölümün önümüzdeki haftalarda ihale edilmesi için Karayolları Adana Bölge Müdürlüğü’nün yetkilendirildiği müjdesini paylaşmak istiyorum.\n\nKozan’ımızın her sorununu yakından takip ediyor, Ankara’da ve ilgili kurumlarda gerekli girişimleri sürdürüyoruz. Kozan için lobimizi güçlü tutmaya, takip etmeye ve sonuç alana kadar sormaya devam edeceğiz.\n\nHemşehrilerimize hayırlı olsun."
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 381
+              },
+              "edge_media_to_comment": {
+                "count": 34
+              }
+            }
+          }
+        ]
+      },
+      "edge_followed_by": {
+        "count": 12200
+      },
+      "edge_follow": {
+        "count": 28
+      },
+      "is_verified": true,
+      "is_private": false
+    }
+  }
+}

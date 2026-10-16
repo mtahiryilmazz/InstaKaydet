@@ -12,7 +12,7 @@ import {
   Clock,
   Download,
   Table,
-  Key,
+  ShieldCheck,
   Puzzle,
   MoreHorizontal,
   RefreshCw,
@@ -33,11 +33,10 @@ interface UserProfileHeaderProps {
   onSelectAllPosts?: () => void;
   onClearSelection?: () => void;
   onExportSelectedPdf?: () => void;
-  onOpenSessionModal?: () => void;
+  onOpenSafetyModal?: () => void;
   onOpenBulkDownloadModal?: () => void;
   onExportCsvStandalone?: () => void;
   onOpenExtensionModal?: () => void;
-  sessionId?: string;
   isDataSaver?: boolean;
   onToggleDataSaver?: () => void;
   cooldownSeconds: number;
@@ -63,11 +62,10 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
   onOpenPdfModal,
   sortOrder,
   onToggleSortOrder,
-  onOpenSessionModal,
+  onOpenSafetyModal,
   onOpenBulkDownloadModal,
   onExportCsvStandalone,
   onOpenExtensionModal,
-  sessionId = '',
   cooldownSeconds,
   onDeepScan,
   onCancelDeepScan,
@@ -421,7 +419,7 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
                   </span>
                 ) : (
                   <span className="text-emerald-300 font-medium">
-                    {sessionId ? '🔑 Çerezli Canlı Mod' : '📱 Çerezsiz Mobil/APK Modu'}
+                    🛡️ Herkese Açık & Şifresiz Mod
                   </span>
                 )}
               </div>
@@ -545,21 +543,21 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
                     </button>
                   )}
 
-                  {onOpenSessionModal && (
+                  {onOpenSafetyModal && (
                     <button
                       type="button"
                       onClick={() => {
                         setIsActionsMenuOpen(false);
-                        onOpenSessionModal();
+                        onOpenSafetyModal();
                       }}
                       className="w-full px-3 py-2.5 rounded-xl text-xs font-medium text-left flex items-center justify-between text-slate-200 hover:bg-slate-800 transition-colors cursor-pointer border-t border-slate-800/80"
                     >
                       <span className="flex items-center gap-2.5">
-                        <Key className="w-4 h-4 text-amber-400 shrink-0" />
-                        <span>Session ID Ayarla</span>
+                        <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span>Hesap Güvenliği Rehberi</span>
                       </span>
-                      <span className="text-[10px] text-slate-400">
-                        {sessionId ? 'Aktif' : 'Yok'}
+                      <span className="text-[10px] text-emerald-400 font-medium">
+                        %100 Güvenli
                       </span>
                     </button>
                   )}
