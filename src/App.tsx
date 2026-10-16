@@ -137,8 +137,19 @@ export default function App() {
     return localStorage.getItem('instaflow_enhance_res') !== 'false';
   });
 
-  // User explicit request: "ayrıca reels ve videoları devre dışı bırak" (Default: true)
-  const [excludeVideos, setExcludeVideos] = useState<boolean>(true);
+  // User-selectable video & reels media preference (Default: false, persisted in localStorage)
+  const [excludeVideos, setExcludeVideos] = useState<boolean>(() => {
+    return localStorage.getItem('instaflow_exclude_videos') === 'true';
+  });
+
+  const toggleExcludeVideos = () => {
+    setExcludeVideos(prev => {
+      const next = !prev;
+      localStorage.setItem('instaflow_exclude_videos', String(next));
+      showToast(next ? '🎬 Videolar ve Reels gönderileri gizlendi' : '🎬 Videolar ve Reels gönderileri listeye dahil edildi');
+      return next;
+    });
+  };
 
   // Deep Scan 400+ Archive State
   const [isScanningDeep, setIsScanningDeep] = useState<boolean>(false);
@@ -992,7 +1003,7 @@ export default function App() {
               onToggleDataSaver={toggleDataSaver}
               cooldownSeconds={cooldownSeconds}
               excludeVideos={excludeVideos}
-              onToggleExcludeVideos={() => setExcludeVideos(prev => !prev)}
+              onToggleExcludeVideos={toggleExcludeVideos}
               onDeepScan={handleDeepScan}
               onCancelDeepScan={handleCancelDeepScan}
               isScanningDeep={isScanningDeep}
@@ -1085,7 +1096,9 @@ export default function App() {
                       }`}
                     >
                       <span>Tümü</span>
-                      <span className="text-[11px] text-slate-400 tabular-nums">({posts.length})</span>
+                      <span className="text-[11px] text-slate-400 tabular-nums">
+                        ({excludeVideos && videoCount > 0 ? `${posts.length - videoCount}` : posts.length})
+                      </span>
                     </button>
 
                     <button
@@ -1130,6 +1143,26 @@ export default function App() {
 
                   {/* Secondary Filter Drawer Toggles & Quick Selection */}
                   <div className="flex items-center gap-1.5 flex-wrap text-xs">
+                    {/* User-selectable Video Inclusion Switch */}
+                    <button
+                      type="button"
+                      onClick={toggleExcludeVideos}
+                      className={`px-3 py-1.5 rounded-xl border font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
+                        excludeVideos
+                          ? 'bg-rose-500/15 border-rose-500/40 text-rose-300 hover:bg-rose-500/25'
+                          : 'bg-sky-500/15 border-sky-500/40 text-sky-300 hover:bg-sky-500/25'
+                      }`}
+                      title={excludeVideos ? 'Videoları ve Reels içeriklerini listeye geri dahil et' : 'Videoları ve Reels içeriklerini gizle'}
+                    >
+                      <Film className={`w-3.5 h-3.5 ${excludeVideos ? 'text-rose-400' : 'text-sky-400'}`} />
+                      <span>{excludeVideos ? 'Videolar Gizli' : 'Videolar Açık'}</span>
+                      {videoCount > 0 && (
+                        <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono ${excludeVideos ? 'bg-rose-500/20 text-rose-300' : 'bg-sky-500/20 text-sky-300'}`}>
+                          {videoCount}
+                        </span>
+                      )}
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => setShowDateFilter(prev => !prev)}
@@ -1169,6 +1202,43 @@ export default function App() {
                         ? 'Seçimi Kaldır'
                         : `Tümünü Seç (${filteredPosts.length})`}
                     </button>
+
+                    {/* Granular User Selection options */}
+                    {videoCount > 0 && (photoCount + carouselCount) > 0 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={handleSelectOnlyVideos}
+                          className="px-2.5 py-1.5 bg-slate-950/80 hover:bg-slate-800 text-sky-300 rounded-xl border border-slate-800 cursor-pointer font-medium text-[11px] flex items-center gap-1"
+                          title="Sadece video ve reels gönderilerini seç"
+                        >
+                          <Film className="w-3 h-3 text-sky-400" />
+                          <span>Videoları Seç ({videoCount})</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleSelectOnlyImages}
+                          className="px-2.5 py-1.5 bg-slate-950/80 hover:bg-slate-800 text-amber-300 rounded-xl border border-slate-800 cursor-pointer font-medium text-[11px] flex items-center gap-1"
+                          title="Sadece fotoğraf ve karusel gönderilerini seç"
+                        >
+                          <ImageIcon className="w-3 h-3 text-amber-400" />
+                          <span>Görselleri Seç ({photoCount + carouselCount})</span>
+                        </button>
+                      </>
+                    )}
+
+                    {/* Quick Batch Download Selected Posts */}
+                    {selectedPostIds.size > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleDownloadSelectedBatch}
+                        disabled={isProcessing}
+                        className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold cursor-pointer transition-all shadow-md active:scale-95 flex items-center gap-1.5 text-xs"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>Seçilenleri ZIP İndir ({selectedPostIds.size})</span>
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -1298,24 +1368,58 @@ export default function App() {
                 </div>
               </div>
             ) : dateGroups.length === 0 ? (
-              <div className="bg-slate-900/40 border border-dashed border-slate-800 rounded-2xl p-10 text-center my-6">
-                <SearchX className="w-10 h-10 text-slate-600 mx-auto mb-2" />
-                <h4 className="text-sm font-semibold text-slate-300">
-                  Bu filtrede hiçbir gönderi bulunamadı
-                </h4>
-                <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                  {profileStartDate && `Başlangıç: ${profileStartDate}`} {profileEndDate && `Bitiş: ${profileEndDate}`}. Filtreyi temizleyebilir veya tümünü seçebilirsiniz.
-                </p>
-                <button
-                  onClick={() => {
-                    setMediaFilter('all');
-                    setProfileStartDate('');
-                    setProfileEndDate('');
-                  }}
-                  className="mt-4 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-rose-300 font-medium text-xs rounded-xl border border-slate-700/60 inline-flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <span>Filtreleri Temizle ve Tüm Gönderileri Göster</span>
-                </button>
+              <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-8 sm:p-10 text-center my-6 max-w-xl mx-auto space-y-4 shadow-xl backdrop-blur-md">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto text-amber-400">
+                  <SearchX className="w-6 h-6" />
+                </div>
+                <div className="space-y-1.5">
+                  <h4 className="text-base font-bold text-white">
+                    Bu filtrede hiçbir gönderi bulunamadı
+                  </h4>
+                  <p className="text-xs text-slate-400 leading-relaxed max-w-md mx-auto">
+                    {excludeVideos && videoCount > 0 && (
+                      <span className="block text-amber-300 font-medium mb-1.5 bg-amber-500/10 border border-amber-500/25 p-2 rounded-xl text-left">
+                        🎬 <strong>Video Filtresi Aktif:</strong> Bu hesapta toplam <strong>{videoCount} adet video/reels</strong> gönderisi mevcut ancak şu an gizlenmiş durumda.
+                      </span>
+                    )}
+                    {profileStartDate && `Başlangıç: ${profileStartDate} `}
+                    {profileEndDate && `Bitiş: ${profileEndDate} `}
+                    {mediaFilter !== 'all' && `Seçili Medya Filtresi: ${mediaFilter === 'image' ? 'Fotoğraf' : mediaFilter === 'carousel' ? 'Karusel' : 'Video'}. `}
+                    Filtreleri sıfırlayabilir veya videoları listeye tek tıkla dahil edebilirsiniz.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
+                  {excludeVideos && videoCount > 0 && (
+                    <button
+                      onClick={() => {
+                        setExcludeVideos(false);
+                        localStorage.setItem('instaflow_exclude_videos', 'false');
+                        setMediaFilter('all');
+                        showToast(`🎬 ${videoCount} video ve reels gönderisi listeye dahil edildi.`);
+                      }}
+                      className="w-full sm:w-auto px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 min-h-[40px]"
+                    >
+                      <Film className="w-4 h-4" />
+                      <span>{videoCount} Videoyu Göster ve Listeye Dahil Et</span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      setMediaFilter('all');
+                      setExcludeVideos(false);
+                      localStorage.setItem('instaflow_exclude_videos', 'false');
+                      setProfileStartDate('');
+                      setProfileEndDate('');
+                      showToast('Tüm filtreler temizlendi ve tüm gönderiler listelendi.');
+                    }}
+                    className="w-full sm:w-auto px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700/80 shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2 min-h-[40px]"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Filtreleri Temizle ve Tüm Gönderileri Göster</span>
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="space-y-6">

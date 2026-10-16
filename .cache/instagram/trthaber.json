@@ -1,0 +1,341 @@
+{
+  "data": {
+    "user": {
+      "id": "206247844",
+      "username": "trthaber",
+      "full_name": "TRT Haber",
+      "profile_pic_url_hd": "https://scontent-lhr11-1.cdninstagram.com/v/t51.2885-19/474612001_2095850877495934_3280026631882302847_n.jpg?stp=dst-jpg_e0_s150x150_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby45NjAuYzIifQ&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_cat=1&_nc_oc=Q6cZ2gGEZ6TOPLFOQ8opfH_taMAIEyw-Q0wyUDImm_KNBaiNcCvT8hYkQr9ZAjEyxn3W7BTQiRJA0P7c3mp8g7SpWSRO&_nc_ohc=z9RToLA_svsQ7kNvwELsZWy&_nc_gid=J-HqvQqDLJyGhtt4_RVGxw&edm=ACWDqb8BAAAA&ccb=7-5&oh=00_AQNf5v-7WPZGoSGfGjga48SbijD87hpAFuQpujRTzY5gTw&oe=6AD80DD4&_nc_sid=ee9879",
+      "profile_pic_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.2885-19/474612001_2095850877495934_3280026631882302847_n.jpg?stp=dst-jpg_e0_s150x150_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby45NjAuYzIifQ&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_cat=1&_nc_oc=Q6cZ2gGEZ6TOPLFOQ8opfH_taMAIEyw-Q0wyUDImm_KNBaiNcCvT8hYkQr9ZAjEyxn3W7BTQiRJA0P7c3mp8g7SpWSRO&_nc_ohc=z9RToLA_svsQ7kNvwELsZWy&_nc_gid=J-HqvQqDLJyGhtt4_RVGxw&edm=ACWDqb8BAAAA&ccb=7-5&oh=00_AQNf5v-7WPZGoSGfGjga48SbijD87hpAFuQpujRTzY5gTw&oe=6AD80DD4&_nc_sid=ee9879",
+      "biography": "",
+      "edge_owner_to_timeline_media": {
+        "count": 12,
+        "page_info": {
+          "has_next_page": true,
+          "end_cursor": "4008685553433673877_206247844"
+        },
+        "edges": [
+          {
+            "node": {
+              "id": "4009182932138173426",
+              "shortcode": "DejeqKdp6Py",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/851829303_18640808317039845_4694243378073524213_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=1&ig_cache_key=NDAwOTE4MjkzMjEzODE3MzQyNg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjEwODAuc2RyLnZpZGVvX2RlZmF1bHRfY292ZXJfZnJhbWUuQzMifQ%3D%3D&_nc_ohc=aZHRTA4d8j8Q7kNvwHOkLtj&_nc_oc=Adrj1zTsfLdSlxLtdkOR-Q1qLzQLMMzjHzaFOCSsnC0ds8XcAj484-BYRH0u_zmgXp-mauC_VI3c4gAsZtWxHBkA&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&oh=00_AQNdyz8WD1jyOgxn7N_rhs7g7XyJ2-T37vxwyUVPblF-Aw&oe=6AD7EBAF",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQO3x4aqw11JtoismHYjzAwX-Y0H1x1DapSW5LFdE_Bi_80CXznpyji1JtKsunhtBZXaWpap_x9PY1puNLd4Z641MFtKKnY3ypaNI-U.mp4?_nc_cat=106&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=wHTGRRPeTUMQ7kNvwHXE8yL&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTg4NzQxMzcwODkxMTkwMywiYXNzZXRfYWdlX2RheXMiOjAsInZpX3VzZWNhc2VfaWQiOjEwMDk5LCJkdXJhdGlvbl9zIjo2OSwidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&ccb=17-1&vs=d2bcaa0d1623c290&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC81MkFBMzdGRjg5MzE0Q0U1QjcxNTExRTM0NTkzQjExQl92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzJBQTMxNjVGNzYxNjQxRENCQ0QxODU3MkUwRjVDOTVCX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACa-1M_696XaBhUCKAJDMywXQFFZmZmZmZoYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&_nc_zt=28&oh=00_AQMvnu3MGjrsClzTyR2QBLVae7Ahu83eeJIqHfUgVfHHQw&oe=6AD40E43",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792151998,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "İstanbul'daki rekor yağış en çok Ayazağa'yı etkiledi.\n\nSuların çekilmesiyle geriye hasarlı araçlar ve balçık yığınları kaldı."
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 598
+              },
+              "edge_media_to_comment": {
+                "count": 18
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4009136711067372213",
+              "shortcode": "DejUJjvJgq1",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/849772955_18640785979039845_1107412237212705018_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=101&ig_cache_key=NDAwOTEzNjcxMTA2NzM3MjIxMzE4NjQwNzg1OTc2MDM5ODQ1.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjcyMC5zZHIudmlkZW9fZGVmYXVsdF9jb3Zlcl9mcmFtZS5DMyJ9&_nc_ohc=tus_c3Kxwh4Q7kNvwHNxhEH&_nc_oc=Adrw7i5Y1LwHPgrGmueFoLXGqWUxpbHa-uU8_N9BVUzrCwvXBnzffd4KfdkGNwsANCPfgW5kEDihtu41vtj5vaMi&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&oh=00_AQNyNjgmGNOSiKNkBvIGM5sGBDFnZVZ3pRSxPIiePNwzSQ&oe=6AD7DC09",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQPxBPUpoNxotYGNUwHp8F4BIBcf7U_zpjil-q8_MTivmBvDNq9-oKJqd6c-IDsvT93SHT5zFHNYSZfb2jfdlzSjBji4I3SqJlQ25kc.mp4?_nc_cat=101&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=Uu_gUrIs5UAQ7kNvwFLozA0&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTY4NTE5NDQ2MzMxODg4MSwiYXNzZXRfYWdlX2RheXMiOjAsInZpX3VzZWNhc2VfaWQiOjEwMDk5LCJkdXJhdGlvbl9zIjoxMjksInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=6b6271f6646fc77b&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC8yQTI2RkIxQjI3Rjc0M0JFOTYyQjI4Mzc1NTUyNzlGQV92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyL0JBQTdGMzc5MkQ5MzRBOTNCQjU5M0IzQTkxNEQ3OEQxX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbCzeiVnav-BRUCKAJDMywXQGAuFHrhR64YEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&_nc_zt=28&oh=00_AQONJG43bdiCuY_VxQ-QUlKfU-WfW8SB6jsIW_5QuE0R6A&oe=6AD41ABA",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792146433,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Gazze'de ateşkes kapsamında çekilen 'sarı hat', planlananın aksine Filistinlileri boğmayı amaçlayan bir halata dönüştü.\n\nİşte soykırımcı İsrail'in skandal planı..."
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 959
+              },
+              "edge_media_to_comment": {
+                "count": 42
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4009118083550832124",
+              "shortcode": "DejP6fgpGX8",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/849663443_18640782004039845_3187121093482197949_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=104&ig_cache_key=NDAwOTExODA4MzU1MDgzMjEyNDE4NjQwNzgyMDAxMDM5ODQ1.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjcyMC5zZHIudmlkZW9fZGVmYXVsdF9jb3Zlcl9mcmFtZS5DMyJ9&_nc_ohc=0h_7iZiybHsQ7kNvwEl5p4n&_nc_oc=Adr7LsIuwyfjl8049ylPS9lkPajTHSe-zUhVkEir3PxVfQetoDvTu14Hlqy0wy8hPAHiBlawH3UTiheMuzjCTBlG&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&oh=00_AQNbiq1YWxp0uOgFISXI1x3cHIP9U5W_mkwy0KjAr4lktQ&oe=6AD80A15",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQPIyTd5OfRvNoPbSqts9VtEbJ6n-y9W65Jf-eDGMD7wt8X2NNnHqV4_pfAuSc2XzbRS1BhH4fMqH7G5hLYdN-64hA3ceHN1e9p9S0Q.mp4?_nc_cat=106&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=_PtJc_kDVUMQ7kNvwFfeahf&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuMTI4MC5kYXNoX2Jhc2VsaW5lXzFfdjEiLCJ4cHZfYXNzZXRfaWQiOjEwNzcwMDI0Njg1MDY5OTMsImFzc2V0X2FnZV9kYXlzIjowLCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6ODEsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=afaf75cfcf322814&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC83NDc3Qzc5OEZEODY0NTFEQTgwMjY0RTg3OTUyNTNCQ192aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzUzNTREQzY1OTg0QzQ2Qjg5MUI1QzZBNDMxMDRBMzFDX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbi9fXY5eHpAxUCKAJDMywXQFR9cKPXCj0YEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&_nc_zt=28&oh=00_AQMnw5mNlaxdtQNMSI49Ih0R8ZqpyUsbqt3jTyklRUHbuQ&oe=6AD3F18F",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792144213,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Emine Erdoğan'dan Türkiye Maarif Vakfı 10. Yıl Programı'na ilişkin paylaşım:\n\n📌\"Türkiye Maarif Vakfımızın çatısı altında ilimle donanan, erdemle yetişen gençlerin, birikimleri ve başarılarıyla insanlığın yarınlarına yön vermesini temenni ediyorum.\""
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 273
+              },
+              "edge_media_to_comment": {
+                "count": 8
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4009091700556670321",
+              "shortcode": "DejJ6kbpaVx",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/851829007_18640763974039845_4881483685199625029_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=1&ig_cache_key=NDAwOTA5MTcwMDU1NjY3MDMyMQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjEwODAuc2RyLnZpZGVvX2RlZmF1bHRfY292ZXJfZnJhbWUuQzMifQ%3D%3D&_nc_ohc=kjy_tM9BZoMQ7kNvwGLQugO&_nc_oc=AdrUZzAxO9ZIvL-bORZSoPTeBf6zJq7G7Y8nq4gLaKHaGpY3MVXrNqvDRjOleYh6ODvwVyP8dPbPWjoByS-emaVI&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&oh=00_AQNKo5A0_UjWfp5WNVuQdYuGQ8iYpcUAWp3dBN9HqnB0qA&oe=6AD7DA3B",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQMVEsu3saw4RA3PA902uXYTVbJ2PnwsXtD89hJwWWoAE71rmiyV5l7WHiJ5sju5OQ5QAU1NyN3myY7tnKosflr3l36w0nFe-GOpmuY.mp4?_nc_cat=111&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=0YB9U3sLlN0Q7kNvwExjwIb&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTU4MjM2MjI2NjQwOTgxNiwiYXNzZXRfYWdlX2RheXMiOjAsInZpX3VzZWNhc2VfaWQiOjEwMDk5LCJkdXJhdGlvbl9zIjoyOSwidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&ccb=17-1&vs=6e38310e0025e8e0&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC80RUZCQjdGMDAzQ0Y0NTc0QTNBMzJCQ0U1Q0U3RTk4Ml92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzA5OTUzQ0QyOUU4MjQ3NEY5NjUwNERBNjc2MzE0RkU5X2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACaw7dzMzcnPBRUCKAJDMywXQD1mZmZmZmYYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&_nc_zt=28&oh=00_AQOKPGpakBx2mJTmsieLdC2cWSXwwVFTDbaCBDNsOJazlg&oe=6AD3E738",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792141059,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "❄️ Ankara'nın Kızılcahamam ve Çamlıdere ilçelerine mevsimin ilk karı yağdı."
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 13342
+              },
+              "edge_media_to_comment": {
+                "count": 115
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4009059234873805418",
+              "shortcode": "DejCiIaJwpq",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/851829249_18640750849039845_913117633323655594_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=1&ig_cache_key=NDAwOTA1OTIzNDg3MzgwNTQxOA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjEwODAuc2RyLnZpZGVvX2RlZmF1bHRfY292ZXJfZnJhbWUuQzMifQ%3D%3D&_nc_ohc=SeykP8FQpdwQ7kNvwFVp27z&_nc_oc=AdpYvsm2YZ8T3SfAFav2giJISxhd61tf-Kij7ZSV6KgySLvllCfgpCan92w0aglERNL89zCLvn823nPeQcrBJ8iA&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&oh=00_AQOgVu4tivIfuOEIhw3KcXtzbotQ_dTKDBowFeSzk9HN3A&oe=6AD7FEA8",
+              "video_url": "https://scontent-lhr6-1.cdninstagram.com/o1/v/t2/f2/m86/AQNBKkAX_HkBm6FWH-_cDvsGZXAUfH2Bk7ONvkQyZqiBQTOa5wSJ0n86h-ny4NeExrKlQ5bbzEbKQ4WUc7vNL7ORk7jfGWkaX0meTv4.mp4?_nc_cat=109&_nc_sid=5e9851&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_ohc=xp_pSAj6YI8Q7kNvwEvi2FN&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTQ3ODg3NDg4MDc2NTgxMywiYXNzZXRfYWdlX2RheXMiOjAsInZpX3VzZWNhc2VfaWQiOjEwMDk5LCJkdXJhdGlvbl9zIjozMywidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&ccb=17-1&vs=37b544a12dd56b82&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC8wQTk1MDEwRDhDQUM0QzAyOERBODcxMTkwMzE3MkU5RV92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzNDN0M2NDQ2RkRFRDQwNzlCMzEyNEQ2RkVEMTE4RDQ1X2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbqvfu-7MGgBRUCKAJDMywXQEDXCj1wo9cYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&_nc_zt=28&oh=00_AQMUMELKOxMUWmcxCMJgH538MEEoYusF232dIKNB0ccm_g&oe=6AD4052E",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792137163,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Husilerin Suudi Arabistan'daki havalimanlarına düzenlediği saldırılardan yeni görüntüler…"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 1397
+              },
+              "edge_media_to_comment": {
+                "count": 91
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4009030192590198612",
+              "shortcode": "Dei77grJ5dU",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/851829088_18640739284039845_2217071113803627962_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=1&ig_cache_key=NDAwOTAzMDE5MjU5MDE5ODYxMg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjEwODAuc2RyLnZpZGVvX2RlZmF1bHRfY292ZXJfZnJhbWUuQzMifQ%3D%3D&_nc_ohc=wHbBQ_O2dDQQ7kNvwEnn8vc&_nc_oc=AdovU5o2xh20c4mSXKt3i8LgBs-vDVB1T7vYCx_FR_jVnQxgIdY0VH8HpuNx83uKfxftia0NomyO4PJAbhN1B8Tc&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&oh=00_AQNtWWkTBsoBVoJbBYQyxb6vcPThhGxdEPPhLa3LHwNi3Q&oe=6AD7F258",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQM_Udyt2SqMataAqvtopTKPlEdg-lVf5GvxhSezHt0VlHa6TBdqRo5ES96kfITbdMRRmYUfgLFEYoJeBjgLo2o1XRxGmJbxI9JV5Zc.mp4?_nc_cat=101&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=Q873z9aQKAQQ7kNvwHvT_kX&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTA4OTc3OTA5MDYyNTAyMCwiYXNzZXRfYWdlX2RheXMiOjAsInZpX3VzZWNhc2VfaWQiOjEwMDk5LCJkdXJhdGlvbl9zIjo1NywidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&ccb=17-1&vs=14dee5d031795742&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC9ENTA0QjY5ODM3NEY0QkE2OEI5NzUzMjE4RTBDNzVDN192aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzU0OTdEQjI0REM2ODRGQUJBOTdGOEYyOEY2RDQ2Q0U1X2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACb4x6T5vsnvAxUCKAJDMywXQEzMzMzMzM0YEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&_nc_zt=28&oh=00_AQMeVWI1iopVTucRNUreuwqb4APQUJqbsR19Mn6n-PbBhw&oe=6AD41406",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792133706,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Havada takla atıyor, 0’dan 100’e 1 saniyeden kısa sürede çıkıyor.\n\nİşte Tesla'nın 'uçan otomobil'i..."
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 9195
+              },
+              "edge_media_to_comment": {
+                "count": 795
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4009007232290480224",
+              "shortcode": "Dei2tZOpWBg",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/851887554_18640730413039845_920034879780831522_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=111&ig_cache_key=NDAwOTAwNzIzMjI5MDQ4MDIyNA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjEwODAuc2RyLnZpZGVvX2RlZmF1bHRfY292ZXJfZnJhbWUuQzMifQ%3D%3D&_nc_ohc=Fub4lWOPrm8Q7kNvwETJ2Zz&_nc_oc=Adq-ULpuWRDBT_FcstIdX9fUkGM3o6g60ullXBO8RNWveRMWCwvxeWRzRqiHRGseZCqzB_c-OiyucJOVYoVSo2c5&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&oh=00_AQMLb5LnIYqHKK7hKIFO1iO62kK-tN3ekAVzoC5yjIWjeQ&oe=6AD7F8FF",
+              "video_url": "https://scontent-lhr6-1.cdninstagram.com/o1/v/t2/f2/m86/AQPiRHi8eDz4f4cuXT-lFbY51kY-kdPQqv5W__pBvtSjIv2TECmyqQdq-Q0M6P-TGHulpMP0W5FIJ96LNnj1T0dj0QWnJIpIiVsmykQ.mp4?_nc_cat=109&_nc_sid=5e9851&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_ohc=6tU-n4oYkoUQ7kNvwFvueZp&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTE0Njk3MzM2MTU5NzA4NiwiYXNzZXRfYWdlX2RheXMiOjAsInZpX3VzZWNhc2VfaWQiOjEwMDk5LCJkdXJhdGlvbl9zIjoyMSwidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&ccb=17-1&vs=d326cef46cab119b&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC85NjAzOTI4QzA0MkU0MDdEQUZCOTZCRjY2Q0RERkUxQl92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyL0FBOTZBQ0VGODNGMTRCOUJBNkZENzRDQzgwM0Q5MTIzX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACa8qse80cqJBBUCKAJDMywXQDWPXCj1wo8YEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&_nc_zt=28&oh=00_AQPCBQkk489ssEBxO9LvzmM4p6MapQX5prW4KbcjD7csjg&oe=6AD3E6E6",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792130964,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Rusya, Ukrayna'da bir süpermarketi vurdu, 3 kişi yaralandı."
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 525
+              },
+              "edge_media_to_comment": {
+                "count": 24
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4008912721483873168",
+              "shortcode": "DeihOFLlzuQ",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/851887607_18640686745039845_5624004175030483076_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=106&ig_cache_key=NDAwODkxMjcyMTQ4Mzg3MzE2ODE4NjQwNjg2NzQyMDM5ODQ1.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjEwODAuc2RyLnZpZGVvX2RlZmF1bHRfY292ZXJfZnJhbWUuQzMifQ%3D%3D&_nc_ohc=AnraZ5yKunUQ7kNvwGETyQI&_nc_oc=Adouo2EdZYip_vyEp32Du740Ui9ibsYbNoRTVlV23a0Updu-O9jQuJIAJiOxE0iQFgKaeFa8v-tHevlN5j4S28RW&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&oh=00_AQNCUxs4fWekqGZfsXtjBGpzKA19Za1RuNfJCQWsIe2bfQ&oe=6AD7F7E3",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQOoVXK_soge2l-EpXcyiwBA3Rb6oJrZJKtoBB4RP0zgf4sIizxxLavSnECVlxx70M_fCv_kf01r6oTpWP2dlHdTUgaeiQvwEafncj8.mp4?_nc_cat=107&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=XxjhlYUld6cQ7kNvwEJXbQM&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTg2NDA2ODY1NDcwMzk4NDUsImFzc2V0X2FnZV9kYXlzIjowLCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6MjEsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=6579bcd445b208d4&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC82REVFRUJDOUJFRTY0OTc2OUJEMkYzN0Q5RjE4OUZGRl92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzcxMTBFMzFGQTA5NzRCODlBRjk4RjVEN0YwNUM1NURFX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbK2YvA4eacQhUCKAJDMywXQDXMzMzMzM0YEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&_nc_zt=28&oh=00_AQNI-UCQ4H-eWGjT0XABRkdAzM5JnuhHxoC4icQu4PmWWw&oe=6AD41700",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792119682,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "🪂 Rusya'da bir evin çatısına inen paraşütçü, ev sahibinden merdiven istedi.\n\nParaşütçü, kurtarma ekipleri tarafından çatıdan indirildi."
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 1137
+              },
+              "edge_media_to_comment": {
+                "count": 11
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4008867385637435056",
+              "shortcode": "DeiW6W4kXaw",
+              "display_url": "https://scontent-lhr6-2.cdninstagram.com/v/t51.82787-15/850070306_18640708603039845_7047143011862896288_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=105&ig_cache_key=NDAwODg2NzM4NTYzNzQzNTA1NjE4NjQwNzA4NjAwMDM5ODQ1.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjcyMC5zZHIudmlkZW9fZGVmYXVsdF9jb3Zlcl9mcmFtZS5DMyJ9&_nc_ohc=zGUa9tYMcvkQ7kNvwHrkWkx&_nc_oc=AdruX54wKAj65D2Qyj4vxp0W9u1vvLNHvlw244vW9kRhA6eG3FdY7pYXcViSFGoXOsoWV2f__W_0RJLG7la8wHBL&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-2.cdninstagram.com&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&oh=00_AQMmeJQklP0rjP4aIox3H3G0dFHyK7nQaqxDRNXXk2R-CA&oe=6AD80DC1",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQN3w9GKWrEqzzbwR4z6VgwF-TP9Cudd1FbQbjtb_tXx1OSa51K-9fDjJtJ9qiyAK-yvVy7TtMQ9eXTFN_eL37pPCbBfXx0znccoqaM.mp4?_nc_cat=106&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=LN0ZQrxR030Q7kNvwHfHJkJ&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTg2NDA2NTY2MjIwMzk4NDUsImFzc2V0X2FnZV9kYXlzIjowLCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6MTQsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=1eb604a099c86c02&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC82NkY1OUVCODI4MEE0MkE3QThFODQ3RDBCNUNERThGMl92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzhEQTRFMTc2M0E2QzQyMjlBMjJFMERCNThCNTcwRkVEX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbKzLHFguWcQhUCKAJDMywXQC0zMzMzMzMYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&_nc_zt=28&oh=00_AQPnciENJZNXUEeB2gsInYbYPu5o61gzg9DiT0GhBnW4bQ&oe=6AD40DCB",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792114276,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Katil İsrail, Gazze'yi bombaladı.\n\nGazze kenti ve Megazi Mülteci Kampı'na düzenlenen saldırılarda 3 Filistinli yaralandı, çok sayıda ev yıkıldı."
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 2776
+              },
+              "edge_media_to_comment": {
+                "count": 192
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4008791950500870076",
+              "shortcode": "DeiFwocDLe8",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/850336367_18640616641039845_8363441068471101550_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=1&ig_cache_key=NDAwODc5MTk1MDUwMDg3MDA3NjE4NjQwNjE2NjM4MDM5ODQ1.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjEwODAuc2RyLnZpZGVvX2RlZmF1bHRfY292ZXJfZnJhbWUuQzMifQ%3D%3D&_nc_ohc=wTMc9mdfiDoQ7kNvwFsUrFJ&_nc_oc=AdqX0gEgcfNQa71SMpCTLi6T9s5pZXNcAcgCbw67eHlhNOQrUbjmjpOgvj_0lX63UIEreWQwNHh_Np7xAggoQpm5&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&oh=00_AQOhhAnwP-BFVd6VgN2t97VPBGRLNoN0Dyvhb1z-nKx88A&oe=6AD7FF33",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQOTAKUndMx2Rz5Njodag2hBhybr1Qk3b5ww80J8IBsMstCAvEFvoHX522ZvMP0pQmRWXaxdfyeUTq3Zdx6meDeEEzaC1-12h08On3E.mp4?_nc_cat=110&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=38a32v3VwM8Q7kNvwGmTbNS&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTg2NDA2MTYyODQwMzk4NDUsImFzc2V0X2FnZV9kYXlzIjowLCJ2aV91c2VjYXNlX2lkIjoxMDA5OSwiZHVyYXRpb25fcyI6NjQsInVybGdlbl9zb3VyY2UiOiJ3d3cifQ%3D%3D&ccb=17-1&vs=9c8900f9bde6239d&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC84QzgwMDE5QTUzRjc0NUZEQTE5NUVFQ0ZGRDA0MTlCN192aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyL0ZGRDI4NEY4Q0FDRjREMkNCOUVBMDM5MzBDREEwQUE1X2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbKqomA1uKcQhUCKAJDMywXQFAwo9cKPXEYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&_nc_zt=28&oh=00_AQPClWarHfgC6UkbugOv8qPTZlzsbP95aMnA1etRovnEUA&oe=6AD4044B",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792105291,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Diyarbakır'da nefes borusuna mandalina parçası kaçan öğrenci, müdür yardımcısının Heimlich manevrasıyla kurtuldu."
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 24766
+              },
+              "edge_media_to_comment": {
+                "count": 447
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4008730809352856721",
+              "shortcode": "Deh326TpCSR",
+              "display_url": "https://scontent-lhr11-1.cdninstagram.com/v/t51.82787-15/851041320_18640583797039845_4005862047665804352_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=1&ig_cache_key=NDAwODczMDgwOTM1Mjg1NjcyMQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjEwODAuc2RyLnZpZGVvX2RlZmF1bHRfY292ZXJfZnJhbWUuQzMifQ%3D%3D&_nc_ohc=45LuM0EYyiQQ7kNvwHO47-d&_nc_oc=AdrenDEcJ6XyUZPYtzWEOSkE3snRK-abspwmVSHGw5LdqPC8oETOAE_NOjwqoWjJLmXAhHlvEiDu-Y-2omMRMSkZ&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&oh=00_AQNRr41ZibAokPLLTsnd-KG6-BpbYysEM8fLlmgkHA3Ndg&oe=6AD7F203",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQPqCQAo1hReKposM_bBHxP-Uimf4k55B5pYKhTweeRe3I5fgZAYMnxNure0soL97GcJKby0UpeN7Stwv7YEhi1-gipFZELFFq3JSH0.mp4?_nc_cat=100&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=801Lni3gdK0Q7kNvwEGzpJ7&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTgxMzEzMDUzNjY5MjE1MywiYXNzZXRfYWdlX2RheXMiOjAsInZpX3VzZWNhc2VfaWQiOjEwMDk5LCJkdXJhdGlvbl9zIjoxOCwidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&ccb=17-1&vs=47aca91e7935ea76&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC9BRTQyRjIxMTY3QjI0QjM5QUFDMTAwMjJGMzEzMzU1RF92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyLzA3NUREM0EzMzQ2NTQwMkU4QUUxNzk0RTI5MjY4MEVGX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbyppGZi8K4BhUCKAJDMywXQDJcKPXCj1wYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&_nc_zt=28&oh=00_AQPuwvKQc56ydS_ouHYqq1iuLMC7WVMlEJ4oQs0UNJI-jA&oe=6AD409AD",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792098009,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "Hürmüz Boğazı'nda mayına çarparak battığı iddia edilen gemiden geriye denizde sürüklenen konteynerler ve enkaz kaldı.\n\nSingapur bayraklı gemiden 21 mürettebatın tamamı tahliye edilmişti."
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 4138
+              },
+              "edge_media_to_comment": {
+                "count": 87
+              }
+            }
+          },
+          {
+            "node": {
+              "id": "4008685553433673877",
+              "shortcode": "DehtkWcp4CV",
+              "display_url": "https://scontent-lhr6-1.cdninstagram.com/v/t51.82787-15/850496258_18640555072039845_7223306849245120644_n.jpg?stp=dst-jpg_e15_tt6&_nc_cat=108&ig_cache_key=NDAwODY4NTU1MzQzMzY3Mzg3Nw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNMSVBTLnhwaWRzLjk0MC5zZHIudmlkZW9fZGVmYXVsdF9jb3Zlcl9mcmFtZS5DMyJ9&_nc_ohc=-TYlCBx5WQ4Q7kNvwFG3SPD&_nc_oc=AdpIY1WA8GaRbgDSHgO2ffELDhOx939kErIK8sHJylKgQHH9nlANSKvb0ODk2kZvgwr_LmlsVTqEDKDHL0vRZUGn&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&oh=00_AQMHISmOMeEh1fgq81Z7fASrdXUwOP52uUBTsjVlr5-96Q&oe=6AD7F6A7",
+              "video_url": "https://scontent-lhr11-1.cdninstagram.com/o1/v/t2/f2/m86/AQPjpPWXqbNlSwatBwkaHpJv-W6_6LbaHHAaQxCyl_OulHE7rA3riVLCWY0d5-Hs-5EsUEPCajTCtgIumqjaASyGTZBHJjkug2HEPVY.mp4?_nc_cat=110&_nc_sid=5e9851&_nc_ht=scontent-lhr11-1.cdninstagram.com&_nc_ohc=QYgUlWdG0SoQ7kNvwFvchPG&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5JTlNUQUdSQU0uQ0xJUFMuQzMuNzIwLmRhc2hfYmFzZWxpbmVfMV92MSIsInhwdl9hc3NldF9pZCI6MTgwMjE4NDEwNDI1Mzg3NiwiYXNzZXRfYWdlX2RheXMiOjAsInZpX3VzZWNhc2VfaWQiOjEwMDk5LCJkdXJhdGlvbl9zIjo5NCwidXJsZ2VuX3NvdXJjZSI6Ind3dyJ9&ccb=17-1&vs=c3f7b8978efbf498&_nc_vs=HBksFQIYUmlnX3hwdl9yZWVsc19wZXJtYW5lbnRfc3JfcHJvZC9BQjQ3RTJFNjQ5OUU0OTRBOEI3Rjg4OUE2QTdERDMwQl92aWRlb19kYXNoaW5pdC5tcDQVAALIARIAFQIYUWlnX3hwdl9wbGFjZW1lbnRfcGVybWFuZW50X3YyL0JCN0JEMzQ1RjQyOTQ2OTlBNDVDNDZGOUU5MUFERDJFX2F1ZGlvX2Rhc2hpbml0Lm1wNBUCAsgBEgAoABgAGwKIB3VzZV9vaWwBMRJwcm9ncmVzc2l2ZV9yZWNpcGUBMRUAACbo5tT19cSzBhUCKAJDMywXQFeKPXCj1woYEmRhc2hfYmFzZWxpbmVfMV92MREAdf4HZeadAQA&_nc_gid=mpTaWZ5v4ZCfrDN-VcesRw&_nc_ss=7a20f&_nc_zt=28&oh=00_AQOrJ_WsaKSBOba3q_Oa0zYT8MagHjkKfwTm6yqtp9Ictw&oe=6AD40CCF",
+              "is_video": true,
+              "__typename": "GraphVideo",
+              "taken_at_timestamp": 1792092707,
+              "edge_media_to_caption": {
+                "edges": [
+                  {
+                    "node": {
+                      "text": "🌊 Selde araçta kalmak mı, çıkmak mı daha güvenli?\n\n30 santimetrelik hızlı akan su bile otomobili sürükleyebiliyor. Peki selde mahsur kalırsanız ne yapmalısınız?"
+                    }
+                  }
+                ]
+              },
+              "edge_liked_by": {
+                "count": 2924
+              },
+              "edge_media_to_comment": {
+                "count": 49
+              }
+            }
+          }
+        ]
+      },
+      "edge_followed_by": {
+        "count": 0
+      },
+      "edge_follow": {
+        "count": 0
+      },
+      "is_verified": true,
+      "is_private": false
+    }
+  }
+}

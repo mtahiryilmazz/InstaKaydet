@@ -155,6 +155,139 @@ async function startServer() {
     return { cookieHeader, csrfToken, sessionId, userId, parsedCookies };
   }
 
+  // Universal Profile Statistics Enrichment (No hardcoded account rules; works dynamically for ANY Instagram profile)
+  async function enrichUniversalProfileStats(targetUsername: string, userObj: any): Promise<any> {
+    if (!userObj) return userObj;
+
+    const currentPostCount = Number(userObj.edge_owner_to_timeline_media?.count || 0);
+    const currentFollowerCount = Number(userObj.edge_followed_by?.count || 0);
+    const currentFollowingCount = Number(userObj.edge_follow?.count || 0);
+
+    // If stats are already populated (followers > 0 and postsCount > 24 and following > 0), no enrichment needed
+    if (currentFollowerCount > 0 && currentPostCount > 24 && currentFollowingCount > 0) {
+      return userObj;
+    }
+
+    try {
+      const { execFile } = await import('child_process');
+      const util = await import('util');
+      const execFileAsync = util.promisify(execFile);
+
+      // 1. Scrape public embed context which contains real owner stats for ANY public Instagram account
+      const embedUrls = [
+        `https://www.instagram.com/${encodeURIComponent(targetUsername)}/embed/`,
+        `https://www.instagram.com/${encodeURIComponent(targetUsername)}/embed/captioned/`
+      ];
+
+      for (const embedUrl of embedUrls) {
+        try {
+          const args = [
+            '-s', '-L', '--max-time', '6',
+            '-H', 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            '-H', 'Accept-Language: tr-TR,tr;q=0.9,en-US;q=0.8',
+            embedUrl
+          ];
+          const { stdout } = await execFileAsync('curl', args, { maxBuffer: 12 * 1024 * 1024 });
+          if (!stdout) continue;
+
+          // Extract edge_followed_by count (takipçi sayısı)
+          const followerMatch = stdout.match(/"edge_followed_by"\s*:\s*\{\s*"count"\s*:\s*(\d+)\s*\}/);
+          if (followerMatch && followerMatch[1]) {
+            const fCount = parseInt(followerMatch[1], 10);
+            if (fCount > 0) {
+              userObj.edge_followed_by = { count: fCount };
+            }
+          }
+
+          // Extract edge_owner_to_timeline_media count (toplam gönderi sayısı)
+          const postCountMatch = stdout.match(/"edge_owner_to_timeline_media"\s*:\s*\{\s*"count"\s*:\s*(\d+)\s*\}/);
+          if (postCountMatch && postCountMatch[1]) {
+            const pCount = parseInt(postCountMatch[1], 10);
+            if (pCount > 0) {
+              if (!userObj.edge_owner_to_timeline_media) {
+                userObj.edge_owner_to_timeline_media = { count: pCount, page_info: { has_next_page: false, end_cursor: null }, edges: [] };
+              } else {
+                userObj.edge_owner_to_timeline_media.count = pCount;
+              }
+            }
+          }
+
+          // Extract is_verified
+          const verifiedMatch = stdout.match(/"is_verified"\s*:\s*(true|false)/);
+          if (verifiedMatch) {
+            userObj.is_verified = verifiedMatch[1] === 'true';
+          }
+
+          // Extract HD avatar if current is empty or small
+          const avatarMatch = stdout.match(/"profile_pic_url"\s*:\s*"((?:\\.|[^"\\])*)"/);
+          if (avatarMatch && avatarMatch[1] && (!userObj.profile_pic_url || !userObj.profile_pic_url_hd)) {
+            try {
+              const cleanPic = JSON.parse(`"${avatarMatch[1]}"`).replace(/&amp;/g, '&');
+              userObj.profile_pic_url = cleanPic;
+              userObj.profile_pic_url_hd = cleanPic;
+            } catch {}
+          }
+
+          // If we got both followers and total posts, we can break
+          if (userObj.edge_followed_by?.count > 0 && userObj.edge_owner_to_timeline_media?.count > 12) {
+            break;
+          }
+        } catch {}
+      }
+
+      // 2. OpenGraph description fallback (parses e.g. "3M Followers, 3 Following, 52K Posts" or Turkish "3,3 Mn Takipçi, 3 Takip, 52,8 B Gönderi")
+      if (!userObj.edge_followed_by?.count || !userObj.edge_owner_to_timeline_media?.count || !userObj.edge_follow?.count) {
+        try {
+          const args = [
+            '-s', '-L', '--max-time', '5',
+            '-H', 'User-Agent: facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
+            '-H', 'Accept-Language: tr-TR,tr;q=0.9,en-US;q=0.8',
+            `https://www.instagram.com/${encodeURIComponent(targetUsername)}/`
+          ];
+          const { stdout } = await execFileAsync('curl', args, { maxBuffer: 5 * 1024 * 1024 });
+          if (stdout) {
+            const ogDesc =
+              stdout.match(/property="og:description"\s+content="([^"]+)"/i)?.[1] ||
+              stdout.match(/name="description"\s+content="([^"]+)"/i)?.[1] || '';
+
+            if (ogDesc) {
+              const numMatches = ogDesc.match(/([\d.,]+[KMBkmb]?)\s+(Followers|Takipçi|Following|Takip|Posts|Gönderi)/gi);
+              if (numMatches && numMatches.length >= 1) {
+                const parseNum = (str: string) => {
+                  const raw = str.replace(/[^\d.,KMBkmb]/g, '').trim();
+                  const mult = /m/i.test(raw) ? 1000000 : /k/i.test(raw) || /b/i.test(raw) ? 1000 : 1;
+                  const n = parseFloat(raw.replace(/,/g, '.').replace(/[KMBkmb]/gi, ''));
+                  return isNaN(n) ? 0 : Math.round(n * mult);
+                };
+                for (const m of numMatches) {
+                  if (/Follower|Takipçi/i.test(m) && (!userObj.edge_followed_by?.count || userObj.edge_followed_by.count === 0)) {
+                    userObj.edge_followed_by = { count: parseNum(m) };
+                  } else if (/Following|Takip(?!çi)/i.test(m) && (!userObj.edge_follow?.count || userObj.edge_follow.count === 0)) {
+                    userObj.edge_follow = { count: parseNum(m) };
+                  } else if (/Post|Gönderi/i.test(m) && (!userObj.edge_owner_to_timeline_media?.count || userObj.edge_owner_to_timeline_media.count <= 12)) {
+                    const parsedPosts = parseNum(m);
+                    if (parsedPosts > 0) {
+                      if (!userObj.edge_owner_to_timeline_media) {
+                        userObj.edge_owner_to_timeline_media = { count: parsedPosts, page_info: { has_next_page: false, end_cursor: null }, edges: [] };
+                      } else {
+                        userObj.edge_owner_to_timeline_media.count = parsedPosts;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } catch {}
+      }
+    } catch (err: any) {
+      console.warn(`Universal profile stats enrichment error for @${targetUsername}:`, err.message);
+    }
+
+    return userObj;
+  }
+
   // Resilient multi-strategy Instagram Profile fetcher (Cookie-Free Mobile/APK + Optional Desktop Cookie + Social Bot Crawler Bypass)
   async function fetchInstagramProfile(cleanUsername: string, sessionId = ''): Promise<any> {
     const { execFile } = await import('child_process');
@@ -290,28 +423,31 @@ async function startServer() {
               };
             });
 
+            const baseUser = {
+              id: String(u.pk || u.id || ''),
+              username: u.username || targetUsername,
+              full_name: u.full_name || targetUsername,
+              profile_pic_url_hd: u.hd_profile_pic_url_info?.url || u.profile_pic_url || '',
+              profile_pic_url: u.profile_pic_url || '',
+              biography: u.biography || '',
+              edge_owner_to_timeline_media: {
+                count: convertedEdges.length,
+                page_info: {
+                  has_next_page: !!(feedParsed.more_available && feedParsed.next_max_id),
+                  end_cursor: feedParsed.next_max_id || null,
+                },
+                edges: convertedEdges,
+              },
+              edge_followed_by: { count: u.follower_count || 0 },
+              edge_follow: { count: u.following_count || 0 },
+              is_verified: !!u.is_verified,
+              is_private: !!u.is_private,
+            };
+
+            const enrichedUser = await enrichUniversalProfileStats(targetUsername, baseUser);
             return {
               data: {
-                user: {
-                  id: String(u.pk || u.id || ''),
-                  username: u.username || targetUsername,
-                  full_name: u.full_name || targetUsername,
-                  profile_pic_url_hd: u.hd_profile_pic_url_info?.url || u.profile_pic_url || '',
-                  profile_pic_url: u.profile_pic_url || '',
-                  biography: u.biography || '',
-                  edge_owner_to_timeline_media: {
-                    count: convertedEdges.length,
-                    page_info: {
-                      has_next_page: !!(feedParsed.more_available && feedParsed.next_max_id),
-                      end_cursor: feedParsed.next_max_id || null,
-                    },
-                    edges: convertedEdges,
-                  },
-                  edge_followed_by: { count: u.follower_count || 0 },
-                  edge_follow: { count: u.following_count || 0 },
-                  is_verified: !!u.is_verified,
-                  is_private: !!u.is_private,
-                },
+                user: enrichedUser,
               },
             };
           }
@@ -934,6 +1070,7 @@ async function startServer() {
       }
 
       if (rawJson?.data?.user?.username) {
+        rawJson.data.user = await enrichUniversalProfileStats(cleanUsername, rawJson.data.user);
         try {
           fs.writeFileSync(cacheFile, JSON.stringify(rawJson, null, 2), 'utf-8');
           console.log(`Successfully fetched LIVE Instagram data for ${cleanUsername}`);
@@ -949,6 +1086,12 @@ async function startServer() {
       }
 
       let userData = rawJson?.data?.user;
+      if (userData) {
+        userData = await enrichUniversalProfileStats(cleanUsername, userData);
+        if (rawJson?.data) {
+          rawJson.data.user = userData;
+        }
+      }
 
       // CRITICAL FIX: If the 30-second countdown already completed (retryAfterCooldown === true),
       // NEVER return HTTP 429 again! Synthesize a guaranteed recovery profile response so the user is never stuck in an infinite 429 loop.
@@ -1687,6 +1830,8 @@ Nasıl Kullanılır?
           id: String(tokenPayload.user_id),
           username: typeof tokenPayload.username === 'string' ? tokenPayload.username : '',
           fullName: typeof tokenPayload.username === 'string' ? tokenPayload.username : '',
+          avatarUrl: '',
+          postsCount: 0,
           accountType: 'CREATOR'
         },
         accessToken: tokenPayload.access_token,

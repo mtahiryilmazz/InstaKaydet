@@ -380,7 +380,11 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
                 <span aria-hidden="true">·</span>
                 <span>
                   <strong className="text-white font-semibold tabular-nums">
-                    {profile.followersCount >= 10000
+                    {profile.followersCount >= 1000000
+                      ? `${(profile.followersCount / 1000000).toLocaleString('tr-TR', {
+                          maximumFractionDigits: 1,
+                        })} Mn`
+                      : profile.followersCount >= 10000
                       ? `${(profile.followersCount / 1000).toLocaleString('tr-TR', {
                           maximumFractionDigits: 1,
                         })} B`
@@ -388,10 +392,25 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
                   </strong>{' '}
                   takipçi
                 </span>
-                <span aria-hidden="true">·</span>
-                <span className="text-emerald-400 font-medium tabular-nums">
-                  {totalPosts} yüklü
-                </span>
+                {profile.followingCount > 0 && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span>
+                      <strong className="text-white font-semibold tabular-nums">
+                        {profile.followingCount.toLocaleString('tr-TR')}
+                      </strong>{' '}
+                      takip
+                    </span>
+                  </>
+                )}
+                {totalPosts > 0 && profile.postsCount > totalPosts && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span className="text-emerald-400 font-medium tabular-nums">
+                      {totalPosts} yüklü
+                    </span>
+                  </>
+                )}
                 <span aria-hidden="true">·</span>
                 {isFromLocalCache ? (
                   <span

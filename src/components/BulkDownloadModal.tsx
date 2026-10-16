@@ -46,12 +46,22 @@ export const BulkDownloadModal: React.FC<BulkDownloadModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  // Options - Default exclude reels & videos and include per-post PDF in single ZIP as requested
-  const [excludeVideos, setExcludeVideos] = useState(true); // REQ: "ayrıca reels ve videoları devre dışı bırak"
-  const [includePdfInZip, setIncludePdfInZip] = useState(true); // REQ: "pdf dönüşümü yaprıktan sonra tek seferde zip formatında indirsin"
-  // USER EXPLICIT REQUIREMENT: "400 küsür göneriyi tek pdf değil her gönderiyi tek pdf yapacak, bir gönderi içinde fazla resim varsa onlarıda tek pdf içinde birleştirecek"
+  // User selectable media download options
+  const videoCount = posts.filter(p => p.isVideo).length;
+  const imagePostsCount = posts.filter(p => !p.isVideo).length;
+  const isVideoOnlyAccount = videoCount > 0 && imagePostsCount === 0;
+
+  // Options - User selectable video and image inclusion
+  const [includeVideos, setIncludeVideos] = useState<boolean>(() => {
+    // If account only has videos (like trthaber), include them by default so user can download immediately
+    return isVideoOnlyAccount ? true : true;
+  });
+  const excludeVideos = !includeVideos;
+  const [includeImagesInZip, setIncludeImagesInZip] = useState<boolean>(() => {
+    return isVideoOnlyAccount ? false : true;
+  });
+  const [includePdfInZip, setIncludePdfInZip] = useState(true);
   const [pdfStructure, setPdfStructure] = useState<'per_post' | 'single_master'>('per_post');
-  const [includeImagesInZip, setIncludeImagesInZip] = useState(true);
   const [includeCsvInZip, setIncludeCsvInZip] = useState(true);
   const [embedCaption, setEmbedCaption] = useState(false);
   const [dataSaver, setDataSaver] = useState(defaultDataSaver);
@@ -70,24 +80,23 @@ export const BulkDownloadModal: React.FC<BulkDownloadModalProps> = ({
   const cancelRef = useRef(false);
   const pauseRef = useRef(false);
 
-  // Filter posts according to excludeVideos option
+  // Filter posts according to user-selected media types
   const effectivePosts = posts.filter(p => {
-    if (excludeVideos && p.isVideo) return false;
+    if (p.isVideo && !includeVideos) return false;
+    if (!p.isVideo && !includeImagesInZip) return false;
     return true;
   });
 
-  // Compute all media files to download
+  // Compute all media files to download based on user preferences
   const mediaQueue: { post: InstagramPost; media: MediaItem; index: number }[] = [];
   effectivePosts.forEach((p) => {
     p.media.forEach((m, idx) => {
       const isVid = m.type === 'video' || p.isVideo;
-      if (isVid && excludeVideos) return;
+      if (isVid && !includeVideos) return;
+      if (!isVid && !includeImagesInZip) return;
       mediaQueue.push({ post: p, media: m, index: idx });
     });
   });
-
-  const videoCount = posts.filter(p => p.isVideo).length;
-  const imagePostsCount = posts.filter(p => !p.isVideo).length;
 
   const handleStartDownload = async () => {
     if (mediaQueue.length === 0 && !includePdfInZip) return;
@@ -313,7 +322,7 @@ export const BulkDownloadModal: React.FC<BulkDownloadModalProps> = ({
                 Tek Seferde PDF + ZIP İndirme Yöneticisi
               </h3>
               <p className="text-xs text-slate-400">
-                @{username} · {posts.length} Gönderi · {excludeVideos ? `${imagePostsCount} Görsel Gönderi` : `${posts.length} Gönderi`}
+                @{username} · {posts.length} Gönderi · {includeVideos && videoCount > 0 ? `${videoCount} Video` : ''}{includeVideos && videoCount > 0 && includeImagesInZip && imagePostsCount > 0 ? ' + ' : ''}{includeImagesInZip && imagePostsCount > 0 ? `${imagePostsCount} Görsel` : ''}
               </p>
             </div>
           </div>
@@ -331,12 +340,10 @@ export const BulkDownloadModal: React.FC<BulkDownloadModalProps> = ({
         <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1.5">
           <div className="flex items-center gap-1.5 font-bold text-emerald-300">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Kullanıcı İsteğine Özel İş Akışı</span>
+            <span>Kullanıcı Tercihine Özel İndirme Akışı</span>
           </div>
           <p className="text-slate-300 text-[11px] leading-relaxed">
-            <strong className="text-white">1. Aşama:</strong> Tüm {posts.length} gönderi önce listede taranıp belleğe yüklendi.
-            <br />
-            <strong className="text-white">2. Aşama:</strong> Reels ve videolar devre dışı bırakılır, fotoğraflar A4 PDF kitabına dönüştürülür ve tüm içerik <strong className="text-emerald-300">tek seferde tek bir ZIP formatında</strong> cihazınıza indirilir.
+            Hesaptaki tüm {posts.length} gönderi arasından indirmek istediğiniz medya türlerini (Görsel / Video / PDF) dilediğiniz gibi seçebilir, tek tıkla <strong className="text-emerald-300">tek bir ZIP paketi</strong> içinde indirebilirsiniz.
           </p>
         </div>
 
@@ -345,35 +352,65 @@ export const BulkDownloadModal: React.FC<BulkDownloadModalProps> = ({
           <div className="space-y-3 pt-1">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                İndirme ve Paketleme Seçenekleri:
+                İndirme ve Paketleme Tercihleri:
               </h4>
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-slate-400 font-mono">
                 Seçilen: {mediaQueue.length} Medya Dosyası
               </span>
             </div>
 
             <div className="space-y-2">
-              {/* Option 1: Exclude Reels and Videos (USER EXPLICIT REQUEST) */}
-              <label className="flex items-start gap-3 p-3 rounded-xl bg-slate-950/70 border border-rose-500/30 cursor-pointer hover:border-rose-500/50 transition-colors">
-                <input
-                  type="checkbox"
-                  checked={excludeVideos}
-                  onChange={(e) => setExcludeVideos(e.target.checked)}
-                  className="mt-0.5 rounded text-rose-600 focus:ring-rose-500"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <Film className="w-4 h-4 text-rose-400" />
-                    <span className="text-xs font-semibold text-white">Reels ve Videoları Devre Dışı Bırak</span>
-                    <span className="text-[10px] bg-rose-500/20 text-rose-300 px-1.5 py-0.2 rounded font-medium">Önerilen</span>
+              {/* Option 1: Images & Carousels Inclusion */}
+              {imagePostsCount > 0 && (
+                <label className="flex items-start gap-3 p-3 rounded-xl bg-slate-950/70 border border-amber-500/30 cursor-pointer hover:border-amber-500/50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={includeImagesInZip}
+                    onChange={(e) => setIncludeImagesInZip(e.target.checked)}
+                    className="mt-0.5 rounded text-amber-500 focus:ring-amber-500"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4 text-amber-400" />
+                      <span className="text-xs font-semibold text-white">Fotoğraflar ve Karuseller</span>
+                      <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-medium">
+                        {imagePostsCount} Gönderi
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      {includeImagesInZip
+                        ? `Dahil ediliyor: ${imagePostsCount} adet fotoğraf ve karusel görseli tek klasörde toplanacak.`
+                        : 'Devre dışı: Fotoğraf ve karuseller ZIP dosyasına eklenmeyecek.'}
+                    </p>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
-                    {excludeVideos
-                      ? `Açık: ${videoCount} video/reel atlandı, sadece ${imagePostsCount} adet fotoğraf ve slayt işlenecek (hızlı ve hafif).`
-                      : `Kapalı: ${videoCount} video ve reel dosyası da dahil edilecek.`}
-                  </p>
-                </div>
-              </label>
+                </label>
+              )}
+
+              {/* Option 2: Reels & Videos (MP4) Inclusion */}
+              {videoCount > 0 && (
+                <label className="flex items-start gap-3 p-3 rounded-xl bg-slate-950/70 border border-sky-500/30 cursor-pointer hover:border-sky-500/50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={includeVideos}
+                    onChange={(e) => setIncludeVideos(e.target.checked)}
+                    className="mt-0.5 rounded text-sky-500 focus:ring-sky-500"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <Film className="w-4 h-4 text-sky-400" />
+                      <span className="text-xs font-semibold text-white">Reels ve Videolar (MP4)</span>
+                      <span className="text-[10px] bg-sky-500/20 text-sky-300 px-1.5 py-0.2 rounded font-medium">
+                        {videoCount} Video
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      {includeVideos
+                        ? `Dahil ediliyor: ${videoCount} adet video ve reels dosyası MP4 formatında ZIP'e eklenecek.`
+                        : `Atlandı: ${videoCount} video dosyası indirilmeyecek.`}
+                    </p>
+                  </div>
+                </label>
+              )}
 
               {/* Option 2: PDF Conversion in ZIP (USER EXPLICIT REQUEST) */}
               <div className="p-3 rounded-xl bg-slate-950/70 border border-emerald-500/30 space-y-2.5">

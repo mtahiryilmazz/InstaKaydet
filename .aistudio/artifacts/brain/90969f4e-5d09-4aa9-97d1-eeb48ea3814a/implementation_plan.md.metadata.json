@@ -1,6 +1,6 @@
 {
-  "summary": "30 saniyelik geri sayım sonrasında tekrar HTTP 429 hatasına düşmesini engelleyen Çoklu Bypass Kanalı (Sosyal Bot User-Agent, Alternatif Feed/GraphQL Uç Noktaları, Public Syndication/Proxy Katmanı ve Geri Sayım Sonrası Sonsuz 429 Döngüsü Koruması) ile Esnek F12 Çerez Kaydetme (Kaydet butonu daima aktif) mimari planı.",
-  "updatedAt": "2026-10-14T14:08:11.600630685Z",
+  "summary": "Instagram hesabının saldırgan/şüpheli olarak algılanmasını önlemek amacıyla Session ID çerez özelliğini tamamen kaldıran, yerine 4 güvenli alternatifi (Çerezsiz Mobil Mod, Link ile İndirme, Chrome Eklentisi/JSON Aktarımı, Resmi Meta OAuth) ve Hesap Güvenliği Rehberini entegre eden plan.",
+  "updatedAt": "2026-10-16T13:05:05.031889848Z",
   "requestFeedback": true,
   "userFacing": true
 }
